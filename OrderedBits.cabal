@@ -1,0 +1,36 @@
+name:           OrderedBits
+version:        0.0.0.1
+author:         Christian Hoener zu Siederdissen, 2014
+copyright:      Christian Hoener zu Siederdissen, 2014
+homepage:       http://www.tbi.univie.ac.at/~choener/
+maintainer:     choener@tbi.univie.ac.at
+category:       Data
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+stability:      experimental
+cabal-version:  >= 1.6.0
+synopsis:
+                Efficient ordered (by popcount) enumeration of bits
+description:
+                X
+
+
+
+Extra-Source-Files:
+
+library
+  build-depends:
+    primitive       == 0.5.*    ,
+    vector          == 0.10.*   ,
+    base            == 4.*
+  exposed-modules:
+    Data.Bits.Ordered
+  ghc-options:
+    -O2 -funbox-strict-fields
+
+
+source-repository head
+  type: git
+  location: git://github.com/choener/OrderedBits
+
