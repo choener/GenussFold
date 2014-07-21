@@ -13,7 +13,12 @@ cabal-version:  >= 1.6.0
 synopsis:
                 Efficient ordered (by popcount) enumeration of bits
 description:
-                X
+                This library provides efficient methods to enumerate all
+                elements of a set in order of the population count. First, the
+                empty set, then all 1-element sets, all 2-element sets, etc.
+                Such enumerations are important for algorithms over unordered
+                data sets. Examples include the travelling salesman problem and
+                the closely related Hamiltonian path problem.
 
 
 
@@ -21,13 +26,16 @@ Extra-Source-Files:
 
 library
   build-depends:
-    primitive       == 0.5.*    ,
-    vector          == 0.10.*   ,
-    base            == 4.*
+    primitive         == 0.5.*    ,
+    vector            == 0.10.*   ,
+    vector-algorithms == 0.6.*    ,
+    base              == 4.*
   exposed-modules:
     Data.Bits.Ordered
+    Data.Bits.Ordered.QuickCheck
   ghc-options:
     -O2 -funbox-strict-fields
+
 
 
 source-repository head
