@@ -22,8 +22,8 @@ import           Control.Arrow
 
 
 
--- The /slow/ default implementation. We sort the vector, not the list, as
--- sorting will walk the whole data structure anyway, and the vector
+-- | The /slow/ default implementation. We sort the vector, not the list,
+-- as sorting will walk the whole data structure anyway, and the vector
 -- requires not as much memory.
 --
 -- Uses a stable sort so that @a,b@ with equal pop count still has @a<b@ in
@@ -33,13 +33,15 @@ popCntSorted :: (Unbox n, Integral n, Bits n) => Int -> VU.Vector n
 popCntSorted n = VU.modify (AI.sortBy (comparing (popCount &&& id))) $ VU.enumFromN 0 (2^n)
 {-# INLINE popCntSorted #-}
 
--- | Memoized version @m@ is the size of the memotable (up to 31 bits are
--- memoized), @n@ the requested number of bits.
+-- | Memoized version of 'popCntSorted'.
 --
 -- NOTE Since this uses @popCntSorted@ for now it will still require a lot
 -- of memory for sorting the vector!
 
-popCntMemo :: Int -> Int -> VU.Vector Int
+popCntMemo
+  :: Int    -- ^ memoize how many bits? Can only go up once a certain number of bits have been memoized
+  -> Int    -- ^ size of the set we want. If larger than memo limit, will just call 'popCntSorted'
+  -> VU.Vector Int
 popCntMemo m n
   | n>m       = popCntSorted n
   | m>limit   = error $ "for safety reasons, memoization is only performed for popcounts up to " ++ show limit ++ " bits, memoize manually!"
