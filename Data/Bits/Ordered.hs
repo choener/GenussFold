@@ -7,6 +7,9 @@
 --
 -- The enumerator can be inlined with @unfoldr@ (of the @vector@ package)
 -- and is a good producer.
+--
+-- A memo-table is available, since @popCntSorted@ is still waiting for an
+-- efficient @popCntEnumerated@ that does not require sorting.
 
 module Data.Bits.Ordered 
   ( popCntSorted
@@ -39,14 +42,12 @@ popCntSorted n = VU.modify (AI.sortBy (comparing (popCount &&& id))) $ VU.enumFr
 -- of memory for sorting the vector!
 
 popCntMemo
-  :: Int    -- ^ memoize how many bits? Can only go up once a certain number of bits have been memoized
-  -> Int    -- ^ size of the set we want. If larger than memo limit, will just call 'popCntSorted'
+  :: Int    -- ^ size of the set we want. If larger than memo limit, will just call 'popCntSorted'
   -> VU.Vector Int
-popCntMemo m n
-  | n>m       = popCntSorted n
-  | m>limit   = error $ "for safety reasons, memoization is only performed for popcounts up to " ++ show limit ++ " bits, memoize manually!"
+popCntMemo n
+  | n>limit   = error $ "for safety reasons, memoization is only performed for popcounts up to " ++ show limit ++ " bits, memoize manually!"
   | otherwise = _popCntMemo !! n
-  where limit = 31
+  where limit = 28
 {-# INLINE popCntMemo #-}
 
 -- | Memoizes popcount arrays. The limit to memoization is enforced by

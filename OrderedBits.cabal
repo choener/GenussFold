@@ -9,7 +9,7 @@ license:        BSD3
 license-file:   LICENSE
 build-type:     Simple
 stability:      experimental
-cabal-version:  >= 1.6.0
+cabal-version:  >= 1.8.0
 synopsis:
                 Efficient ordered (by popcount) enumeration of bits
 description:
@@ -24,6 +24,11 @@ description:
 
 Extra-Source-Files:
 
+flag benchmarks
+  description:  enable criterion benchmarking
+  default:      False
+  manual:       True
+
 library
   build-depends:
     primitive         == 0.5.*    ,
@@ -36,7 +41,27 @@ library
   ghc-options:
     -O2 -funbox-strict-fields
 
-
+executable Benchmarks
+  if flag(benchmarks)
+    buildable: True
+  else
+    buildable: False
+  build-depends:
+    criterion   ==  1.0.0.2 ,
+    OrderedBits             ,
+    vector                  ,
+    base
+  hs-source-dirs:
+    src
+  main-is:
+    Benchmarks.hs
+  ghc-options:
+    -O2
+    -funbox-strict-fields
+    -fllvm
+    -optlo-O3 -optlo-std-compile-opts
+    -fllvm-tbaa
+    -fsimpl-tick-factor=1000
 
 source-repository head
   type: git
