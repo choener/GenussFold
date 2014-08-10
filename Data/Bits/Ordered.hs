@@ -13,7 +13,8 @@
 
 module Data.Bits.Ordered 
   ( popCntSorted
-  , popCntMemo
+  , popCntMemoInt
+  , popCntMemoWord
   ) where
 
 import           Data.Bits
@@ -22,6 +23,7 @@ import           Data.Vector.Unboxed (Unbox)
 import qualified Data.Vector.Algorithms.Intro as AI
 import           Data.Ord (comparing)
 import           Control.Arrow
+import           Data.Word(Word(..))
 
 
 
@@ -36,23 +38,43 @@ popCntSorted :: (Unbox n, Integral n, Bits n) => Int -> VU.Vector n
 popCntSorted n = VU.modify (AI.sortBy (comparing (popCount &&& id))) $ VU.enumFromN 0 (2^n)
 {-# INLINE popCntSorted #-}
 
--- | Memoized version of 'popCntSorted'.
+-- | Memoized version of 'popCntSorted' for @Int@s.
 --
 -- NOTE Since this uses @popCntSorted@ for now it will still require a lot
 -- of memory for sorting the vector!
 
-popCntMemo
+popCntMemoInt
   :: Int    -- ^ size of the set we want. If larger than memo limit, will just call 'popCntSorted'
   -> VU.Vector Int
-popCntMemo n
+popCntMemoInt n
   | n>limit   = error $ "for safety reasons, memoization is only performed for popcounts up to " ++ show limit ++ " bits, memoize manually!"
-  | otherwise = _popCntMemo !! n
+  | otherwise = _popCntMemoInt !! n
   where limit = 28
-{-# INLINE popCntMemo #-}
+{-# INLINE popCntMemoInt #-}
 
 -- | Memoizes popcount arrays. The limit to memoization is enforced by
 -- popCntMemo, not here.
 
-_popCntMemo = map popCntSorted [0..]
-{-# NOINLINE _popCntMemo #-}
+_popCntMemoInt = map popCntSorted [0..]
+{-# NOINLINE _popCntMemoInt #-}
+
+-- | Memoized version of 'popCntSorted' for @Word@s.
+--
+-- NOTE Since this uses @popCntSorted@ for now it will still require a lot
+-- of memory for sorting the vector!
+
+popCntMemoWord
+  :: Int    -- ^ size of the set we want. If larger than memo limit, will just call 'popCntSorted'
+  -> VU.Vector Word
+popCntMemoWord n
+  | n>limit   = error $ "for safety reasons, memoization is only performed for popcounts up to " ++ show limit ++ " bits, memoize manually!"
+  | otherwise = _popCntMemoWord !! n
+  where limit = 28
+{-# INLINE popCntMemoWord #-}
+
+-- | Memoizes popcount arrays. The limit to memoization is enforced by
+-- popCntMemo, not here.
+
+_popCntMemoWord = map popCntSorted [0..]
+{-# NOINLINE _popCntMemoWord #-}
 
