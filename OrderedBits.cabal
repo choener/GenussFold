@@ -43,14 +43,15 @@ library
 
 executable Benchmarks
   if flag(benchmarks)
-    buildable: True
+    buildable:
+      True
+    build-depends:
+      criterion   ==  1.0.0.2 ,
+      OrderedBits             ,
+      vector                  ,
+      base
   else
     buildable: False
-  build-depends:
-    criterion   ==  1.0.0.2 ,
-    OrderedBits             ,
-    vector                  ,
-    base
   hs-source-dirs:
     src
   main-is:
