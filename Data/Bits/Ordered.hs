@@ -1,4 +1,6 @@
 
+{-# LANGUAGE CPP #-}
+
 -- | Efficiently enumerate the bits in data types in order of population
 -- count. This yields, say, @000, 001, 010, 100, 011, 101, 110, 111@ (or
 -- @0, 1, 2, 4, 3, 5, 6, 7@). Another view is of looking at the bits as
@@ -12,12 +14,17 @@
 -- efficient @popCntEnumerated@ that does not require sorting.
 
 module Data.Bits.Ordered 
-  ( popCntSorted
+  -- bitset operations
+  ( lsbActive
+  , nextActive
+  -- stream ever larger population counts
+  , popCntSorted
   , popCntMemoInt
   , popCntMemoWord
   ) where
 
 import           Data.Bits
+import           Data.Bits.Extras
 import qualified Data.Vector.Unboxed as VU
 import           Data.Vector.Unboxed (Unbox)
 import qualified Data.Vector.Algorithms.Intro as AI
@@ -26,6 +33,29 @@ import           Control.Arrow
 import           Data.Word(Word(..))
 
 
+
+-- * Move from one active bit to the next one
+
+-- | Capture the no-bit-set case
+
+captureNull :: Ranked t => t -> (t -> Int) -> Int
+captureNull t f = if t==0 then -1 else f t
+{-# INLINE captureNull #-}
+
+-- | Get the lowest active bit. Returns @-1@ if no bit is set.
+
+lsbActive :: Ranked t => t -> Int
+lsbActive t = lsb t
+{-# INLINE lsbActive #-}
+
+-- | Given the set @t@ and the currently active bit @k@, get the next
+-- active bit. Return @-1@ if there is no next active bit.
+
+nextActive :: Ranked t => Int -> t -> Int
+nextActive k t = lsbActive $ (t `shiftR` (k+1)) `shiftL` (k+1)
+{-# INLINE nextActive #-}
+
+-- * Population count methods
 
 -- | The /slow/ default implementation. We sort the vector, not the list,
 -- as sorting will walk the whole data structure anyway, and the vector
@@ -77,4 +107,40 @@ popCntMemoWord n
 
 _popCntMemoWord = map popCntSorted [0..]
 {-# NOINLINE _popCntMemoWord #-}
+
+
+
+
+
+-- WARNING: Conditional compilation based on architecture!
+
+instance Ranked Int where
+#if x86_64_HOST_ARCH
+  lsb  = lsb  . w64
+  rank = rank . w64
+  nlz  = nlz  . w64
+#endif
+#if i386_HOST_ARCH
+  lsb  = lsb  . w32
+  rank = rank . w32
+  nlz  = nlz  . w32
+#endif
+  {-# INLINE lsb  #-}
+  {-# INLINE rank #-}
+  {-# INLINE nlz  #-}
+
+instance Ranked Word where
+#if x86_64_HOST_ARCH
+  lsb  = lsb  . w64
+  rank = rank . w64
+  nlz  = nlz  . w64
+#endif
+#if i386_HOST_ARCH
+  lsb  = lsb  . w32
+  rank = rank . w32
+  nlz  = nlz  . w32
+#endif
+  {-# INLINE lsb  #-}
+  {-# INLINE rank #-}
+  {-# INLINE nlz  #-}
 
