@@ -31,7 +31,7 @@ flag benchmarks
 
 library
   build-depends:
-    bits              == 0.3.*    ,
+    bits              == 0.4.*    ,
     primitive         == 0.5.*    ,
     vector            == 0.10.*   ,
     vector-algorithms == 0.6.*    ,
