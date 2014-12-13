@@ -6,7 +6,10 @@
 
 -- | A bijection between boxed, immutable vectors.
 
-module Data.Bijection.Vector.Unboxed where
+module Data.Bijection.Vector.Unboxed
+  ( module Data.Bijection.Class
+  , Bimap
+  ) where
 
 import           Control.Applicative ((<$>))
 import           Control.DeepSeq

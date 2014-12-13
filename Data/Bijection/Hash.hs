@@ -4,7 +4,10 @@
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE UndecidableInstances #-}
 
-module Data.Bijection.Hash where
+module Data.Bijection.Hash
+  ( module Data.Bijection.Class
+  , Bimap
+  ) where
 
 import           Control.DeepSeq
 import           Data.Aeson

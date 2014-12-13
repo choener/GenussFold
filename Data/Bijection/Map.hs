@@ -6,7 +6,10 @@
 
 -- | Bijections via strict maps.
 
-module Data.Bijection.Map where
+module Data.Bijection.Map
+  ( module Data.Bijection.Class
+  , Bimap
+  ) where
 
 import           Control.DeepSeq
 import           Data.Aeson
