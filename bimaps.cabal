@@ -32,7 +32,7 @@ flag llvm
 library
   exposed-modules:
     Data.Bijection.Class
---    Data.Bijection.Hash
+    Data.Bijection.Hash
     Data.Bijection.Map
     Data.Bijection.Vector
     Data.Bijection.Vector.Unboxed
@@ -43,10 +43,12 @@ library
     cereal                  == 0.4.*    ,
     containers              == 0.5.*    ,
     deepseq                 == 1.3.*    ,
+    hashable                == 1.2.*    ,
     primitive               == 0.5.*    ,
     QuickCheck              == 2.*      ,
     repa                    == 3.3.*    ,
     storable-tuple          == 0.0.2    ,
+    unordered-containers    == 0.2.5.*  ,
     vector                  == 0.10.*   ,
     vector-binary-instances == 0.2.*    ,
     vector-th-unbox         == 0.2.*    ,

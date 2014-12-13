@@ -1,21 +1,31 @@
 
+{-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE UndecidableInstances #-}
 
 -- | A bijection between boxed, immutable vectors.
 
 module Data.Bijection.Vector where
 
-import qualified Data.Vector.Generic as G
-import           Data.Vector (Vector)
-import           Data.Tuple (swap)
 import           Control.Applicative ((<$>))
 import           Control.DeepSeq
+import           Data.Aeson
+import           Data.Binary
+import           Data.Serialize
+import           Data.Tuple (swap)
+import           Data.Vector.Binary
+import           Data.Vector.Cereal
+import           Data.Vector (Vector)
+import           GHC.Generics
+import qualified Data.Vector.Generic as G
 
 import           Data.Bijection.Class
 
 
 
 newtype Bimap l r = Bimap (Vector (l,r))
+  deriving (Read,Show,Eq,Generic)
 
 instance (Eq l, Eq r) => Bijection (Bimap l r) where
   type ContL (Bimap l r) = Vector (l,r)
@@ -37,4 +47,9 @@ instance (Eq l, Eq r) => Bijection (Bimap l r) where
 
 instance (NFData l, NFData r) => NFData (Bimap l r) where
   rnf (Bimap v) = rnf v
+
+instance (Binary l, Binary r) => Binary (Bimap l r)
+instance (Serialize l, Serialize r) => Serialize (Bimap l r)
+instance (ToJSON l, ToJSON r) => ToJSON (Bimap l r)
+instance (FromJSON l, FromJSON r) => FromJSON (Bimap l r)
 

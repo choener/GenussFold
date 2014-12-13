@@ -20,6 +20,7 @@ import qualified Data.Bijection.Vector as BV
 import qualified Data.Bijection.Vector.Unboxed as BU
 import qualified Data.Bijection.Vector.Storable as BS
 import qualified Data.Bijection.Map as BM
+import qualified Data.Bijection.Hash as HS
 import qualified Data.Bijection.Class as B
 
 
@@ -61,15 +62,18 @@ main = do
   let zVU :: [BU.Bimap Int Int] = map (\i -> B.fromList $ zip i i) inputs
   let zVS :: [BS.Bimap Int Int] = map (\i -> B.fromList $ zip i i) inputs
   let zMS :: [BM.Bimap Int Int] = map (\i -> B.fromList $ zip i i) inputs
-  deepseq (lkup,inputs,zVV,zVU,zVS,zMS) `seq` defaultMain
+  let zHS :: [HS.Bimap Int Int] = map (\i -> B.fromList $ zip i i) inputs
+  deepseq (lkup,inputs,zVV,zVU,zVS,zMS,zHS) `seq` defaultMain
     [ bgroup "5"
       [ bench "vector/ unboxed" $ whnf (benchVU lkup) (zVU !! 1)
       , bench "   map/  strict" $ whnf (benchBM lkup) (zMS !! 1)
       ]
+    , bgroup "by type"
+--      [ bgroup "vector/    boxed" (map (runLookupBench lkup) zVV)
+--      , bgroup "vector/ storable" (map (runLookupBench lkup) zVS)
+      [ bgroup "vector/  unboxed" (map (runLookupBench lkup) zVU)
+      , bgroup "   map/   strict" (map (runLookupBench lkup) zMS)
+      , bgroup "  hash/   strict" (map (runLookupBench lkup) zHS)
+      ]
     ]
---    [ bgroup "vector/    boxed" (map (`benchLookup` lkup) zVV)
---    , bgroup "vector/ storable" (map (`benchLookup` lkup) zVS)
---    [ bgroup "vector/  unboxed" (map (`benchLookup` lkup) zVU)
---    , bgroup "   map/   strict" (map (`benchLookup` lkup) zMS)
---    ]
 
