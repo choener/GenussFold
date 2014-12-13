@@ -34,6 +34,8 @@ instance (Eq l, Eq r, Unbox l, Unbox r) => Bijection (Bimap l r) where
   insert (Bimap v) = Bimap . G.snoc v
   deleteByL (Bimap v) x = Bimap $ G.filter ((/=x) . fst) v
   deleteByR (Bimap v) y = Bimap $ G.filter ((/=y) . snd) v
+  {-# INLINE lookupL #-}
+  {-# INLINE lookupR #-}
 
 instance (NFData l, NFData r) => NFData (Bimap l r) where
   rnf (Bimap v) = rnf v

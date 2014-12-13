@@ -26,6 +26,8 @@ class Bijection z where
   insert :: z -> (ElemL z, ElemR z) -> z
   deleteByL :: z -> ElemL z -> z
   deleteByR :: z -> ElemR z -> z
+  {-# INLINE memberL #-}
+  {-# INLINE memberR #-}
 
 findWithDefaultL :: Bijection z => ElemR z -> z -> ElemL z -> ElemR z
 findWithDefaultL def = (maybe def id . ) . lookupL

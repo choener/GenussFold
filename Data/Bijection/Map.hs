@@ -41,6 +41,8 @@ instance (Ord l, Ord r) => Bijection (Bimap l r) where
     let l' = maybe l (`S.delete` l) $ S.lookup y r
         r' = S.delete y r
     in  Bimap (l',r')
+  {-# INLINE lookupL #-}
+  {-# INLINE lookupR #-}
 
 instance (NFData l, NFData r) => NFData (Bimap l r) where
   rnf (Bimap (l,r)) = rnf (l,r)
