@@ -19,8 +19,8 @@ extra-source-files:
   changelog.md
   README.md
 
-flag examples
-  description:  build the examples
+flag benchmark
+  description:  build the benchmark
   default:      False
   manual:       True
 
@@ -58,7 +58,7 @@ library
     -funbox-strict-fields
 
 executable Benchmark
-  if flag(examples)
+  if flag(benchmark)
     buildable: True
     build-depends:
       bimaps                  ,
