@@ -45,7 +45,7 @@ captureNull t f = if t==0 then -1 else f t
 -- | Get the lowest active bit. Returns @-1@ if no bit is set.
 
 lsbActive :: Ranked t => t -> Int
-lsbActive t = lsb t
+lsbActive t = captureNull t lsb
 {-# INLINE lsbActive #-}
 
 -- | Given the set @t@ and the currently active bit @k@, get the next
