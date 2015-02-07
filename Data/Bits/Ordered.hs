@@ -1,5 +1,6 @@
 
-{-# LANGUAGE CPP #-}
+{-# Language CPP #-}
+{-# Language BangPatterns #-}
 
 -- | Efficiently enumerate the bits in data types in order of population
 -- count. This yields, say, @000, 001, 010, 100, 011, 101, 110, 111@ (or
@@ -21,6 +22,8 @@ module Data.Bits.Ordered
   , popCntSorted
   , popCntMemoInt
   , popCntMemoWord
+  , succPopulation
+  , popComplement
   ) where
 
 import           Data.Bits
@@ -31,6 +34,7 @@ import qualified Data.Vector.Algorithms.Intro as AI
 import           Data.Ord (comparing)
 import           Control.Arrow
 import           Data.Word(Word(..))
+import           Debug.Trace
 
 
 
@@ -108,7 +112,33 @@ popCntMemoWord n
 _popCntMemoWord = map popCntSorted [0..]
 {-# NOINLINE _popCntMemoWord #-}
 
+-- | Enumerate all sets with the same population count. Given a population
+-- @i@, this returns @Just j@ with @j>i@ (but same number of set bits) or
+-- @Nothing@. For a population count of @k@, start with @2^(k+1) -1@.
 
+succPopulation
+  :: Ranked t
+  => Int        -- zero-based index of the highest bit in the population
+  -> t          -- current population
+  -> Maybe t    -- Just the new population, or nothing if now higher-ordered population exists.
+succPopulation !h' !s' = go h' s' where
+  go !h !s
+    | s == 0    = Nothing
+    | m == h    = fmap (`setBit` h) (go (h-1) (clearBit s h))
+    | otherwise = Just $ setBit (clearBit s m) (m+1)
+    where !m = msb s
+{-# INLINE succPopulation #-}
+
+-- | Given a population, get the complement.
+
+popComplement
+  :: Ranked t
+  => Int        -- zero-based index of the highest bit in the population
+  -> t          -- current population
+  -> t          -- complement of the population. All bits higher than the highest bit are kept zero.
+popComplement !h !s = mask .&. complement s
+  where mask = (2^(h+1) -1)
+{-# INLINE popComplement #-}
 
 
 
