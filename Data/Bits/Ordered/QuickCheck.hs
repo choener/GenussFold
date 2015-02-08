@@ -2,6 +2,11 @@
 {-# Language ScopedTypeVariables #-}
 
 -- | Check a number of properties for popcount-ordered elements.
+--
+-- $setup
+--
+-- >>> :set -XScopedTypeVariables
+--
 
 module Data.Bits.Ordered.QuickCheck where
 
@@ -18,6 +23,12 @@ import           Debug.Trace
 import           Data.Bits.Ordered
 
 
+
+-- | Check if both the memoized version and the population enumeration
+-- produce the same multisets, but maybe in different order.
+--
+-- prop> \(n :: Int16) -> let b = popCount n in memoSorted b == enumSorted b
+--
 
 prop_PopCountSet (NonZero (n :: Int16)) = memo == enum
   where b    = popCount n

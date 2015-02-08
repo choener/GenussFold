@@ -117,6 +117,9 @@ _popCntMemoWord = map popCntSorted [0..]
 -- | Enumerate all sets with the same population count. Given a population
 -- @i@, this returns @Just j@ with @j>i@ (but same number of set bits) or
 -- @Nothing@. For a population count of @k@, start with @2^(k+1) -1@.
+--
+-- cf
+-- <http://en.wikipedia.org/wiki/Permutation#Algorithms_to_generate_permutations>
 
 succPopulation
   :: Ranked t
@@ -143,15 +146,25 @@ succPopulation !h' !s'
           | otherwise = reverseFrom (u+1) (d-1) src (assignBit (assignBit tgt u (testBit src d)) d (testBit src u))
 {-# INLINE succPopulation #-}
 
--- | Given a population, get the complement.
+-- | Given a population, get the complement. The first argument is the size
+-- of the population (say. 8 for 8 bits); the second the current
+-- population.
+--
+-- Examples:
+--
+-- >>> popComplement 5 (3 :: Int)
+-- 28
+--
+-- >>> popComplement 6 (3 :: Int)
+-- 60
 
 popComplement
   :: Ranked t
-  => Int        -- zero-based index of the highest bit in the population
+  => Int        -- size of the population set
   -> t          -- current population
   -> t          -- complement of the population. All bits higher than the highest bit are kept zero.
 popComplement !h !s = mask .&. complement s
-  where mask = (2^(h+1) -1)
+  where mask = (2^h -1)
 {-# INLINE popComplement #-}
 
 
