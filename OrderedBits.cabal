@@ -30,12 +30,12 @@ flag benchmarks
   manual:       True
 
 library
-  build-depends:
-    bits              == 0.4.*    ,
-    primitive         == 0.5.*    ,
-    vector            == 0.10.*   ,
-    vector-algorithms == 0.6.*    ,
-    base              == 4.*
+  build-depends:  base              == 4.*
+               ,  bits              == 0.4.*
+               ,  primitive         == 0.5.*
+               ,  QuickCheck        == 2.7.*
+               ,  vector            == 0.10.*
+               ,  vector-algorithms == 0.6.*
   exposed-modules:
     Data.Bits.Ordered
     Data.Bits.Ordered.QuickCheck

@@ -1,6 +1,7 @@
 
 {-# Language CPP #-}
 {-# Language BangPatterns #-}
+{-# Language PatternGuards #-}
 
 -- | Efficiently enumerate the bits in data types in order of population
 -- count. This yields, say, @000, 001, 010, 100, 011, 101, 110, 111@ (or
@@ -18,23 +19,24 @@ module Data.Bits.Ordered
   -- bitset operations
   ( lsbActive
   , nextActive
+  -- population operations
+  , succPopulation
+  , popComplement
   -- stream ever larger population counts
   , popCntSorted
   , popCntMemoInt
   , popCntMemoWord
-  , succPopulation
-  , popComplement
   ) where
 
+import           Control.Arrow
 import           Data.Bits
 import           Data.Bits.Extras
-import qualified Data.Vector.Unboxed as VU
-import           Data.Vector.Unboxed (Unbox)
-import qualified Data.Vector.Algorithms.Intro as AI
 import           Data.Ord (comparing)
-import           Control.Arrow
+import           Data.Vector.Unboxed (Unbox)
 import           Data.Word(Word(..))
 import           Debug.Trace
+import qualified Data.Vector.Algorithms.Intro as AI
+import qualified Data.Vector.Unboxed as VU
 
 
 
@@ -118,15 +120,35 @@ _popCntMemoWord = map popCntSorted [0..]
 
 succPopulation
   :: Ranked t
-  => Int        -- zero-based index of the highest bit in the population
+  => Int        -- size of the set we want. (i.e. numbor of bits available for @0@ or @1@)
   -> t          -- current population
   -> Maybe t    -- Just the new population, or nothing if now higher-ordered population exists.
-succPopulation !h' !s' = go h' s' where
+{-
+succPopulation !h' !s' = go (h'-1) s' where
   go !h !s
     | s == 0    = Nothing
     | m == h    = fmap (`setBit` h) (go (h-1) (clearBit s h))
     | otherwise = Just $ setBit (clearBit s m) (m+1)
     where !m = msb s
+-}
+succPopulation !h' !s'
+  | popCount s' < 1 || h' < 2 = Nothing
+  | Just k <- findK   (h' -2)
+  , Just l <- findL k (h' -1)
+  = let swp = setBit (clearBit s' k) l
+    in  Just $ reverseFrom (k+1) (h' -1) swp swp
+  | otherwise = Nothing
+  where findK k
+          | k < 0                                  = Nothing
+          | testBit s' k && not (testBit s' (k+1)) = Just k
+          | otherwise                              = findK (k-1)
+        findL k l
+          | l <= k             = Nothing
+          | not $ testBit s' l = Just l
+          | otherwise          = findL k $ l-1
+        reverseFrom u d src tgt
+          | u >= h'   = tgt
+          | otherwise = reverseFrom (u+1) (d-1) src (assignBit (assignBit tgt u (testBit src d)) d (testBit src u))
 {-# INLINE succPopulation #-}
 
 -- | Given a population, get the complement.
