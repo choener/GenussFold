@@ -47,7 +47,7 @@ executable Benchmarks
     buildable:
       True
     build-depends:
-      criterion   ==  1.0.0.2 ,
+      criterion   ==  1.0.2.* ,
       OrderedBits             ,
       vector                  ,
       base
