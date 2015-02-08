@@ -123,14 +123,6 @@ succPopulation
   => Int        -- size of the set we want. (i.e. numbor of bits available for @0@ or @1@)
   -> t          -- current population
   -> Maybe t    -- Just the new population, or nothing if now higher-ordered population exists.
-{-
-succPopulation !h' !s' = go (h'-1) s' where
-  go !h !s
-    | s == 0    = Nothing
-    | m == h    = fmap (`setBit` h) (go (h-1) (clearBit s h))
-    | otherwise = Just $ setBit (clearBit s m) (m+1)
-    where !m = msb s
--}
 succPopulation !h' !s'
   | popCount s' < 1 || h' < 2 = Nothing
   | Just k <- findK   (h' -2)
