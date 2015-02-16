@@ -1,5 +1,6 @@
 
 {-# Language CPP #-}
+{-# Language ScopedTypeVariables #-}
 {-# Language BangPatterns #-}
 {-# Language PatternGuards #-}
 
@@ -26,6 +27,7 @@ module Data.Bits.Ordered
   , popCntSorted
   , popCntMemoInt
   , popCntMemoWord
+  , movePopulation
   ) where
 
 import           Control.Arrow
@@ -166,6 +168,37 @@ popComplement
 popComplement !h !s = mask .&. complement s
   where mask = (2^h -1)
 {-# INLINE popComplement #-}
+
+-- | Move a population around. Assume that you have a bitmask @mask
+-- = 10101@ and a least-significant aligned population @11@, then given
+-- mask and population you'd like to see @00101@.
+--
+-- Examples:
+--
+-- >>> movePopulation (21::Int) 3 -- 10101 00011  -- 00101
+-- 5
+-- >>> movePopulation (28::Int) 0 -- 11100 00000  -- 00000
+-- 0
+-- >>> movePopulation (28::Int) 1 -- 11100 00001  -- 00100
+-- 4
+-- >>> movePopulation (28::Int) 2 -- 11100 00010  -- 01000
+-- 8
+-- >>> movePopulation (28::Int) 3 -- 11100 00011  -- 01100
+-- 12
+
+movePopulation
+  :: (Ranked t)
+  => t          -- the mask
+  -> t          -- the population
+  -> t          -- final population
+movePopulation mask lsp = go 0 0 mask lsp where
+  go !acc !(k::Int) !m !l
+    | l==0              = acc
+    | testBit m 0
+    , testBit l 0       = go (acc + unsafeShiftL 1 k) (k+1) (unsafeShiftR m 1) (unsafeShiftR l 1)
+    | not $ testBit m 0 = go acc                      (k+1) (unsafeShiftR m 1) l
+    | not $ testBit l 0 = go acc                      (k+1) (unsafeShiftR m 1) (unsafeShiftR l 1)
+{-# Inline movePopulation #-}
 
 
 
