@@ -3,9 +3,9 @@ Version:        0.0.0.1
 License:        BSD3
 License-file:   LICENSE
 Author:         Christian Hoener zu Siederdissen
-Maintainer:     choener@tbi.univie.ac.at
-Copyright:      Christian Hoener zu Siederdissen, 2014
-Homepage:       http://www.tbi.univie.ac.at/~choener/
+Maintainer:     choener@bioinf.uni-leipzig.de
+Copyright:      Christian Hoener zu Siederdissen, 2014 - 2015
+Homepage:       http://www.bioinf.uni-leipzig.de/~choener/
 Stability:      Experimental
 Category:       Data
 Build-type:     Simple
@@ -57,7 +57,7 @@ library
     -O2
     -funbox-strict-fields
 
-executable Benchmark
+executable BenchmarkBimaps
   if flag(benchmark)
     buildable: True
     build-depends: base
