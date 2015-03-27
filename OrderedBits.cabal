@@ -64,7 +64,6 @@ executable BenchmarkOrderedBits
   ghc-options:
     -O2
     -funbox-strict-fields
---    -fsimpl-tick-factor=1000
   if flag(llvm)
     ghc-options:
       -fllvm
