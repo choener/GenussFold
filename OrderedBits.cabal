@@ -35,10 +35,10 @@ flag llvm
   manual:       True
 
 library
-  build-depends:  base              >= 4.7    && < 4.9
+  build-depends:  base              >= 4.7      && < 4.9
                ,  bits              == 0.4.*
                ,  primitive         == 0.5.*
-               ,  QuickCheck        >= 2.7    && < 2.9
+               ,  QuickCheck        >= 2.7      && < 2.9
                ,  vector            == 0.10.*
                ,  vector-algorithms == 0.6.*
   exposed-modules:
