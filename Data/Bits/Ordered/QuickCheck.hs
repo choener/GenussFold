@@ -1,6 +1,4 @@
 
-{-# Language ScopedTypeVariables #-}
-
 -- | Check a number of properties for popcount-ordered elements.
 --
 -- $setup
@@ -38,7 +36,7 @@ prop_PopCountSet (NonZero (n :: Int16)) = memo == enum
 memoSorted, enumSorted :: Int -> [[Int]]
 
 memoSorted b = map sort . groupBy ((==) `on` popCount) $ VU.toList $ popCntMemoInt b
-enumSorted b = map sort                                $ [0] : [ roll (succPopulation b) (Just $ 2^k-1) | k <- [1..b] ]
+enumSorted b = map sort                                $ [0] : [ roll (popPermutation b) (Just $ 2^k-1) | k <- [1..b] ]
   where roll f (Just k) = k : roll f (f k)
         roll _ Nothing  = []
 

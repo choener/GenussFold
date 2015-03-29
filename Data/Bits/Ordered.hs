@@ -1,9 +1,4 @@
 
-{-# Language CPP #-}
-{-# Language ScopedTypeVariables #-}
-{-# Language BangPatterns #-}
-{-# Language PatternGuards #-}
-
 -- | Efficiently enumerate the bits in data types in order of population
 -- count. This yields, say, @000, 001, 010, 100, 011, 101, 110, 111@ (or
 -- @0, 1, 2, 4, 3, 5, 6, 7@). Another view is of looking at the bits as
@@ -20,8 +15,10 @@ module Data.Bits.Ordered
   -- bitset operations
   ( lsbActive
   , nextActive
+  , succActive
+  , maybeLsb
   -- population operations
-  , succPopulation
+  , popPermutation
   , popComplement
   -- stream ever larger population counts
   , popCntSorted
@@ -62,6 +59,19 @@ lsbActive t = captureNull t lsb
 nextActive :: Ranked t => Int -> t -> Int
 nextActive k t = lsbActive $ (t `shiftR` (k+1)) `shiftL` (k+1)
 {-# INLINE nextActive #-}
+
+-- | Return next active bit, using @Maybe@.
+
+succActive :: Ranked t => Int -> t -> Maybe Int
+succActive k t = if t==0 then Nothing else Just (lsb t')
+  where t' = (t `shiftR` (k+1) `shiftL` (k+1))
+{-# Inline succActive #-}
+
+-- | @Maybe@ the lowest active bit.
+
+maybeLsb :: Ranked t => t -> Maybe Int
+maybeLsb t = if t==0 then Nothing else Just (lsb t)
+{-# Inline maybeLsb #-}
 
 -- * Population count methods
 
@@ -123,12 +133,12 @@ _popCntMemoWord = map popCntSorted [0..]
 -- cf
 -- <http://en.wikipedia.org/wiki/Permutation#Algorithms_to_generate_permutations>
 
-succPopulation
+popPermutation
   :: Ranked t
   => Int        -- size of the set we want. (i.e. numbor of bits available for @0@ or @1@)
   -> t          -- current population
   -> Maybe t    -- Just the new population, or nothing if now higher-ordered population exists.
-succPopulation !h' !s'
+popPermutation !h' !s'
   | popCount s' < 1 || h' < 2 = Nothing
   | Just k <- findK   (h' -2)
   , Just l <- findL k (h' -1)
@@ -146,7 +156,7 @@ succPopulation !h' !s'
         reverseFrom u d src tgt
           | u >= h'   = tgt
           | otherwise = reverseFrom (u+1) (d-1) src (assignBit (assignBit tgt u (testBit src d)) d (testBit src u))
-{-# INLINE succPopulation #-}
+{-# INLINE popPermutation #-}
 
 -- | Given a population, get the complement. The first argument is the size
 -- of the population (say. 8 for 8 bits); the second the current
