@@ -63,7 +63,7 @@ nextActive k t = lsbActive $ (t `shiftR` (k+1)) `shiftL` (k+1)
 -- | Return next active bit, using @Maybe@.
 
 succActive :: Ranked t => Int -> t -> Maybe Int
-succActive k t = if t==0 then Nothing else Just (lsb t')
+succActive k t = if t'==0 then Nothing else Just (lsb t')
   where t' = (t `shiftR` (k+1) `shiftL` (k+1))
 {-# Inline succActive #-}
 
