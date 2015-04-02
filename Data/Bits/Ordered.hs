@@ -25,6 +25,10 @@ module Data.Bits.Ordered
   , popCntMemoInt
   , popCntMemoWord
   , movePopulation
+  -- structures with active bits
+  , activeBitsL
+  , activeBitsS
+  , activeBitsV
   ) where
 
 import           Control.Arrow
@@ -35,6 +39,9 @@ import           Data.Vector.Unboxed (Unbox)
 import           Data.Word(Word(..))
 import           Debug.Trace
 import qualified Data.Vector.Algorithms.Intro as AI
+import qualified Data.Vector.Fusion.Stream as S
+import qualified Data.Vector.Fusion.Stream.Monadic as SM
+import qualified Data.Vector.Generic as VG
 import qualified Data.Vector.Unboxed as VU
 
 
@@ -72,6 +79,27 @@ succActive k t = if t'==0 then Nothing else Just (lsb t')
 maybeLsb :: Ranked t => t -> Maybe Int
 maybeLsb t = if t==0 then Nothing else Just (lsb t)
 {-# Inline maybeLsb #-}
+
+-- | List of all active bits, from lowest to highest.
+
+activeBitsL :: Ranked t => t -> [Int]
+activeBitsL = S.toList . activeBitsS
+{-# Inline activeBitsL #-}
+
+-- | A generic vector (specializes to the corrept type) of the active bits,
+-- lowest to highest.
+
+activeBitsV :: (Ranked t, VG.Vector v Int) => t -> v Int
+activeBitsV = VG.unstream . activeBitsS
+{-# Inline activeBitsV #-}
+
+-- | A stream with the currently active bits, lowest to highest.
+
+activeBitsS :: (Ranked t, Monad m) => t -> SM.Stream m Int
+activeBitsS t = SM.unfoldr go (maybeLsb t)
+  where go Nothing  = Nothing
+        go (Just k) = Just (k, succActive k t)
+{-# Inline activeBitsS #-}
 
 -- * Population count methods
 

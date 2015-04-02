@@ -45,6 +45,7 @@ library
     Haskell2010
   default-extensions: BangPatterns
                     , CPP
+                    , FlexibleContexts
                     , PatternGuards
                     , ScopedTypeVariables
 
