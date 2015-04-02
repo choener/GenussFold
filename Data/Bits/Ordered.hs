@@ -96,9 +96,7 @@ activeBitsV = VG.unstream . activeBitsS
 -- | A stream with the currently active bits, lowest to highest.
 
 activeBitsS :: (Ranked t, Monad m) => t -> SM.Stream m Int
-activeBitsS t = SM.unfoldr go (maybeLsb t)
-  where go Nothing  = Nothing
-        go (Just k) = Just (k, succActive k t)
+activeBitsS t = SM.unfoldr (fmap (id &&& (`succActive` t))) (maybeLsb t)
 {-# Inline activeBitsS #-}
 
 -- * Population count methods
