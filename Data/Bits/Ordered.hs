@@ -209,7 +209,9 @@ popComplement !h !s = mask .&. complement s
 
 -- | Move a population around. Assume that you have a bitmask @mask
 -- = 10101@ and a least-significant aligned population @11@, then given
--- mask and population you'd like to see @00101@.
+-- mask and population you'd like to see @00101@, i.e. the two lowest
+-- one bits of the mask are set. @101@ would set the lowest and third one
+-- bit.
 --
 -- Examples:
 --
