@@ -105,11 +105,13 @@ activeBitsS t = SM.unfoldr (fmap (id &&& (`succActive` t))) (maybeLsb t)
 -- as sorting will walk the whole data structure anyway, and the vector
 -- requires not as much memory.
 --
--- Uses a stable sort so that @a,b@ with equal pop count still has @a<b@ in
--- the order via @comparing (popCount &&& id)@.
+-- Replaced @popCount &&& id@ as sort, which provides for @a<b@ on equal
+-- @popCount@ with @popCount &&& activeBitsL@ which sorts according to
+-- a list of increasing bit indices. Mostly to stay in sync with the @pred@
+-- / @succ@ functions below.
 
-popCntSorted :: (Unbox n, Integral n, Bits n) => Int -> VU.Vector n
-popCntSorted n = VU.modify (AI.sortBy (comparing (popCount &&& id))) $ VU.enumFromN 0 (2^n)
+popCntSorted :: (Unbox n, Integral n, Bits n, Ranked n) => Int -> VU.Vector n
+popCntSorted n = VU.modify (AI.sortBy (comparing (popCount &&& activeBitsL))) $ VU.enumFromN 0 (2^n)
 {-# INLINE popCntSorted #-}
 
 -- | Memoized version of 'popCntSorted' for @Int@s.
