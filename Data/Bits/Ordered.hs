@@ -16,7 +16,7 @@ module Data.Bits.Ordered
   ( lsbActive
   , nextActive
   , succActive
-  , maybeLsb
+  , maybeSucc
   -- population operations
   , popPermutation
   , popComplement
@@ -24,7 +24,7 @@ module Data.Bits.Ordered
   , popCntSorted
   , popCntMemoInt
   , popCntMemoWord
-  , movePopulation
+  , popMove
   -- structures with active bits
   , activeBitsL
   , activeBitsS
@@ -76,9 +76,9 @@ succActive k t = if t'==0 then Nothing else Just (lsb t')
 
 -- | @Maybe@ the lowest active bit.
 
-maybeLsb :: Ranked t => t -> Maybe Int
-maybeLsb t = if t==0 then Nothing else Just (lsb t)
-{-# Inline maybeLsb #-}
+maybeSucc :: Ranked t => t -> Maybe Int
+maybeSucc t = if t==0 then Nothing else Just (lsb t)
+{-# Inline maybeSucc #-}
 
 -- | List of all active bits, from lowest to highest.
 
@@ -96,7 +96,7 @@ activeBitsV = VG.unstream . activeBitsS
 -- | A stream with the currently active bits, lowest to highest.
 
 activeBitsS :: (Ranked t, Monad m) => t -> SM.Stream m Int
-activeBitsS t = SM.unfoldr (fmap (id &&& (`succActive` t))) (maybeLsb t)
+activeBitsS t = SM.unfoldr (fmap (id &&& (`succActive` t))) (maybeSucc t)
 {-# Inline activeBitsS #-}
 
 -- * Population count methods
@@ -215,30 +215,30 @@ popComplement !h !s = mask .&. complement s
 --
 -- Examples:
 --
--- >>> movePopulation (21::Int) 3 -- 10101 00011  -- 00101
+-- >>> popMove (21::Int) 3 -- 10101 00011  -- 00101
 -- 5
--- >>> movePopulation (28::Int) 0 -- 11100 00000  -- 00000
+-- >>> popMove (28::Int) 0 -- 11100 00000  -- 00000
 -- 0
--- >>> movePopulation (28::Int) 1 -- 11100 00001  -- 00100
+-- >>> popMove (28::Int) 1 -- 11100 00001  -- 00100
 -- 4
--- >>> movePopulation (28::Int) 2 -- 11100 00010  -- 01000
+-- >>> popMove (28::Int) 2 -- 11100 00010  -- 01000
 -- 8
--- >>> movePopulation (28::Int) 3 -- 11100 00011  -- 01100
+-- >>> popMove (28::Int) 3 -- 11100 00011  -- 01100
 -- 12
 
-movePopulation
+popMove
   :: (Ranked t)
   => t          -- the mask
   -> t          -- the population
   -> t          -- final population
-movePopulation mask lsp = go 0 0 mask lsp where
+popMove mask lsp = go 0 0 mask lsp where
   go !acc !(k::Int) !m !l
     | l==0              = acc
     | testBit m 0
     , testBit l 0       = go (acc + unsafeShiftL 1 k) (k+1) (unsafeShiftR m 1) (unsafeShiftR l 1)
     | not $ testBit m 0 = go acc                      (k+1) (unsafeShiftR m 1) l
     | not $ testBit l 0 = go acc                      (k+1) (unsafeShiftR m 1) (unsafeShiftR l 1)
-{-# Inline movePopulation #-}
+{-# Inline popMove #-}
 
 
 
