@@ -13,10 +13,10 @@
 
 module Data.Bits.Ordered 
   -- bitset operations
-  ( lsbActive
-  , nextActive
-  , succActive
-  , maybeSucc
+  ( lsbZ
+  , nextActiveZ
+  , maybeNextActive
+  , maybeLsb
   -- population operations
   , popPermutation
   , popComplement
@@ -56,29 +56,29 @@ captureNull t f = if t==0 then -1 else f t
 
 -- | Get the lowest active bit. Returns @-1@ if no bit is set.
 
-lsbActive :: Ranked t => t -> Int
-lsbActive t = captureNull t lsb
-{-# INLINE lsbActive #-}
+lsbZ :: Ranked t => t -> Int
+lsbZ t = captureNull t lsb
+{-# INLINE lsbZ #-}
 
 -- | Given the set @t@ and the currently active bit @k@, get the next
 -- active bit. Return @-1@ if there is no next active bit.
 
-nextActive :: Ranked t => Int -> t -> Int
-nextActive k t = lsbActive $ (t `shiftR` (k+1)) `shiftL` (k+1)
-{-# INLINE nextActive #-}
+nextActiveZ :: Ranked t => Int -> t -> Int
+nextActiveZ k t = lsbZ $ (t `shiftR` (k+1)) `shiftL` (k+1)
+{-# INLINE nextActiveZ #-}
 
 -- | Return next active bit, using @Maybe@.
 
-succActive :: Ranked t => Int -> t -> Maybe Int
-succActive k t = if t'==0 then Nothing else Just (lsb t')
+maybeNextActive :: Ranked t => Int -> t -> Maybe Int
+maybeNextActive k t = if t'==0 then Nothing else Just (lsb t')
   where t' = (t `shiftR` (k+1) `shiftL` (k+1))
-{-# Inline succActive #-}
+{-# Inline maybeNextActive #-}
 
 -- | @Maybe@ the lowest active bit.
 
-maybeSucc :: Ranked t => t -> Maybe Int
-maybeSucc t = if t==0 then Nothing else Just (lsb t)
-{-# Inline maybeSucc #-}
+maybeLsb :: Ranked t => t -> Maybe Int
+maybeLsb t = if t==0 then Nothing else Just (lsb t)
+{-# Inline maybeLsb #-}
 
 -- | List of all active bits, from lowest to highest.
 
@@ -96,7 +96,7 @@ activeBitsV = VG.unstream . activeBitsS
 -- | A stream with the currently active bits, lowest to highest.
 
 activeBitsS :: (Ranked t, Monad m) => t -> SM.Stream m Int
-activeBitsS t = SM.unfoldr (fmap (id &&& (`succActive` t))) (maybeSucc t)
+activeBitsS t = SM.unfoldr (fmap (id &&& (`maybeNextActive` t))) (maybeLsb t)
 {-# Inline activeBitsS #-}
 
 -- * Population count methods
