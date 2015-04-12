@@ -34,10 +34,12 @@ flag llvm
   default:      False
   manual:       True
 
+
+
 library
   build-depends:  base              >= 4.7      && < 4.9
                ,  bits              == 0.4.*
-               ,  primitive         == 0.5.*
+               ,  primitive         >= 0.5      && < 0.7
                ,  QuickCheck        >= 2.7      && < 2.9
                ,  vector            == 0.10.*
                ,  vector-algorithms == 0.6.*
@@ -55,6 +57,8 @@ library
   ghc-options:
     -O2 -funbox-strict-fields
 
+
+
 executable BenchmarkOrderedBits
   if flag(benchmark)
     buildable:
@@ -65,6 +69,8 @@ executable BenchmarkOrderedBits
                  ,  vector
   else
     buildable: False
+  default-language:
+    Haskell2010
   hs-source-dirs:
     src
   main-is:
@@ -77,6 +83,29 @@ executable BenchmarkOrderedBits
       -fllvm
       -optlo-O3 -optlo-std-compile-opts
       -fllvm-tbaa
+
+
+
+test-suite properties
+  type:
+    exitcode-stdio-1.0
+  main-is:
+    properties.hs
+  ghc-options:
+    -threaded -rtsopts -with-rtsopts=-N
+  hs-source-dirs:
+    tests
+  default-language:
+    Haskell2010
+  default-extensions: TemplateHaskell
+  build-depends: base
+               , OrderedBits
+               , QuickCheck
+               , test-framework               >= 0.8  && < 0.9
+               , test-framework-quickcheck2   >= 0.3  && < 0.4
+               , test-framework-th            >= 0.2  && < 0.3
+
+
 
 source-repository head
   type: git
