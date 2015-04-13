@@ -24,11 +24,13 @@ module Data.Bits.Ordered
   , popCntSorted
   , popCntMemoInt
   , popCntMemoWord
-  , popMove
+  , popShiftL
+  , popShiftR
   -- structures with active bits
   , activeBitsL
   , activeBitsS
   , activeBitsV
+  -- temporary
   ) where
 
 import           Control.Arrow
@@ -212,38 +214,57 @@ popComplement !h !s = mask .&. complement s
   where mask = (2^h -1)
 {-# INLINE popComplement #-}
 
--- | Move a population around. Assume that you have a bitmask @mask
--- = 10101@ and a least-significant aligned population @11@, then given
--- mask and population you'd like to see @00101@, i.e. the two lowest
--- one bits of the mask are set. @101@ would set the lowest and third one
--- bit.
+-- | Move a population more to the left. This, effectively, introduces @0@s
+-- in the set, whereever the @mask@ has a @0@. Only as many @1@s can be
+-- set, as the mask holds. Assume that you have a bitmask @mask = 10101@
+-- and a least-significant aligned population @11@, then given mask and
+-- population you'd like to see @00101@, i.e. the two lowest one bits of
+-- the mask are set. @101@ would set the lowest and third one bit.
 --
 -- Examples:
 --
--- >>> popMove (21::Int) 3 -- 10101 00011  -- 00101
+-- >>> popShiftL (21::Int) 3 -- 10101 00011  -- 00101
 -- 5
--- >>> popMove (28::Int) 0 -- 11100 00000  -- 00000
+-- >>> popShiftL (28::Int) 0 -- 11100 00000  -- 00000
 -- 0
--- >>> popMove (28::Int) 1 -- 11100 00001  -- 00100
+-- >>> popShiftL (28::Int) 1 -- 11100 00001  -- 00100
 -- 4
--- >>> popMove (28::Int) 2 -- 11100 00010  -- 01000
+-- >>> popShiftL (28::Int) 2 -- 11100 00010  -- 01000
 -- 8
--- >>> popMove (28::Int) 3 -- 11100 00011  -- 01100
+-- >>> popShiftL (28::Int) 3 -- 11100 00011  -- 01100
 -- 12
 
-popMove
+popShiftL
   :: (Ranked t)
   => t          -- the mask
   -> t          -- the population
   -> t          -- final population
-popMove mask lsp = go 0 0 mask lsp where
+popShiftL mask lsp = go 0 0 mask lsp where
   go !acc !(k::Int) !m !l
-    | l==0              = acc
+    | l==0 || m==0      = acc
     | testBit m 0
-    , testBit l 0       = go (acc + unsafeShiftL 1 k) (k+1) (unsafeShiftR m 1) (unsafeShiftR l 1)
-    | not $ testBit m 0 = go acc                      (k+1) (unsafeShiftR m 1) l
-    | not $ testBit l 0 = go acc                      (k+1) (unsafeShiftR m 1) (unsafeShiftR l 1)
-{-# Inline popMove #-}
+    , testBit l 0       = go (acc + bit k) (k+1) (unsafeShiftR m 1) (unsafeShiftR l 1)
+    | not $ testBit m 0 = go acc           (k+1) (unsafeShiftR m 1) l
+    | not $ testBit l 0 = go acc           (k+1) (unsafeShiftR m 1) (unsafeShiftR l 1)
+{-# Inline popShiftL #-}
+
+-- | Effectively compresses a bitset, given a mask. Removes set elements,
+-- whenever the mask is @0@, by moving all remaining elements one to the
+-- right.
+
+popShiftR
+  :: (Ranked t)
+  => t          -- the mask
+  -> t          -- the population
+  -> t          -- final population
+popShiftR mask lsp = go 0 0 mask lsp where
+  go !acc !k !m !l
+    | m==0 || l==0 = acc
+    | testBit m 0
+    , testBit l 0  = go (acc .|. bit k) (k+1) (m `unsafeShiftR` 1) (l `unsafeShiftR` 1)
+    | testBit m 0  = go acc             (k+1) (m `unsafeShiftR` 1) (l `unsafeShiftR` 1)
+    | otherwise    = go acc             k     (m `unsafeShiftR` 1) (l `unsafeShiftR` 1)
+{-# Inline popShiftR #-}
 
 
 

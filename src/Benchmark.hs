@@ -30,5 +30,7 @@ main = defaultMain
                       , bench "20" $ whnf (VU.sum . popCntMemoWord :: Int  -> Word) 20
                       , bench "24" $ whnf (VU.sum . popCntMemoWord :: Int  -> Word) 24
                       ]
+--  , bgroup "small ops" [ bench "
+--                       ]
   ]
 

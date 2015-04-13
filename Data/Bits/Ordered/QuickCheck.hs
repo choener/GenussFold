@@ -10,7 +10,7 @@
 
 module Data.Bits.Ordered.QuickCheck where
 
-import           Test.QuickCheck
+import           Test.QuickCheck hiding ((.&.))
 import           Data.Int (Int16(..))
 import           Data.Bits
 import qualified Data.Vector.Unboxed as VU
@@ -65,5 +65,9 @@ prop_allPermutations (a :: Int , b :: Int) = and $ zipWith cmp (sort qs) (sort $
 
 -- TODO popComplement
 
--- TODO popMove
+prop_popShiftL_popShiftR (a::Word,b::Word) = s == l
+  where m = a .|. b
+        s = a .&. b
+        l = popShiftL m r
+        r = popShiftR m s
 
