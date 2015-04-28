@@ -19,6 +19,7 @@ import           Data.Function (on)
 import           Data.Maybe (isJust)
 import           Control.Monad (join)
 import           Debug.Trace
+import           Data.Word (Word)
 
 import           Data.Bits.Ordered
 
