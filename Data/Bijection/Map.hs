@@ -1,9 +1,4 @@
 
-{-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE TypeFamilies #-}
-{-# LANGUAGE UndecidableInstances #-}
-
 -- | Bijections via strict maps.
 
 module Data.Bijection.Map

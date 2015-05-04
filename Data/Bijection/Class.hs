@@ -1,6 +1,4 @@
 
-{-# LANGUAGE TypeFamilies #-}
-
 module Data.Bijection.Class where
 
 

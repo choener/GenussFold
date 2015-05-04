@@ -9,7 +9,7 @@ Homepage:       http://www.bioinf.uni-leipzig.de/~choener/
 Stability:      Experimental
 Category:       Data
 Build-type:     Simple
-Cabal-version:  >=1.8
+Cabal-version:  >= 1.10
 Synopsis:
                 bijections with multiple implementations.
 Description:
@@ -56,6 +56,15 @@ library
   ghc-options:
     -O2
     -funbox-strict-fields
+  default-language:
+    Haskell2010
+  default-extensions: BangPatterns
+                    , DeriveGeneric
+                    , FlexibleContexts
+                    , TypeFamilies
+                    , UndecidableInstances
+
+
 
 executable BenchmarkBimaps
   if flag(benchmark)
@@ -72,6 +81,12 @@ executable BenchmarkBimaps
     src
   main-is:
     Benchmark.hs
+  default-language:
+    Haskell2010
+  default-extensions: BangPatterns
+                    , FlexibleContexts
+                    , ScopedTypeVariables
+                    , TypeFamilies
   ghc-options:
     -O2
     -funbox-strict-fields
@@ -82,6 +97,7 @@ executable BenchmarkBimaps
       -fllvm
       -optlo-O3 -optlo-std-compile-opts
       -fllvm-tbaa
+
 
 
 source-repository head

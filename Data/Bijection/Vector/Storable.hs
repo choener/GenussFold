@@ -1,9 +1,4 @@
 
-{-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE TypeFamilies #-}
-{-# LANGUAGE UndecidableInstances #-}
-
 -- | A bijection between boxed, immutable vectors.
 
 module Data.Bijection.Vector.Storable

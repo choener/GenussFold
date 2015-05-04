@@ -1,9 +1,4 @@
 
-{-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE TypeFamilies #-}
-{-# LANGUAGE UndecidableInstances #-}
-
 module Data.Bijection.Hash
   ( module Data.Bijection.Class
   , Bimap
