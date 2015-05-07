@@ -54,20 +54,20 @@ import qualified Data.Vector.Unboxed as VU
 
 captureNull :: Ranked t => t -> (t -> Int) -> Int
 captureNull t f = if t==0 then -1 else f t
-{-# INLINE captureNull #-}
+{-# Inline captureNull #-}
 
 -- | Get the lowest active bit. Returns @-1@ if no bit is set.
 
 lsbZ :: Ranked t => t -> Int
 lsbZ t = captureNull t lsb
-{-# INLINE lsbZ #-}
+{-# Inline lsbZ #-}
 
--- | Given the set @t@ and the currently active bit @k@, get the next
+-- | Given the currently active bit @k@ and the set @t@, get the next
 -- active bit. Return @-1@ if there is no next active bit.
 
 nextActiveZ :: Ranked t => Int -> t -> Int
 nextActiveZ k t = lsbZ $ (t `shiftR` (k+1)) `shiftL` (k+1)
-{-# INLINE nextActiveZ #-}
+{-# Inline nextActiveZ #-}
 
 -- | Return next active bit, using @Maybe@.
 
@@ -114,7 +114,7 @@ activeBitsS t = SM.unfoldr (fmap (id &&& (`maybeNextActive` t))) (maybeLsb t)
 
 popCntSorted :: (Unbox n, Integral n, Bits n, Ranked n) => Int -> VU.Vector n
 popCntSorted n = VU.modify (AI.sortBy (comparing (popCount &&& activeBitsL))) $ VU.enumFromN 0 (2^n)
-{-# INLINE popCntSorted #-}
+{-# Inline popCntSorted #-}
 
 -- | Memoized version of 'popCntSorted' for @Int@s.
 --
@@ -128,13 +128,13 @@ popCntMemoInt n
   | n>limit   = error $ "for safety reasons, memoization is only performed for popcounts up to " ++ show limit ++ " bits, memoize manually!"
   | otherwise = _popCntMemoInt !! n
   where limit = 28
-{-# INLINE popCntMemoInt #-}
+{-# Inline popCntMemoInt #-}
 
 -- | Memoizes popcount arrays. The limit to memoization is enforced by
 -- popCntMemo, not here.
 
 _popCntMemoInt = map popCntSorted [0..]
-{-# NOINLINE _popCntMemoInt #-}
+{-# NoInline _popCntMemoInt #-}
 
 -- | Memoized version of 'popCntSorted' for @Word@s.
 --
@@ -148,13 +148,13 @@ popCntMemoWord n
   | n>limit   = error $ "for safety reasons, memoization is only performed for popcounts up to " ++ show limit ++ " bits, memoize manually!"
   | otherwise = _popCntMemoWord !! n
   where limit = 28
-{-# INLINE popCntMemoWord #-}
+{-# Inline popCntMemoWord #-}
 
 -- | Memoizes popcount arrays. The limit to memoization is enforced by
 -- popCntMemo, not here.
 
 _popCntMemoWord = map popCntSorted [0..]
-{-# NOINLINE _popCntMemoWord #-}
+{-# NoInline _popCntMemoWord #-}
 
 -- | Enumerate all sets with the same population count. Given a population
 -- @i@, this returns @Just j@ with @j>i@ (but same number of set bits) or
@@ -191,7 +191,7 @@ popPermutation !h' !s'
         reverseFrom u d src tgt
           | u >= h'   = tgt
           | otherwise = reverseFrom (u+1) (d-1) src (assignBit (assignBit tgt u (testBit src d)) d (testBit src u))
-{-# INLINE popPermutation #-}
+{-# Inline popPermutation #-}
 
 -- | Given a population, get the complement. The first argument is the size
 -- of the population (say. 8 for 8 bits); the second the current
@@ -212,7 +212,7 @@ popComplement
   -> t          -- complement of the population. All bits higher than the highest bit are kept zero.
 popComplement !h !s = mask .&. complement s
   where mask = (2^h -1)
-{-# INLINE popComplement #-}
+{-# Inline popComplement #-}
 
 -- | Move a population more to the left. This, effectively, introduces @0@s
 -- in the set, whereever the @mask@ has a @0@. Only as many @1@s can be
@@ -281,9 +281,9 @@ instance Ranked Int where
   rank = rank . w32
   nlz  = nlz  . w32
 #endif
-  {-# INLINE lsb  #-}
-  {-# INLINE rank #-}
-  {-# INLINE nlz  #-}
+  {-# Inline lsb  #-}
+  {-# Inline rank #-}
+  {-# Inline nlz  #-}
 
 instance Ranked Word where
 #if x86_64_HOST_ARCH
@@ -296,7 +296,7 @@ instance Ranked Word where
   rank = rank . w32
   nlz  = nlz  . w32
 #endif
-  {-# INLINE lsb  #-}
-  {-# INLINE rank #-}
-  {-# INLINE nlz  #-}
+  {-# Inline lsb  #-}
+  {-# Inline rank #-}
+  {-# Inline nlz  #-}
 
