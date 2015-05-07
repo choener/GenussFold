@@ -1,5 +1,7 @@
 # OrderedBits
 
+[![Build Status](https://travis-ci.org/choener/OrderedBits.svg?branch=master)](https://travis-ci.org/choener/OrderedBits)
+
 The OrderedBits library provides methods to generate unboxed vectors of Ints
 (and others) ordered by their population count or Hamming distance to the 0
 set.
