@@ -23,6 +23,8 @@ description:
 
 
 Extra-Source-Files:
+  README.md
+  changelog.md
 
 flag benchmark
   description:  enable criterion benchmarking
