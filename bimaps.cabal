@@ -10,14 +10,18 @@ Stability:      Experimental
 Category:       Data
 Build-type:     Simple
 Cabal-version:  >= 1.10
-Synopsis:
-                bijections with multiple implementations.
+tested-with:    GHC == 7.8.4, GHC == 7.10.1
+Synopsis:       bijections with multiple implementations.
 Description:
                 Bijections between sets of values.
+
+
 
 extra-source-files:
   changelog.md
   README.md
+
+
 
 flag benchmark
   description:  build the benchmark
@@ -28,6 +32,8 @@ flag llvm
   description:  build using LLVM
   default:      False
   manual:       True
+
+
 
 library
   exposed-modules:
