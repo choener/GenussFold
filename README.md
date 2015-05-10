@@ -13,7 +13,7 @@ path problems and the travelling salesman problem.
 
 #### Contact
 
-Christian Hoener zu Siederdissen
-choener@bioinf.uni-leipzig.de
-http://www.bioinf.uni-leipzig.de/~choener/
+Christian Hoener zu Siederdissen  
+choener@bioinf.uni-leipzig.de  
+http://www.bioinf.uni-leipzig.de/~choener/  
 
