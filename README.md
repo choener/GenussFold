@@ -14,6 +14,7 @@ path problems and the travelling salesman problem.
 #### Contact
 
 Christian Hoener zu Siederdissen  
+Leipzig University, Leipzig, Germany  
 choener@bioinf.uni-leipzig.de  
 http://www.bioinf.uni-leipzig.de/~choener/  
 
