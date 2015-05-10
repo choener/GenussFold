@@ -8,7 +8,8 @@ Efficient bijections between sets with dense and sparse implementations.
 
 #### Contact
 
-Christian Hoener zu Siederdissen
-choener@bioinf.uni-leipzig.de
-Leipzig University, Leipzig, Germany
+Christian Hoener zu Siederdissen  
+Leipzig University, Leipzig, Germany  
+choener@bioinf.uni-leipzig.de  
+http://www.bioinf.uni-leipzig.de/~choener/  
 
