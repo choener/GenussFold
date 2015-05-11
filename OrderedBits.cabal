@@ -3,7 +3,7 @@ version:        0.0.0.2
 author:         Christian Hoener zu Siederdissen
 copyright:      Christian Hoener zu Siederdissen, 2014 - 2015
 homepage:       https://github.com/choener/OrderedBits
-maintainer:     choener@tbi.univie.ac.at
+maintainer:     choener@bioinf.uni-leipzig.de
 category:       Data
 license:        BSD3
 license-file:   LICENSE
