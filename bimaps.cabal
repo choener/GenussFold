@@ -1,5 +1,5 @@
 Name:           bimaps
-Version:        0.0.0.1
+Version:        0.0.0.2
 License:        BSD3
 License-file:   LICENSE
 Author:         Christian Hoener zu Siederdissen
@@ -41,19 +41,19 @@ library
 
   -- 4.7.0.0 is ghc 7.8.1; 4.8.0.0 is ghc 7.10.1
   build-depends: base                     >= 4.7      && < 4.9
-               , aeson                    == 0.8.*
-               , binary                   == 0.7.*
-               , cereal                   == 0.4.*
-               , containers               == 0.5.*
+               , aeson                    >= 0.8      && < 0.10
+               , binary                   >= 0.7      && < 0.8
+               , cereal                   >= 0.4      && < 0.5
+               , containers               >= 0.5      && < 0.6
                , deepseq                  >= 1.3      && < 1.5
-               , hashable                 == 1.2.*
+               , hashable                 >= 1.2      && < 1.3
                , primitive                >= 0.5      && < 0.7
                , QuickCheck               >= 2.7      && < 2.9
-               , storable-tuple           == 0.0.2
-               , unordered-containers     == 0.2.5.*
-               , vector                   == 0.10.*
-               , vector-binary-instances  == 0.2.*
-               , vector-th-unbox          == 0.2.*
+               , storable-tuple           >= 0.0.2    && < 0.0.3
+               , unordered-containers     >= 0.2.5    && < 0.2.6
+               , vector                   >= 0.10     && < 0.11
+               , vector-binary-instances  >= 0.2      && < 0.3
+               , vector-th-unbox          >= 0.2      && < 0.3
   ghc-options:
     -O2
     -funbox-strict-fields
