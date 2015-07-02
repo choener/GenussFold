@@ -1,0 +1,149 @@
+
+module BioInf.GenusFold.PseudoNussinov where
+
+import           Control.Applicative
+import           Control.Monad
+import           Control.Monad.ST
+import           Data.Char (toUpper,toLower)
+import           Data.List
+import           Data.Vector.Fusion.Util
+import           Language.Haskell.TH
+import           Language.Haskell.TH.Syntax
+import qualified Data.Vector.Fusion.Stream as S
+import qualified Data.Vector.Fusion.Stream.Monadic as SM
+import qualified Data.Vector.Unboxed as VU
+import           Text.Printf
+
+import           ADP.Fusion
+import           Data.PrimitiveArray as PA hiding (map)
+
+import           FormalLanguage
+
+
+
+-- | Define signature and grammar
+
+[formalLanguage|
+Verbose
+
+Grammar: PKN
+N: S
+{-
+ - <U> is a split non-terminal. This is short-hand for <U:U> (in case you
+ - need to bind to U more than once you could use <U1:U> <U2:U> for example
+ - and then S -> U1 U2 U1 U2 and <U,U> -> ... . where U1,U2 use the same
+ - <U,U> but have different splits.
+ -
+ - We explicitly introduce <U> and <V> as we want to have @pk1@ and @pk2@
+ - in place. In principle, we could make use of an intermediate recursive
+ - syntactic variable to ease the memory load, but this is simpler.
+ -}
+N: <U>
+N: <V>
+T: c
+S: S
+S -> unp <<< X c
+S -> jux <<< X c X c
+S -> nil <<< e
+S -> pse <<< U V U V
+
+<U,U> -> pk1 <<< [S,-] [c,-] <U,U> [-,S] [-,c]
+<U,U> -> nll <<< [e,e]
+
+<V,V> -> pk2 <<< [S,-] [c,-] <V,V> [-,S] [-,c]
+<V,V> -> nll <<< [e,e]
+//
+Emit: PKN
+|]
+
+makeAlgebraProduct ''SigPKN
+
+
+
+{-
+
+bpmax :: Monad m => Nussinov m Int Int Char
+bpmax = Nussinov
+  { unp = \ x c     -> x
+  , jux = \ x c y d -> if c `pairs` d then x + y + 1 else -999999
+  , pse = \ () () x y -> x + y
+  , nil = \ ()      -> 0
+  , pk1 = \ (Z:.x:.()) (Z:.a:.()) y (Z:.():.z) (Z:.():.b) -> if (a `pairs` b || a == 'N' && b == 'M') then x + y + z + 1 else -888888
+  , pk2 = \ (Z:.x:.()) (Z:.a:.()) y (Z:.():.z) (Z:.():.b) -> if (a `pairs` b || a == 'N' && b == 'M') then x + y + z + 1 else -888888
+  , nll = \ (Z:.():.()) -> 0
+  , h   = SM.foldl' max (-999999)
+  }
+{-# INLINE bpmax #-}
+
+-- |
+
+pairs !c !d
+  =  c=='A' && d=='U'
+  || c=='C' && d=='G'
+  || c=='G' && d=='C'
+  || c=='G' && d=='U'
+  || c=='U' && d=='A'
+  || c=='U' && d=='G'
+{-# INLINE pairs #-}
+
+-- |
+--
+-- TODO It could be beneficial to introduce
+-- @type Splitted = Either String (String,String)@
+-- or something isomorphic. While [String] works, it allows for too many
+-- possibilities here! ([] ist lightweight, on the other hand ...)
+
+pretty :: Monad m => Nussinov m [String] [[String]] Char
+pretty = Nussinov
+  { unp = \ [x] c     -> [x ++ "."]
+  , jux = \ [x] c [y] d -> [x ++ "(" ++ y ++ ")"]
+  , pse = \ () () [x1,x2] [y1,y2] -> [x1 ++ y1 ++ x2 ++ y2]
+  , nil = \ ()      -> [""]
+  , pk1 = \ (Z:.[x]:.()) (Z:.a:.()) [y1,y2] (Z:.():.[z]) (Z:.():.b) -> [x ++ "[" ++ y1 , y2 ++ z ++ "]"]
+  , pk2 = \ (Z:.[x]:.()) (Z:.a:.()) [y1,y2] (Z:.():.[z]) (Z:.():.b) -> [x ++ "{" ++ y1 , y2 ++ z ++ "}"]
+  , nll = \ (Z:.():.()) -> ["",""]
+  , h   = SM.toList
+  }
+{-# INLINE pretty #-}
+
+runPseudoknot :: Int -> String -> (Int,[[String]])
+runPseudoknot k inp = (d, take k bs) where
+  i = VU.fromList . Prelude.map toUpper $ inp
+  n = VU.length i
+  !(Z:.t:.u:.v) = runInsideForward i
+  d = unId $ axiom t
+  bs = runInsideBacktrack i (Z:.t:.u:.v)
+{-# NOINLINE runPseudoknot #-}
+
+type X = ITbl Id Unboxed Subword Int
+type T = ITbl Id Unboxed (Z:.Subword:.Subword) Int
+
+runInsideForward :: VU.Vector Char -> Z:.X:.T:.T
+runInsideForward i = mutateTablesDefault
+                   $ grammar bpmax
+                        (ITbl 0 0 EmptyOk (PA.fromAssocs (subword 0 0) (subword 0 n) (-666999) []))
+                        (ITbl 0 0 (Z:.EmptyOk:.EmptyOk) (PA.fromAssocs (Z:.subword 0 0:.subword 0 0) (Z:.subword 0 n:.subword 0 n) (-777999) []))
+                        (ITbl 0 0 (Z:.EmptyOk:.EmptyOk) (PA.fromAssocs (Z:.subword 0 0:.subword 0 0) (Z:.subword 0 n:.subword 0 n) (-888999) []))
+                        i
+  where n = VU.length i
+{-# NoInline runInsideForward #-}
+
+runInsideBacktrack :: VU.Vector Char -> Z:.X:.T:.T -> [[String]]
+runInsideBacktrack i (Z:.t:.u:.v) = unId $ axiom b
+  where !(Z:.b:._:._) = grammar (bpmax <|| pretty)
+                          (toBacktrack t (undefined :: Id a -> Id a))
+                          (toBacktrack u (undefined :: Id a -> Id a))
+                          (toBacktrack v (undefined :: Id a -> Id a))
+                          i
+{-# NoInline runInsideBacktrack #-}
+
+-}
+
+
+
+-- | Will run the basepair maximisation variant of pseudoknot-enabled
+-- Nussinov.
+
+pseudoNussinovPairMax :: (Int,[String])
+pseudoNussinovPairMax = error "pseudoNussinovPairMax: write me"
+
