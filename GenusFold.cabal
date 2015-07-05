@@ -72,6 +72,17 @@ library
                     , TypeOperators
   ghc-options:
     -O2 -funbox-strict-fields
+  if flag(debug)
+    ghc-options:
+      -ddump-to-file
+      -ddump-simpl
+      -ddump-stg
+      -dsuppress-all
+  if flag(llvm)
+    ghc-options:
+      -fllvm
+      -optlo-O3 -optlo-std-compile-opts
+      -fllvm-tbaa
 
 
 
@@ -93,12 +104,6 @@ executable GenusFold
   ghc-options:
     -O2
     -funbox-strict-fields
-  if flag(debug)
-    ghc-options:
-      -ddump-to-file
-      -ddump-simpl
-      -ddump-stg
-      -dsuppress-all
   if flag(llvm)
     ghc-options:
       -fllvm
