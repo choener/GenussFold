@@ -5,7 +5,7 @@ import System.Console.CmdArgs
 import Control.Monad (forM_)
 import Text.Printf
 
-import BioInf.GenusFold
+import BioInf.GenussFold
 
 
 
@@ -26,7 +26,7 @@ main = do
     Nussinov{..} -> do
       ls <- lines <$> getContents
       forM_ ls $ \l -> do
-        let (r,bs) = pseudoNussinovPairMax coopts l
+        let (r,bs) = pknPairMax coopts l
         printf "%s   %d\n" l r
         forM_ bs $ \[b] -> printf "%s   %d\n" b r
 

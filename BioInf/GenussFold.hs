@@ -1,6 +1,6 @@
 
 module BioInf.GenussFold
-  ( pseudoNussinovPairMax
+  ( pknPairMax
   ) where
 
 import BioInf.GenussFold.PKN (pknPairMax)
