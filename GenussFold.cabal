@@ -20,6 +20,8 @@ description:
                 implementation based on a formal grammar is much more pleasing
                 to write.
                 .
+                Consult the README for details.
+                .
                 * @BioInf.GenussFold.PKN@: Recursive pseudoknots with a simple
                   basepair maximization scoring scheme.
                 .
