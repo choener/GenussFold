@@ -1,5 +1,5 @@
 
-module BioInf.GenusFold.PseudoNussinov where
+module BioInf.GenussFold.PKN where
 
 import           Control.Applicative
 import           Control.Monad
@@ -107,14 +107,14 @@ pretty = SigPKN
 --     (())
 -- @
 
-pseudoNussinovPairMax :: Int -> String -> (Int,[[String]])
-pseudoNussinovPairMax k inp = (d, take k bs) where
+pknPairMax :: Int -> String -> (Int,[[String]])
+pknPairMax k inp = (d, take k bs) where
   i = VU.fromList . Prelude.map toUpper $ inp
   n = VU.length i
   !(Z:.t:.u:.v) = runInsideForward i
   d = unId $ axiom t
   bs = runInsideBacktrack i (Z:.t:.u:.v)
-{-# NOINLINE pseudoNussinovPairMax #-}
+{-# NOINLINE pknPairMax #-}
 
 type X = ITbl Id Unboxed Subword Int
 type T = ITbl Id Unboxed (Z:.Subword:.Subword) Int
