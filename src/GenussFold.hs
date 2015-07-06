@@ -1,8 +1,9 @@
 
 module Main where
 
-import System.Console.CmdArgs
+import Control.Applicative ( (<$>) )
 import Control.Monad (forM_)
+import System.Console.CmdArgs
 import Text.Printf
 
 import BioInf.GenussFold
