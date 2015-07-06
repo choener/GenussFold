@@ -49,6 +49,7 @@ library
                , ADPfusion              >= 0.4.1    && < 0.4.2
                , ansi-wl-pprint         >= 0.6.7    && < 0.6.8
                , BiobaseTurner          >= 0.3.2    && < 0.3.3
+               , BiobaseTypes           >= 0.1.1    && < 0.1.2
                , bytestring             >= 0.10     && < 0.11
                , containers
                , data-default           >= 0.5      && < 0.6
