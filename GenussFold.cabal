@@ -81,7 +81,10 @@ library
                     , TypeFamilies
                     , TypeOperators
   ghc-options:
-    -O2 -funbox-strict-fields
+    -O2
+    -funbox-strict-fields
+    -fcpr-off
+    -fno-liberate-case
   if flag(debug)
     ghc-options:
       -ddump-to-file
