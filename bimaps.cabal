@@ -24,13 +24,6 @@ extra-source-files:
 
 
 
-flag llvm
-  description:  build using LLVM
-  default:      False
-  manual:       True
-
-
-
 library
   exposed-modules:
     Data.Bijection.Class
@@ -73,7 +66,7 @@ benchmark BenchmarkBimaps
                , bimaps
                , criterion   >= 1.0.2   && < 1.1.1
                , deepseq
-               , mwc-random  == 0.13.*
+               , mwc-random  >= 0.13    && < 0.14
                , vector
   hs-source-dirs:
     src
@@ -92,11 +85,6 @@ benchmark BenchmarkBimaps
     -funbox-strict-fields
     -funfolding-use-threshold1000
     -funfolding-keeness-factor1000
-  if flag(llvm)
-    ghc-options:
-      -fllvm
-      -optlo-O3 -optlo-std-compile-opts
-      -fllvm-tbaa
 
 
 
