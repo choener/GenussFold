@@ -15,24 +15,18 @@ tested-with:    GHC == 7.8.4, GHC == 7.10.1
 synopsis:       Efficient ordered (by popcount) enumeration of bits
 description:
                 This library provides efficient methods to enumerate all
-                elements of a set in order of the population count. First, the
-                empty set, then all 1-element sets, all 2-element sets, etc.
-                Such enumerations are important for algorithms over unordered
-                data sets. Examples include the travelling salesman problem and
-                the closely related Hamiltonian path problem.
+                elements of a set in order of the population count, or the
+                ordered enumerations of the elements of the powerset of a set.
+                First, the empty set, then all 1-element sets, all 2-element
+                sets, etc.  Such enumerations are important for algorithms over
+                unordered data sets. Examples include the travelling salesman
+                problem and the closely related Hamiltonian path problem.
 
 
 
 Extra-Source-Files:
   README.md
   changelog.md
-
-
-
-flag llvm
-  description:  build using LLVM
-  default:      False
-  manual:       True
 
 
 
@@ -74,11 +68,6 @@ benchmark BenchmarkOrderedBits
   ghc-options:
     -O2
     -funbox-strict-fields
-  if flag(llvm)
-    ghc-options:
-      -fllvm
-      -optlo-O3 -optlo-std-compile-opts
-      -fllvm-tbaa
 
 
 

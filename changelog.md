@@ -1,7 +1,8 @@
 0.0.0.2
 -------
 
-- allow newer vector-algorithms
+- vector-algorithms version bump
+- removed explicit llvm flag (use --ghc-options)
 
 0.0.0.1
 -------
