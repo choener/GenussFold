@@ -28,20 +28,21 @@ rather forms graphs with crossing edges. Using the idea of interleaved brackets
 and given an input sequence `AAA CCC UUU GGG` (with artificial white space to
 make this more clear), a pseudoknotted structure may be formed:
 
-``
+```
 AAA CCC UUU GGG  
 [[[ ((( ]]] )))
-``
+```
 
 A formal grammar that parses such a structure requires the ability to denote
 that a sub-structure has a "hole". We can write such a grammar as follows:
-``
+
+```
 S     -> U V U V  
 <U,U> -> [ε,ε]  
 <U,U> -> [S,-] [a,-] <U,U> [-,S] [-,u]  
 <V,V> -> [ε,ε]  
 <V,V> -> [S,-] [c,-] <V,V> [-,S] [-,g]
-``
+```
 
 The `PKN` grammar in GenussFold (for genus-1 structures, but much more
 pleasurable to write) offers the required features:
