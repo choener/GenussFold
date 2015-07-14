@@ -57,6 +57,13 @@ performance -- we are reasonably close to C in running time performance.
 Reasonable means around a factor of 2 slower.
 
 
+
+#### Performance comparison
+
+C-code for running time performance comparison is available in the GenussFold
+github repository. The direct URL is:
+<https://github.com/choener/GenussFold/blob/master/C/genussfold.c>
+
 #### Contact
 
 Christian Hoener zu Siederdissen  
