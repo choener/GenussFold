@@ -41,7 +41,6 @@ instance Show Nts where
 instance Arbitrary Nts where
   arbitrary = do k <- choose (1,50)
                  fmap Nts $ replicateM k (elements "ACGU")
-  shrink (Nts [x]) = []
   shrink (Nts xs) = map Nts $ shrinkList (const []) xs
 
 main :: IO ()

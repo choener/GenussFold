@@ -27,6 +27,8 @@ long long pairs (int l,int r) {
 };
 
 long long pseudoknot (long long n, int *inp) {
+  if (n==0)
+    return 0;
   long long i, j, k, l, a, b, c;
   //int at;
   long long cur, new, newL, newM, newR;
@@ -95,11 +97,11 @@ void filluv (int name, int *inp, long long *t, long long *uv, long long n, long 
     cur = -999999;
     // loop over inner part.
     for (a=i; a<=k; a++) {
-      for (b=l; b<=j; b++) {
+      for (b=l-1; b<=j; b++) {
         if (pairs(inp[a], inp[j])) {
-          newL = i<a        ?  t[I2(n,i,a-1)]     : 0;
-          newM = a<k && b<j ? uv[I4(n,a+1,k,l,b)] : 0;
-          newR = b+1<j      ?  t[I2(n,b+1,j-1)]   : 0;
+          newL = i<a                ?  t[I2(n,i,a-1)]     : 0;
+          newM = a<k && l<=b && b<j ? uv[I4(n,a+1,k,l,b)] : 0;
+          newR = b+1<j              ?  t[I2(n,b+1,j-1)]   : 0;
           new = newL + newM + newR + 1;
           cur = MAX(cur,new);
 //          printf ("%c %d %d (%d %d) %d %d   %d %d %d\n", name, i,a, k,l, b,j, newL, newM, newR);
