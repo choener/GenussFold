@@ -1,5 +1,5 @@
 name:           GenussFold
-version:        0.0.0.1
+version:        0.0.0.2
 author:         Christian Hoener zu Siederdissen, 2015
 copyright:      Christian Hoener zu Siederdissen, 2015
 homepage:       https://github.com/choener/GenussFold
@@ -108,6 +108,32 @@ executable GenussFold
   ghc-options:
     -O2
     -funbox-strict-fields
+
+
+
+test-suite properties-fast
+  type:
+    exitcode-stdio-1.0
+  main-is:
+    properties-fast.hs
+  ghc-options:
+    -threaded -rtsopts -with-rtsopts=-N
+  hs-source-dirs:
+    tests
+  default-language:
+    Haskell2010
+  default-extensions: BangPatterns
+                    , CPP
+                    , ForeignFunctionInterface
+                    , TemplateHaskell
+  build-depends: base
+               , GenussFold
+               , QuickCheck
+               , test-framework               >= 0.8  && < 0.9
+               , test-framework-quickcheck2   >= 0.3  && < 0.4
+               , test-framework-th            >= 0.2  && < 0.3
+  c-sources: C/genussfold.c
+  cc-options: -fPIC
 
 
 

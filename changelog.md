@@ -1,3 +1,8 @@
+0.0.0.2
+-------
+
+- quickcheck tests for GenussFold
+
 0.0.0.1
 -------
 
