@@ -44,7 +44,7 @@ flag debug
 
 library
   build-depends: base                   >= 4.7      && < 4.9
-               , ADPfusion              >= 0.4.1    && < 0.4.2
+               , ADPfusion              >= 0.4.1.1  && < 0.4.2
                , ansi-wl-pprint         >= 0.6.7    && < 0.6.8
 --               , BiobaseTurner          >= 0.3.2    && < 0.3.3
 --               , BiobaseTypes           >= 0.1.1    && < 0.1.2

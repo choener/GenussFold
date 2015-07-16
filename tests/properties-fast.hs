@@ -4,11 +4,12 @@
 
 module Main where
 
-import Test.Framework.Providers.QuickCheck2
-import Test.Framework.TH
+import Data.Char (toUpper)
+import Debug.Trace
 import Foreign.C.String
 import System.IO.Unsafe (unsafePerformIO)
-import Data.Char (toUpper)
+import Test.Framework.Providers.QuickCheck2
+import Test.Framework.TH
 
 import BioInf.GenussFold.PKN (pknPairMax)
 
@@ -25,7 +26,9 @@ c_pseudoknot s' = unsafePerformIO $ do
 
 
 prop_GenussFold_HS_C :: String -> Bool
-prop_GenussFold_HS_C i = (fst $ pknPairMax 1 i) == (c_pseudoknot i)
+prop_GenussFold_HS_C i' =
+  let i = take (length i' `mod` 50) i'
+  in  (fst $ pknPairMax 1 i) == (c_pseudoknot i)
 
 
 main :: IO ()

@@ -11,22 +11,6 @@ int pseudoknot (int, char *);
 int pairs (char, char);
 void filluv (char name, char *inp, int *t, int *uv, int n, int i, int j);
 
-int main () {
-  char *p = calloc (10000, sizeof(char));
-  int n;
-  int e;
-  int i;
-  while (1==scanf ("%9999s", p)) { // only GNU C
-    n = strlen(p);
-    for (i=0;i<n;i++) {
-      p[i] = toupper(p[i]);
-    }
-    e = pseudoknot (n, p);
-    printf ("%s\n%d\n", p, e);
-  };
-  return 0;
-}
-
 int pairs (char l,char r) {
   if (l=='A' && r=='U') return 1;
   if (l=='C' && r=='G') return 1;
@@ -106,18 +90,19 @@ void filluv (char name, char *inp, int *t, int *uv, int n, int i, int j) {
     cur = -999999;
     // loop over inner part.
     for (a=i; a<=k; a++) {
-      if (pairs(inp[a], inp[j])) {
-        newL = i<a        ?  t[I2(n,i,a-1)]     : 0;
-        for (b=l; b<=j; b++) {
+      for (b=l; b<=j; b++) {
+        if (pairs(inp[a], inp[j])) {
+          newL = i<a        ?  t[I2(n,i,a-1)]     : 0;
           newM = a<k && b<j ? uv[I4(n,a+1,k,l,b)] : 0;
           newR = b+1<j      ?  t[I2(n,b+1,j-1)]   : 0;
           new = newL + newM + newR + 1;
           cur = MAX(cur,new);
 //          printf ("%c %d %d (%d %d) %d %d   %d %d %d\n", name, i,a, k,l, b,j, newL, newM, newR);
-        };
-      } else {
-        cur = MAX(cur,-888888);
-      }; // if pairs
+        }
+        else {
+          cur = MAX(cur,-888888);
+        }; // if pairs
+      }; // for b
 //        if (i==0 && k==1 && l==3 && j==4)
     }; // for a,b
 //    if (name=='U') // && i==0 && k==2 && l==4 && j==7)
