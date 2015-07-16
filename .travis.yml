@@ -25,5 +25,5 @@ install:
   - cabal install --only-dependencies --enable-tests --reorder-goals
 
 script:
-  - cabal configure --enable-tests && cabal build && cabal test
+  - cabal configure --enable-tests && cabal build && travis_wait cabal test
 
