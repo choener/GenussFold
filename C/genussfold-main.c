@@ -3,16 +3,17 @@
 
 int main () {
   char *p = calloc (10000, sizeof(char));
-  int n;
-  int e;
-  int i;
+  int *q = calloc (10000, sizeof(int));
+  long long n;
+  long long e;
+  long long i;
   while (1==scanf ("%9999s", p)) { // only GNU C
     n = strlen(p);
     for (i=0;i<n;i++) {
-      p[i] = toupper(p[i]);
+      q[i] = toupper(p[i]);
     }
-    e = pseudoknot (n, p);
-    printf ("%s\n%d\n", p, e);
+    e = pseudoknot (n, q);
+    printf ("%s\n%lld\n", p, e);
   };
   return 0;
 }

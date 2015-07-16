@@ -3,15 +3,20 @@
 #include <string.h>
 #include <ctype.h>
 
+/*
+ * All types have now the same sizeof they have in Haskell code. "Int" is 64bit
+ * in Haskell; "Char" is 31bit.
+ */
+
 #define MAX(a,b)      ( ((a) > (b)) ? (a) : (b) )
 #define I2(n,i,j)     ((i)*n+(j))
 #define I4(n,i,j,k,l) ((i)*n*n*n + (j)*n*n + (k)*n + (l))
 
-int pseudoknot (int, char *);
-int pairs (char, char);
-void filluv (char name, char *inp, int *t, int *uv, int n, int i, int j);
+long long pseudoknot (long long, int *);
+long long pairs (int, int);
+void filluv (int name, int *inp, long long *t, long long *uv, long long n, long long i, long long j);
 
-int pairs (char l,char r) {
+long long pairs (int l,int r) {
   if (l=='A' && r=='U') return 1;
   if (l=='C' && r=='G') return 1;
   if (l=='G' && r=='C') return 1;
@@ -21,13 +26,13 @@ int pairs (char l,char r) {
   return 0;
 };
 
-int pseudoknot (int n, char *inp) {
-  int i, j, k, l, a, b, c;
+long long pseudoknot (long long n, int *inp) {
+  long long i, j, k, l, a, b, c;
   //int at;
-  int cur, new, newL, newM, newR;
-  int *t = calloc (n*n    , sizeof(int));
-  int *u = calloc (n*n*n*n, sizeof(int));
-  int *v = calloc (n*n*n*n, sizeof(int));
+  long long cur, new, newL, newM, newR;
+  long long *t = calloc (n*n    , sizeof(long long));
+  long long *u = calloc (n*n*n*n, sizeof(long long));
+  long long *v = calloc (n*n*n*n, sizeof(long long));
   // init
   for (i=0; i<n; i++) for (j=0; j<n; j++) {
     t[I2(n,i,j)] = 0;
@@ -82,9 +87,9 @@ int pseudoknot (int n, char *inp) {
   return cur;
 }
 
-void filluv (char name, char *inp, int *t, int *uv, int n, int i, int j) {
-  int k, l, a, b;
-  int cur, newL, newM, newR, new;
+void filluv (int name, int *inp, long long *t, long long *uv, long long n, long long i, long long j) {
+  long long k, l, a, b;
+  long long cur, newL, newM, newR, new;
   for (k=i; k<=j; k++) for (l=k+1; l<=j; l++) {
     // u
     cur = -999999;
