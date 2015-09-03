@@ -1,0 +1,26 @@
+language: haskell
+ghc:
+  - '7.8'
+#  - '7.10'
+sudo: false
+
+addons:
+  apt:
+    sources:
+      - hvr-ghc
+    packages:
+      - happy-1.19.4
+      - alex-3.1.3
+      - cabal-install-1.20
+
+before_install:
+  - export PATH=/opt/alex/3.1.3/bin:/opt/happy/1.19.4/bin:/opt/cabal/1.20/bin:$PATH
+  - cabal update
+  - cabal install Cabal
+
+install:
+  - cabal install --only-dependencies --enable-tests --reorder-goals
+
+script:
+  - cabal configure --enable-tests && cabal build && travis_wait cabal test
+
