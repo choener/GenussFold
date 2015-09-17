@@ -30,21 +30,23 @@ module Data.Bits.Ordered
   , activeBitsL
   , activeBitsS
   , activeBitsV
-  -- temporary
   ) where
 
 import           Control.Arrow
 import           Data.Bits
 import           Data.Bits.Extras
 import           Data.Ord (comparing)
+import           Data.Vector.Fusion.Util
 import           Data.Vector.Unboxed (Unbox)
 import           Data.Word(Word(..))
-import           Debug.Trace
 import qualified Data.Vector.Algorithms.Intro as AI
-import qualified Data.Vector.Fusion.Stream as S
 import qualified Data.Vector.Fusion.Stream.Monadic as SM
 import qualified Data.Vector.Generic as VG
 import qualified Data.Vector.Unboxed as VU
+#if MIN_VERSION_vector(0,11,0)
+import           Data.Vector.Fusion.Bundle.Size
+import qualified Data.Vector.Fusion.Bundle.Monadic as BM
+#endif
 
 
 
@@ -85,14 +87,18 @@ maybeLsb t = if t==0 then Nothing else Just (lsb t)
 -- | List of all active bits, from lowest to highest.
 
 activeBitsL :: Ranked t => t -> [Int]
-activeBitsL = S.toList . activeBitsS
+activeBitsL = unId . SM.toList . activeBitsS
 {-# Inline activeBitsL #-}
 
 -- | A generic vector (specializes to the corrept type) of the active bits,
 -- lowest to highest.
 
 activeBitsV :: (Ranked t, VG.Vector v Int) => t -> v Int
+#if MIN_VERSION_vector(0,11,0)
+activeBitsV = VG.unstream . flip BM.fromStream Unknown . activeBitsS
+#else
 activeBitsV = VG.unstream . activeBitsS
+#endif
 {-# Inline activeBitsV #-}
 
 -- | A stream with the currently active bits, lowest to highest.

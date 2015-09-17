@@ -1,3 +1,8 @@
+0.0.0.3
+-------
+
+- vector <= 0.11 supported (with conditional compilation)
+
 0.0.0.2
 -------
 
