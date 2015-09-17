@@ -1,5 +1,5 @@
 Name:           bimaps
-Version:        0.0.0.2
+Version:        0.0.0.3
 License:        BSD3
 License-file:   LICENSE
 Author:         Christian Hoener zu Siederdissen
@@ -11,7 +11,7 @@ Stability:      Experimental
 Category:       Data
 Build-type:     Simple
 Cabal-version:  >= 1.10
-tested-with:    GHC == 7.8.4, GHC == 7.10.1
+tested-with:    GHC == 7.8.4, GHC == 7.10.2
 Synopsis:       bijections with multiple implementations.
 Description:
                 Bijections between sets of values.
@@ -45,7 +45,7 @@ library
                , QuickCheck               >= 2.7      && < 2.9
                , storable-tuple           >= 0.0.2    && < 0.0.3
                , unordered-containers     >= 0.2.5    && < 0.2.6
-               , vector                   >= 0.10     && < 0.11
+               , vector                   >= 0.10     && < 0.12
                , vector-binary-instances  >= 0.2      && < 0.3
                , vector-th-unbox          >= 0.2      && < 0.3
   ghc-options:
