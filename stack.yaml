@@ -1,0 +1,10 @@
+flags: {}
+packages:
+- '.'
+extra-deps:
+- storable-record-0.0.3
+- storable-tuple-0.0.2
+- utility-ht-0.0.11
+- aeson-0.10.0.0
+- attoparsec-0.13.0.1
+resolver: lts-3.9
