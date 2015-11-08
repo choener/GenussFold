@@ -2,7 +2,8 @@
 
 # ForestStructures: Dynamic and static tree and forest structures
 
-We emphasize static, linearized tree structures based on vectors.
+The static tree structure(s) shall be designed with an emphasis on performance.
+
 
 
 #### Contact

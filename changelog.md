@@ -4,4 +4,5 @@
 - initial checkin
 - preparing travis.yml
 - empty, stub modules
+- stack.yaml file
 
