@@ -1,7 +1,5 @@
-language: haskell
-ghc:
-  - '7.8'
-#  - '7.10'
+# trying with stack
+
 sudo: false
 
 addons:
@@ -10,16 +8,49 @@ addons:
       - hvr-ghc
     packages:
       - happy-1.19.4
-      - alex-3.1.3
-      - cabal-install-1.22
+			- alex-3.1.3
+			- ghc-7.10.2
+      - libgmp-dev
 
 before_install:
-  - export PATH=/opt/alex/3.1.3/bin:/opt/happy/1.19.4/bin:/opt/cabal/1.22/bin:$PATH
-  - cabal update
+ 	- mkdir -p ~/.local/bin
+  - export PATH=~/.local/bin:$PATH
+  - travis_retry curl -L https://www.stackage.org/stack/linux-x86_64 | tar xz --wildcards --strip-components=1 -C ~/.local/bin '*/stack'
 
 install:
-  - cabal install --only-dependencies --enable-tests --reorder-goals
+  - stack --version
 
 script:
-  - cabal configure --enable-tests && cabal build && cabal test
+  - stack setup
+  - stack build
+  - stack test
+
+
+
+### OLD new stuff
+
+#language: haskell
+#ghc:
+#  - '7.8'
+##  - '7.10'
+#sudo: false
+#
+#addons:
+#  apt:
+#    sources:
+#      - hvr-ghc
+#    packages:
+#      - happy-1.19.4
+#      - alex-3.1.3
+#      - cabal-install-1.22
+#
+#before_install:
+#  - export PATH=/opt/alex/3.1.3/bin:/opt/happy/1.19.4/bin:/opt/cabal/1.22/bin:$PATH
+#  - cabal update
+#
+#install:
+#  - cabal install --only-dependencies --enable-tests --reorder-goals
+#
+#script:
+#  - cabal configure --enable-tests && cabal build && cabal test
 
