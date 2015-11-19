@@ -1,5 +1,3 @@
-# trying with stack
-
 sudo: false
 
 addons:
@@ -25,6 +23,9 @@ script:
   - stack build
   - stack test
 
+cache:
+  directories:
+  - $HOME/.stack
 
 
 ### OLD new stuff
