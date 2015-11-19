@@ -10,16 +10,16 @@
 
 module Data.Bits.Ordered.QuickCheck where
 
-import           Test.QuickCheck hiding ((.&.))
-import           Data.Int (Int16(..))
-import           Data.Bits
-import qualified Data.Vector.Unboxed as VU
-import           Data.List (groupBy,sort,permutations,nub)
-import           Data.Function (on)
-import           Data.Maybe (isJust)
 import           Control.Monad (join)
-import           Debug.Trace
+import           Data.Bits
+import           Data.Function (on)
+import           Data.Int (Int16(..))
+import           Data.List (groupBy,sort,permutations,nub)
+import           Data.Maybe (isJust)
 import           Data.Word (Word)
+import           Debug.Trace
+import qualified Data.Vector.Unboxed as VU
+import           Test.QuickCheck hiding ((.&.))
 
 import           Data.Bits.Ordered
 
