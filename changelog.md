@@ -1,3 +1,8 @@
+0.0.1.0
+-------
+
+- moved all properties directly into tests/properties.hs
+
 0.0.0.3
 -------
 
