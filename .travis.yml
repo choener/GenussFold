@@ -21,8 +21,8 @@ install:
 
 script:
   - stack setup
-  - stack build
-  - stack test
+  - stack build --no-terminal
+  - stack test  --test-arguments --plain
 
 cache:
   directories:
