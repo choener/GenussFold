@@ -5,4 +5,4 @@ extra-deps:
 - storable-record-0.0.3
 - storable-tuple-0.0.2
 - utility-ht-0.0.11
-resolver: lts-3.11
+resolver: lts-3.14

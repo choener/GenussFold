@@ -2,6 +2,8 @@
 -------
 
 - vector <= 0.11
+- new travis.yml
+- stack support
 
 0.0.0.2
 -------
