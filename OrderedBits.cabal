@@ -84,7 +84,6 @@ test-suite properties
                     , ScopedTypeVariables
   build-depends: base
                , OrderedBits
-               , QuickCheck
                , QuickCheck                   >= 2.7  && < 2.9
                , test-framework               >= 0.8  && < 0.9
                , test-framework-quickcheck2   >= 0.3  && < 0.4
