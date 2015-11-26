@@ -7,8 +7,12 @@ import qualified Data.Vector.Unboxed as VU
 import           Data.Either (either)
 import           Data.Tree (drawForest,flatten)
 import qualified Data.Tree as T
+import           Data.Traversable (mapAccumL)
+import           Data.Graph.Inductive.Basic
+import qualified Data.Map.Strict as S
 
-import           Biobase.Newick
+import qualified Biobase.Newick as N
+import           Biobase.Newick (NewickTree(..),Info(Info))
 
 
 data TreeOrder = Pre | Post
@@ -34,18 +38,56 @@ deriving instance (Show a) => Show (Forest p a)
 
 
 forestPreFromNewicks :: [NewickTree] -> Forest Pre Info
-forestPreFromNewicks ts = error $ show pro
+forestPreFromNewicks ts
+  = Forest { label    = V.fromList $ preorderF ss
+           , parent   = VU.fromList $ map (\(_,k,_,_) -> k) $ preorderF rs
+           , children = V.fromList $ map (\(_,_,cs,_) -> VU.fromList cs) $ preorderF rs
+           , lsib     = VU.fromList $ map fst $ tail $ S.elems sb
+           , rsib     = VU.fromList $ map snd $ tail $ S.elems sb
+           , roots    = VU.fromList $ map fst $ T.levels rr !! 1
+           }
+  where
+    ss = map getNewickTree ts -- T.Node (Info "SUPER" 0) (map getNewickTree ts)
+    rs = relationsF (-1) $ addIndicesF 0 ss
+    rr = addIndices (-1) $ T.Node (Info "SUPER" 0) (map getNewickTree ts)
+    sb = siblings rr
+
+{-
   where err = error . ("\n"++) . drawForest . map (fmap show) . map getNewickTree $ ts
         pro = map (flatten . getNewickTree) $ ts
         numNodes = sum . map length $ pro
         numRoots = length ts
-        s = T.Node (Info "SUPER" 0) (map getNewickTree ts)
+-}
 
 addPre :: T.Tree x -> T.Tree y
 addPre = undefined
 
+addIndices :: Int -> T.Tree a -> T.Tree (Int,a)
+addIndices k = snd . mapAccumL (\i e -> (i+1, (i,e))) k
 
+addIndicesF :: Int -> [T.Tree a] -> [T.Tree (Int,a)]
+addIndicesF k = snd . mapAccumL go k
+  where go = mapAccumL (\i e -> (i+1, (i,e)))
 
+relationsF :: Int -> [T.Tree (Int,a)] -> [T.Tree (Int,Int,[Int],a)]
+relationsF k ts = [ T.Node (i,k,children sf,l) (relationsF i sf)  | T.Node (i,l) sf <- ts ]
+  where children sf = map (fst . T.rootLabel) sf
 
-test = forestPreFromNewicks $ either error id $ newicksFromText t
+siblings :: T.Tree (Int,a) -> S.Map Int (Int,Int)
+siblings = S.fromList . concatMap (go . map fst) . T.levels
+  where go xs = zipWith3 (\l x r -> (x,(l,r))) ((-1):xs) xs (tail xs ++ [-1])
+        go :: [Int] -> [(Int,(Int,Int))]
+
+test = do
+  let ts = map (addIndices 0 . getNewickTree) $ either error id $ N.newicksFromText t
+  let ss = either error id $ N.newicksFromText t
+  mapM_ (putStrLn . T.drawTree . fmap show) ts
+  putStrLn ""
+  mapM_ (mapM_ (putStrLn . show) . postorder) ts
+  putStrLn ""
+  mapM_ (mapM_ (putStrLn . show) . preorder) ts
+  putStrLn ""
+  mapM_ (mapM_ print . T.levels) ts
+  putStrLn ""
+  print $ forestPreFromNewicks ss
   where t = "((raccoon:19.19959,bear:6.80041):0.84600,((sea_lion:11.99700, seal:12.00300):7.52973,((monkey:100.85930,cat:47.14069):20.59201, weasel:18.87953):2.09460):3.87382,dog:25.46154);"
