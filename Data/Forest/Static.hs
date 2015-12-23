@@ -1,18 +1,19 @@
 
 module Data.Forest.Static where
 
+import           Data.Either (either)
+import           Data.Graph.Inductive.Basic
+import           Data.Traversable (mapAccumL)
+import           Data.Tree (drawForest,flatten)
+import qualified Data.Map.Strict as S
+import qualified Data.Tree as T
 import qualified Data.Vector as V
 import qualified Data.Vector.Generic as VG
 import qualified Data.Vector.Unboxed as VU
-import           Data.Either (either)
-import           Data.Tree (drawForest,flatten)
-import qualified Data.Tree as T
-import           Data.Traversable (mapAccumL)
-import           Data.Graph.Inductive.Basic
-import qualified Data.Map.Strict as S
 
-import qualified Biobase.Newick as N
 import           Biobase.Newick (NewickTree(..),Info(Info))
+import qualified Biobase.Newick as N
+
 
 
 data TreeOrder = Pre | Post
