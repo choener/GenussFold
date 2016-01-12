@@ -55,7 +55,7 @@ Emit: PKN
 
 makeAlgebraProduct ''SigPKN
 
-bpmax :: Monad m => SigPKN m Int Int Char
+bpmax :: Monad m => SigPKN m Int Int Char Char
 bpmax = SigPKN
   { unp = \ x c     -> x
   , jux = \ x c y d -> if c `pairs` d then x + y + 1 else -999999
@@ -84,7 +84,7 @@ pairs !c !d
 -- or something isomorphic. While [String] works, it allows for too many
 -- possibilities here! ([] ist lightweight, on the other hand ...)
 
-pretty :: Monad m => SigPKN m [String] [[String]] Char
+pretty :: Monad m => SigPKN m [String] [[String]] Char Char
 pretty = SigPKN
   { unp = \ [x] c     -> [x ++ "."]
   , jux = \ [x] c [y] d -> [x ++ "(" ++ y ++ ")"]
@@ -116,8 +116,8 @@ pknPairMax k inp = (d, take k bs) where
   bs = runInsideBacktrack i (Z:.t:.u:.v)
 {-# NOINLINE pknPairMax #-}
 
-type X = ITbl Id Unboxed (Subword I) Int
-type T = ITbl Id Unboxed (Z:.Subword I:.Subword I) Int
+type X = ITbl Id Unboxed EmptyOk (Subword I) Int
+type T = ITbl Id Unboxed (Z:.EmptyOk:.EmptyOk) (Z:.Subword I:.Subword I) Int
 
 runInsideForward :: VU.Vector Char -> Z:.X:.T:.T
 runInsideForward i = mutateTablesWithHints (Proxy :: Proxy MonotoneMCFG)
@@ -125,6 +125,7 @@ runInsideForward i = mutateTablesWithHints (Proxy :: Proxy MonotoneMCFG)
                         (ITbl 0 0 EmptyOk (PA.fromAssocs (subword 0 0) (subword 0 n) (-666999) []))
                         (ITbl 0 0 (Z:.EmptyOk:.EmptyOk) (PA.fromAssocs (Z:.subword 0 0:.subword 0 0) (Z:.subword 0 n:.subword 0 n) (-777999) []))
                         (ITbl 0 0 (Z:.EmptyOk:.EmptyOk) (PA.fromAssocs (Z:.subword 0 0:.subword 0 0) (Z:.subword 0 n:.subword 0 n) (-888999) []))
+                        (chr i)
                         (chr i)
   where n = VU.length i
 {-# NoInline runInsideForward #-}
@@ -135,6 +136,7 @@ runInsideBacktrack i (Z:.t:.u:.v) = unId $ axiom b
                           (toBacktrack t (undefined :: Id a -> Id a))
                           (toBacktrack u (undefined :: Id a -> Id a))
                           (toBacktrack v (undefined :: Id a -> Id a))
+                          (chr i)
                           (chr i)
 {-# NoInline runInsideBacktrack #-}
 
