@@ -77,8 +77,9 @@ library
   ghc-options:
     -O2
     -funbox-strict-fields
-    -fcpr-off
-    -fno-liberate-case
+    -fllvm -optlo-O3
+--    -fcpr-off
+--    -fno-liberate-case
   if flag(debug)
     ghc-options:
       -ddump-to-file
@@ -106,6 +107,7 @@ executable GenussFold
   ghc-options:
     -O2
     -funbox-strict-fields
+    -fllvm -optlo-O3
 
 
 
