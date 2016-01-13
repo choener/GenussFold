@@ -38,11 +38,11 @@ deriving instance (Show a) => Show (Forest p a)
 
 
 
-forestPreFromNewicks :: [NewickTree] -> Forest Pre Info
-forestPreFromNewicks ts
-  = Forest { label    = V.fromList $ preorderF ss
-           , parent   = VU.fromList $ map (\(_,k,_,_) -> k) $ preorderF rs
-           , children = V.fromList $ map (\(_,_,cs,_) -> VU.fromList cs) $ preorderF rs
+forestWithFromNewicks :: (forall a . [T.Tree a] -> [a]) -> [NewickTree] -> Forest (p::TreeOrder) Info
+forestWithFromNewicks f ts
+  = Forest { label    = V.fromList $ f ss
+           , parent   = VU.fromList $ map (\(_,k,_,_) -> k) $ f rs
+           , children = V.fromList $ map (\(_,_,cs,_) -> VU.fromList cs) $ f rs
            , lsib     = VU.fromList $ map fst $ tail $ S.elems sb
            , rsib     = VU.fromList $ map snd $ tail $ S.elems sb
            , roots    = VU.fromList $ map fst $ T.levels rr !! 1
@@ -53,15 +53,14 @@ forestPreFromNewicks ts
     rr = addIndices (-1) $ T.Node (Info "SUPER" 0) (map getNewickTree ts)
     sb = siblings rr
 
-{-
-  where err = error . ("\n"++) . drawForest . map (fmap show) . map getNewickTree $ ts
-        pro = map (flatten . getNewickTree) $ ts
-        numNodes = sum . map length $ pro
-        numRoots = length ts
--}
 
-addPre :: T.Tree x -> T.Tree y
-addPre = undefined
+forestPre :: [NewickTree] -> Forest Pre Info
+forestPre = forestWithFromNewicks preorderF
+
+
+forestPost :: [NewickTree] -> Forest Post Info
+forestPost = forestWithFromNewicks postorderF
+
 
 addIndices :: Int -> T.Tree a -> T.Tree (Int,a)
 addIndices k = snd . mapAccumL (\i e -> (i+1, (i,e))) k
@@ -90,5 +89,8 @@ test = do
   putStrLn ""
   mapM_ (mapM_ print . T.levels) ts
   putStrLn ""
-  print $ forestPreFromNewicks ss
-  where t = "((raccoon:19.19959,bear:6.80041):0.84600,((sea_lion:11.99700, seal:12.00300):7.52973,((monkey:100.85930,cat:47.14069):20.59201, weasel:18.87953):2.09460):3.87382,dog:25.46154);"
+  print $ forestPre ss
+  putStrLn ""
+  print $ forestPost ss
+  where t = "((raccoon:19.19959,bear:6.80041):0.84600,((sea_lion:11.99700, seal:12.00300):7.52973,((monkey:100.85930,cat:47.14069):20.59201, weasel:18.87953):2.09460):3.87382,dog:25.46154)Root;"
+
