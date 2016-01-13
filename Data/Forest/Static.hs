@@ -22,25 +22,30 @@ data TreeOrder = Pre | Post
 
 -- | A static forest structure...
 
-data Forest (p :: TreeOrder) a where
-  Forest :: (VG.Vector v a, Show (v a)) =>
+data Forest (p :: TreeOrder) v a where
+  Forest :: (VG.Vector v a) =>
     { label     :: v a
     , parent    :: VU.Vector Int
     , children  :: V.Vector (VU.Vector Int)
     , lsib      :: VU.Vector Int
     , rsib      :: VU.Vector Int
     , roots     :: VU.Vector Int
-    } -> Forest p a
+    } -> Forest p v a
 
 -- instance Show (Forest p a) where
 
-deriving instance (Show a) => Show (Forest p a)
+deriving instance (Show a, Show (v a)) => Show (Forest p v a)
 
 
 
-forestWithFromNewicks :: (forall a . [T.Tree a] -> [a]) -> [NewickTree] -> Forest (p::TreeOrder) Info
-forestWithFromNewicks f ts
-  = Forest { label    = V.fromList $ f ss
+-- |
+--
+-- TODO write addIndicesF to allow us to remove the non-nice 'error'
+-- function / 'undefined'.
+
+forestWith :: (VG.Vector v a) => (forall a . [T.Tree a] -> [a]) -> [T.Tree a] -> Forest (p::TreeOrder) v a
+forestWith f ts
+  = Forest { label    = VG.fromList $ f ss
            , parent   = VU.fromList $ map (\(_,k,_,_) -> k) $ f rs
            , children = V.fromList $ map (\(_,_,cs,_) -> VU.fromList cs) $ f rs
            , lsib     = VU.fromList $ map fst $ tail $ S.elems sb
@@ -48,18 +53,18 @@ forestWithFromNewicks f ts
            , roots    = VU.fromList $ map fst $ T.levels rr !! 1
            }
   where
-    ss = map getNewickTree ts -- T.Node (Info "SUPER" 0) (map getNewickTree ts)
+    ss = ts
     rs = relationsF (-1) $ addIndicesF 0 ss
-    rr = addIndices (-1) $ T.Node (Info "SUPER" 0) (map getNewickTree ts)
+    rr = addIndices (-1) $ T.Node (error "forestWith :: this should have been legal") ts
     sb = siblings rr
 
 
-forestPre :: [NewickTree] -> Forest Pre Info
-forestPre = forestWithFromNewicks preorderF
+forestPre :: (VG.Vector v a) => [T.Tree a] -> Forest Pre v a
+forestPre = forestWith preorderF
 
 
-forestPost :: [NewickTree] -> Forest Post Info
-forestPost = forestWithFromNewicks postorderF
+forestPost :: (VG.Vector v a) => [T.Tree a] -> Forest Post v a
+forestPost = forestWith postorderF
 
 
 addIndices :: Int -> T.Tree a -> T.Tree (Int,a)
@@ -89,8 +94,8 @@ test = do
   putStrLn ""
   mapM_ (mapM_ print . T.levels) ts
   putStrLn ""
-  print $ forestPre ss
+  print (forestPre $ map getNewickTree ss :: Forest Pre V.Vector Info)
   putStrLn ""
-  print $ forestPost ss
+  print (forestPost $ map getNewickTree ss :: Forest Post V.Vector Info)
   where t = "((raccoon:19.19959,bear:6.80041):0.84600,((sea_lion:11.99700, seal:12.00300):7.52973,((monkey:100.85930,cat:47.14069):20.59201, weasel:18.87953):2.09460):3.87382,dog:25.46154)Root;"
 
