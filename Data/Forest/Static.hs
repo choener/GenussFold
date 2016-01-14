@@ -1,20 +1,19 @@
 
 module Data.Forest.Static where
 
-import           Data.Either (either)
 import           Data.Graph.Inductive.Basic
 import           Data.Traversable (mapAccumL)
-import           Data.Tree (drawForest,flatten)
 import qualified Data.Map.Strict as S
 import qualified Data.Tree as T
 import qualified Data.Vector as V
 import qualified Data.Vector.Generic as VG
 import qualified Data.Vector.Unboxed as VU
 
-import           Biobase.Newick (NewickTree(..),Info(Info))
-import qualified Biobase.Newick as N
 
 
+-- | Kind of possible @TreeOrder@s.
+--
+-- TODO @In@ for in-order traversal?
 
 data TreeOrder = Pre | Post
 
@@ -32,8 +31,6 @@ data Forest (p :: TreeOrder) v a where
     , roots     :: VU.Vector Int
     } -> Forest p v a
 
--- instance Show (Forest p a) where
-
 deriving instance (Show a, Show (v a)) => Show (Forest p v a)
 
 
@@ -42,6 +39,8 @@ deriving instance (Show a, Show (v a)) => Show (Forest p v a)
 --
 -- TODO write addIndicesF to allow us to remove the non-nice 'error'
 -- function / 'undefined'.
+--
+-- TODO Explain what this function does.
 
 forestWith :: (VG.Vector v a) => (forall a . [T.Tree a] -> [a]) -> [T.Tree a] -> Forest (p::TreeOrder) v a
 forestWith f ts
@@ -82,20 +81,4 @@ siblings :: T.Tree (Int,a) -> S.Map Int (Int,Int)
 siblings = S.fromList . concatMap (go . map fst) . T.levels
   where go xs = zipWith3 (\l x r -> (x,(l,r))) ((-1):xs) xs (tail xs ++ [-1])
         go :: [Int] -> [(Int,(Int,Int))]
-
-test = do
-  let ts = map (addIndices 0 . getNewickTree) $ either error id $ N.newicksFromText t
-  let ss = either error id $ N.newicksFromText t
-  mapM_ (putStrLn . T.drawTree . fmap show) ts
-  putStrLn ""
-  mapM_ (mapM_ (putStrLn . show) . postorder) ts
-  putStrLn ""
-  mapM_ (mapM_ (putStrLn . show) . preorder) ts
-  putStrLn ""
-  mapM_ (mapM_ print . T.levels) ts
-  putStrLn ""
-  print (forestPre $ map getNewickTree ss :: Forest Pre V.Vector Info)
-  putStrLn ""
-  print (forestPost $ map getNewickTree ss :: Forest Post V.Vector Info)
-  where t = "((raccoon:19.19959,bear:6.80041):0.84600,((sea_lion:11.99700, seal:12.00300):7.52973,((monkey:100.85930,cat:47.14069):20.59201, weasel:18.87953):2.09460):3.87382,dog:25.46154)Root;"
 

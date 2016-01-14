@@ -1,7 +1,7 @@
 name:           ForestStructures
 version:        0.0.0.1
-author:         Christian Hoener zu Siederdissen, Sarah Berkemer, 2015
-copyright:      Christian Hoener zu Siederdissen, 2015
+author:         Christian Hoener zu Siederdissen, Sarah Berkemer, 2015-2016
+copyright:      Christian Hoener zu Siederdissen, 2015-2016
 homepage:       https://github.com/choener/ForestStructures
 bug-reports:    https://github.com/choener/ForestStructures/issues
 maintainer:     choener@bioinf.uni-leipzig.de
@@ -11,35 +11,28 @@ license-file:   LICENSE
 build-type:     Simple
 stability:      experimental
 cabal-version:  >= 1.10.0
-tested-with:    GHC == 7.8.4, GHC == 7.10.2
+tested-with:    GHC == 7.8.4, GHC == 7.10.3
 synopsis:       Tree- and forest structures
 description:
                 This library provides both static and dynamic tree and forest
                 structures. Once a tree structure is static, it can be mappend
                 onto a linearized representation, which is beneficial for
                 algorithms that do not modify the internal tree structure, but
-                need fast @(O(1))@ access to individual nodes, children, and
+                need fast @O(1)@ access to individual nodes, children, and
                 siblings.
-                .
-                Currently includes a dependency on @hybrid-vectors@ for testing
-                purposes.
-                .
 
 
 
 Extra-Source-Files:
   changelog.md
   README.md
-  stack.yaml
 
 
 
 library
   build-depends: base                   >= 4.7      &&  < 4.9
-               , BiobaseNewick          >= 0.0.0.1  &&  < 0.0.1.0
                , containers             >= 0.5      &&  < 0.6
                , fgl                    >= 5.5      &&  < 5.6
-               , hybrid-vectors         >= 0.2      &&  < 0.3
                , unordered-containers   >= 0.2      &&  < 0.3
                , vector                 >= 0.10     &&  < 0.12
                , vector-th-unbox        >= 0.2      &&  < 0.3

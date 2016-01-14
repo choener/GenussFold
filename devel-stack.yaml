@@ -2,8 +2,6 @@ resolver: lts-4.0
 
 packages:
 - '.'
-- location: ../Lib-BiobaseNewick/
-  extra-dep: true
 
 extra-deps:
 - cereal-text-0.1.0.1
