@@ -2,6 +2,7 @@
 module Data.Forest.Static where
 
 import           Data.Graph.Inductive.Basic
+import           Data.List (span)
 import           Data.Traversable (mapAccumL)
 import qualified Data.Map.Strict as S
 import qualified Data.Tree as T
@@ -78,7 +79,12 @@ relationsF k ts = [ T.Node (i,k,children sf,l) (relationsF i sf)  | T.Node (i,l)
   where children sf = map (fst . T.rootLabel) sf
 
 siblings :: T.Tree (Int,a) -> S.Map Int (Int,Int)
+{- -- because, well, stupid
 siblings = S.fromList . concatMap (go . map fst) . T.levels
   where go xs = zipWith3 (\l x r -> (x,(l,r))) ((-1):xs) xs (tail xs ++ [-1])
         go :: [Int] -> [(Int,(Int,Int))]
+-}
+siblings = S.fromList . map splt . T.flatten . go ([]::[Int])
+  where go sib (T.Node (k,lbl) frst) = let cs = [l | T.Node (l,_) _ <- frst] in T.Node (k,lbl,sib) [ go cs t | t <- frst]
+        splt (k,_,sbl) = let (ls,rs) = span (/=k) sbl in (k,(last $ (-1):ls,head $ tail rs ++ [-1]))
 
