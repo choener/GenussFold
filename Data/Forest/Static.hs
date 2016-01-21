@@ -2,7 +2,7 @@
 module Data.Forest.Static where
 
 import           Data.Graph.Inductive.Basic
-import           Data.List (span)
+import           Data.List (span,uncons)
 import           Data.Traversable (mapAccumL)
 import qualified Data.Map.Strict as S
 import qualified Data.Tree as T
@@ -50,7 +50,7 @@ forestWith f ts
            , children = V.fromList $ map (\(_,_,cs,_) -> VU.fromList cs) $ f rs
            , lsib     = VU.fromList $ map fst $ tail $ S.elems sb
            , rsib     = VU.fromList $ map snd $ tail $ S.elems sb
-           , roots    = VU.fromList $ map fst $ T.levels rr !! 1
+           , roots    = VU.fromList . map fst . maybe [] fst . uncons . tail $ T.levels rr -- T.levels rr !! 1
            }
   where
     ss = ts
