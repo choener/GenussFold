@@ -4,8 +4,10 @@
 module Data.Forest.Static where
 
 import           Data.Graph.Inductive.Basic
-import           Data.List (span,uncons)
+import           Data.List (span,uncons,sort)
 import           Data.Traversable (mapAccumL)
+import           Data.Foldable (toList)
+import           Debug.Trace
 import qualified Data.Map.Strict as S
 import qualified Data.Tree as T
 import qualified Data.Vector as V
@@ -49,8 +51,8 @@ deriving instance (Show a, Show (v a)) => Show (Forest p v a)
 forestWith :: (VG.Vector v a) => (forall a . [T.Tree a] -> [a]) -> [T.Tree a] -> Forest (p::TreeOrder) v a
 forestWith f ts
   = Forest { label    = VG.fromList $ f ts
-           , parent   = VU.fromList $ map (\(_,k,_,_) -> k) $ f pcs
-           , children = V.fromList $ map (\(_,_,cs,_) -> VU.fromList cs) $ f pcs
+           , parent   = VU.fromList $ map (\(_,k,_ ,_) -> k             ) $ f pcs
+           , children = V.fromList  $ map (\(_,_,cs,_) -> VU.fromList cs) $ f pcs
            , lsib     = VU.fromList $ map fst $ S.elems lr
            , rsib     = VU.fromList $ map snd $ S.elems lr
            , roots    = VU.fromList $ map (fst . T.rootLabel) us
@@ -62,10 +64,7 @@ forestWith f ts
     ps = addIndicesF' 0 ts
     -- Step 2: use @f@ to produce a permutation map and apply this
     -- permutation to turn the pre-order @ps@ into the required order.
-    -- Looks weird, but once we have the @bp@ indices, we need /them/ in
-    -- the correct form, hence backpermute them.
-    backp = let bp = VU.fromList $ f ps :: VU.Vector Int
-            in  VU.backpermute bp bp
+    backp = VU.fromList $ map snd $ sort $ zip (f ps) [0..]
     -- Step 3: decorate the forest with indices in the correct order. Keep
     -- the label in @snd@.
     us = map (fmap (\(k,l) -> (backp VG.! k,l))) $ addIndicesF 0 ts
@@ -131,9 +130,14 @@ leftMostLeaves f = VG.map go $ VG.enumFromN 0 $ VG.length $ parent f
   where go k = let cs = children f VG.! k
                in if VG.null cs then k else go (VG.head cs)
 
-
 {-
 test :: [T.Tree Char]
 test = [T.Node 'R' [T.Node 'a' [], T.Node 'b' []], T.Node 'S' [T.Node 'x' [], T.Node 'y' []]]
+
+runtest = do
+  print (forestPre test :: Forest Pre V.Vector Char)
+  print (forestPost test :: Forest Post V.Vector Char)
+  print (forestPost [T.Node 'R' [T.Node 'a' []]] :: Forest Post V.Vector Char)
+  print (forestPost [T.Node 'R' [T.Node 'a' [], T.Node 'b' []]] :: Forest Post V.Vector Char)
 -}
 
