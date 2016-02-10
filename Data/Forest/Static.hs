@@ -46,7 +46,7 @@ deriving instance (Show a, Show (v a)) => Show (Forest p v a)
 -- @forestWith preorderF trees@ will construct a pre-order forest from the
 -- list of @trees@.
 
-forestWith :: Show a => (VG.Vector v a) => (forall a . [T.Tree a] -> [a]) -> [T.Tree a] -> Forest (p::TreeOrder) v a
+forestWith :: (VG.Vector v a) => (forall a . [T.Tree a] -> [a]) -> [T.Tree a] -> Forest (p::TreeOrder) v a
 forestWith f ts
   = Forest { label    = VG.fromList $ f ts
            , parent   = VU.fromList $ map (\(_,k,_,_) -> k) $ f pcs
@@ -78,12 +78,12 @@ forestWith f ts
 
 -- | Construct a pre-ordered forest.
 
-forestPre :: (VG.Vector v a, Show a) => [T.Tree a] -> Forest Pre v a
+forestPre :: (VG.Vector v a) => [T.Tree a] -> Forest Pre v a
 forestPre = forestWith preorderF
 
 -- | Construct a post-ordered forest.
 
-forestPost :: (VG.Vector v a, Show a) => [T.Tree a] -> Forest Post v a
+forestPost :: (VG.Vector v a) => [T.Tree a] -> Forest Post v a
 forestPost = forestWith postorderF
 
 -- | Add @pre-ordered@ !!! indices. First argument is the starting index.
