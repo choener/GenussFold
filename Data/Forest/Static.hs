@@ -88,3 +88,8 @@ siblings = S.fromList . map splt . T.flatten . go ([]::[Int])
   where go sib (T.Node (k,lbl) frst) = let cs = [l | T.Node (l,_) _ <- frst] in T.Node (k,lbl,sib) [ go cs t | t <- frst]
         splt (k,_,sbl) = let (ls,rs) = span (/=k) sbl in (k,(last $ (-1):ls,head $ tail rs ++ [-1]))
 
+
+leftMostChildren :: Forest p v a -> VU.Vector Int
+leftMostChildren f = VG.map go $ VG.enumFromN 0 $ VG.length $ parent f
+  where go k = let cs = children f VG.! k
+               in if VG.null cs then k else go (VG.head cs)
