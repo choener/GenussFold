@@ -13,7 +13,7 @@ import           Data.Binary
 import           Data.Serialize
 import           Data.Tuple (swap)
 import           Data.Vector.Binary
-import           Data.Vector.Cereal
+import           Data.Vector.Serialize
 import           Data.Vector.Unboxed (Vector, Unbox)
 import           GHC.Generics
 import qualified Data.Vector.Generic as G

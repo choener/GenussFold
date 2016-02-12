@@ -13,7 +13,7 @@ import           Data.Binary
 import           Data.Serialize
 import           Data.Tuple (swap)
 import           Data.Vector.Binary
-import           Data.Vector.Cereal
+import           Data.Vector.Serialize
 import           Data.Vector.Storable (Vector, Storable)
 import           Foreign.Storable.Tuple
 import           GHC.Generics
