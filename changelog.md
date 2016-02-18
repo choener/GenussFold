@@ -4,6 +4,7 @@
 - use of vector-cereal for cereal instances
 
 0.0.0.4
+-------
 
 - stub properties
 
