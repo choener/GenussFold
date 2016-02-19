@@ -2,6 +2,7 @@
 -------
 
 - use of vector-cereal for cereal instances
+- try the newest travis.yml from M. Snoyman
 
 0.0.0.4
 -------
