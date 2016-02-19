@@ -78,7 +78,7 @@ test-suite properties
 
 benchmark benchmark
   build-depends:  base
-               ,  criterion   >=  1.0.2 &&  < 1.1.1
+               ,  criterion         >=  1.0.2 &&  < 1.1.1
                ,  ForestStructures
   default-language:
     Haskell2010

@@ -3,10 +3,10 @@
 
 module Data.Forest.Static where
 
+import           Data.Foldable (toList)
 import           Data.Graph.Inductive.Basic
 import           Data.List (span,uncons,sort)
 import           Data.Traversable (mapAccumL)
-import           Data.Foldable (toList)
 import           Debug.Trace
 import qualified Data.Map.Strict as S
 import qualified Data.Tree as T
@@ -19,6 +19,8 @@ import qualified Data.Vector.Unboxed as VU
 -- | Kind of possible @TreeOrder@s.
 --
 -- TODO @In@ for in-order traversal?
+--
+-- TODO @Unordered@ for trees that have no sorted order?
 
 data TreeOrder = Pre | Post
 
@@ -129,6 +131,17 @@ leftMostLeaves :: Forest p v a -> VU.Vector Int
 leftMostLeaves f = VG.map go $ VG.enumFromN 0 $ VG.length $ parent f
   where go k = let cs = children f VG.! k
                in if VG.null cs then k else go (VG.head cs)
+
+-- | Return all left key roots. These are the nodes that have no (super-)
+-- parent with the same left-most leaf.
+--
+-- This function is somewhat specialized for tree editing.
+
+leftKeyRoots :: Forest Post v a -> VU.Vector (Int,Int)
+leftKeyRoots f = VU.fromList . S.assocs $ VU.foldl' go S.empty (VU.enumFromN (0::Int) $ VG.length $ parent f)
+        -- Build a map from left-most leaf to most root-near node.
+  where go s k = S.insertWith max (lml VU.! k) k s
+        lml  = leftMostLeaves f
 
 {-
 test :: [T.Tree Char]
