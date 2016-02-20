@@ -136,9 +136,11 @@ leftMostLeaves f = VG.map go $ VG.enumFromN 0 $ VG.length $ parent f
 -- parent with the same left-most leaf.
 --
 -- This function is somewhat specialized for tree editing.
+--
+-- TODO group by
 
-leftKeyRoots :: Forest Post v a -> VU.Vector (Int,Int)
-leftKeyRoots f = VU.fromList . S.assocs $ VU.foldl' go S.empty (VU.enumFromN (0::Int) $ VG.length $ parent f)
+leftKeyRoots :: Forest Post v a -> VU.Vector Int
+leftKeyRoots f = VU.fromList . sort . S.elems $ VU.foldl' go S.empty (VU.enumFromN (0::Int) $ VG.length $ parent f)
         -- Build a map from left-most leaf to most root-near node.
   where go s k = S.insertWith max (lml VU.! k) k s
         lml  = leftMostLeaves f
