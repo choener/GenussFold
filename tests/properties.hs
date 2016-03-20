@@ -24,10 +24,11 @@ import           Data.Bits.Ordered
 -- prop> \(n :: Int16) -> let b = popCount n in memoSorted b == enumSorted b
 --
 
-prop_PopCountSet (NonZero (n :: Int16)) = memo == enum
+prop_PopCountSet (NonZero (n' :: Int16)) = memo == enum
   where b    = popCount n
         memo = memoSorted b
         enum = enumSorted b
+        n    = n' `mod` 12
 
 memoSorted, enumSorted :: Int -> [[Int]]
 
