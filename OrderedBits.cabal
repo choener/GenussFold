@@ -31,7 +31,7 @@ Extra-Source-Files:
 
 
 library
-  build-depends: base               >= 4.7      && < 4.9
+  build-depends: base               >= 4.7      && < 4.10
                , bits               >= 0.4      && < 0.5
                , primitive          >= 0.5      && < 0.7
                , vector             >= 0.10     && < 0.12
