@@ -52,7 +52,7 @@ library
 
 benchmark BenchmarkOrderedBits
   build-depends: base
-               , criterion    >=  1.0.2 && < 1.1.1
+               , criterion    >=  1.0.2 && < 1.2
                , OrderedBits
                , vector
   default-language:
