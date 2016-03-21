@@ -3,7 +3,6 @@
 
 module Data.Bijection.Vector.Unboxed
   ( module Data.Bijection.Class
-  , Bimap
   ) where
 
 import           Control.Applicative ((<$>))
@@ -22,34 +21,21 @@ import           Data.Bijection.Class
 
 
 
-newtype Bimap l r = Bimap (Vector (l,r))
-  deriving (Read,Show,Eq,Generic)
-
-instance (Eq l, Eq r, Unbox l, Unbox r) => Bijection (Bimap l r) where
-  type ContL (Bimap l r) = Vector (l,r)
-  type ContR (Bimap l r) = Vector (r,l)
-  type ElemL (Bimap l r) = l
-  type ElemR (Bimap l r) = r
-  contL (Bimap v) = v
-  contR (Bimap v) = G.map swap v
-  lookupL (Bimap v) k = snd <$> G.find ((==k) . fst) v
-  lookupR (Bimap v) k = fst <$> G.find ((==k) . snd) v
-  empty = Bimap G.empty
-  null (Bimap v) = G.null v
-  size (Bimap v) = G.length v
-  fromList = Bimap . G.fromList
-  toList (Bimap v) = G.toList v
-  insert (Bimap v) = Bimap . G.snoc v
-  deleteByL (Bimap v) x = Bimap $ G.filter ((/=x) . fst) v
-  deleteByR (Bimap v) y = Bimap $ G.filter ((/=y) . snd) v
-  {-# INLINE lookupL #-}
-  {-# INLINE lookupR #-}
-
-instance (NFData l, NFData r) => NFData (Bimap l r) where
-  rnf (Bimap v) = rnf v
-
-instance (Unbox l, Unbox r, Binary l, Binary r) => Binary (Bimap l r)
-instance (Unbox l, Unbox r, Serialize l, Serialize r) => Serialize (Bimap l r)
-instance (Unbox l, Unbox r, ToJSON l, ToJSON r) => ToJSON (Bimap l r)
-instance (Unbox l, Unbox r, FromJSON l, FromJSON r) => FromJSON (Bimap l r)
+instance (Unbox c) => DomCod (Vector c) where
+  type Dom (Vector c) = Int
+  type Cod (Vector c) = c
+  member v k = k >= 0 && k < G.length v
+  lookup v k = v G.!? k
+  deleteDC v k
+    | k+1 == G.length v = Just (v G.! k, G.init v)
+    | otherwise         = error "tried to delete non-last element"
+  insertDC v (d,c)
+    | d == G.length v          = G.snoc v c
+    | d >= 0 && d < G.length v = v G.// [(d,c)]
+    | otherwise                = error "tried to insert into non-contiguous range"
+  toListDC = G.toList . G.indexed
+  nullDC = G.null
+  emptyDC = G.empty
+  sizeDC = G.length
+  fromListDC = G.fromList . map snd
 

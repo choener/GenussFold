@@ -1,5 +1,5 @@
 Name:           bimaps
-Version:        0.0.1.0
+Version:        0.1.0.0
 License:        BSD3
 License-file:   LICENSE
 Author:         Christian Hoener zu Siederdissen
@@ -11,7 +11,7 @@ Stability:      Experimental
 Category:       Data
 Build-type:     Simple
 Cabal-version:  >= 1.10
-tested-with:    GHC == 7.8.4, GHC == 7.10.2
+tested-with:    GHC == 7.8.4, GHC == 7.10.3
 Synopsis:       bijections with multiple implementations.
 Description:
                 Bijections between sets of values.
@@ -33,8 +33,8 @@ library
     Data.Bijection.Vector.Unboxed
     Data.Bijection.Vector.Storable
 
-  build-depends: base                     >= 4.7      &&  < 4.9
-               , aeson                    >= 0.8      &&  < 0.11
+  build-depends: base                     >= 4.7      &&  < 4.10
+               , aeson                    >= 0.8      &&  < 0.12
                , binary                   >= 0.7      &&  < 0.8
                , cereal                   >= 0.4      &&  < 0.6
                , cereal-vector            >= 0.2      &&  < 0.3
@@ -53,8 +53,10 @@ library
   default-language:
     Haskell2010
   default-extensions: BangPatterns
+                    , ConstraintKinds
                     , DeriveGeneric
                     , FlexibleContexts
+                    , TupleSections
                     , TypeFamilies
                     , UndecidableInstances
 
@@ -63,9 +65,11 @@ library
 benchmark BenchmarkBimaps
   build-depends: base
                , bimaps
-               , criterion   >= 1.0.2   && < 1.1.1
+               , containers
+               , criterion            >= 1.0.2  &&  < 1.2
                , deepseq
-               , mwc-random  >= 0.13    && < 0.14
+               , mwc-random           >= 0.13   &&  < 0.14
+               , unordered-containers
                , vector
   hs-source-dirs:
     tests

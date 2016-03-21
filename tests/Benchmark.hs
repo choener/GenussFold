@@ -1,22 +1,25 @@
 
 module Main where
 
-import           Criterion.Main
-import qualified Data.Vector.Unboxed as VU
-import qualified Data.Vector.Generic as VG
-import qualified Data.Vector as VV
-import           Text.Printf
-import           Data.Tuple (swap)
 import           Control.Applicative ((<$>))
-import           System.Random.MWC
 import           Control.DeepSeq
+import           Criterion.Main
+import           Data.Tuple (swap)
+import qualified Data.HashMap.Strict as H
+import qualified Data.Map.Strict as M
+import qualified Data.Vector as VV
+import qualified Data.Vector.Generic as VG
+import qualified Data.Vector.Storable as VS
+import qualified Data.Vector.Unboxed as VU
+import           System.Random.MWC
+import           Text.Printf
 
-import qualified Data.Bijection.Vector as BV
-import qualified Data.Bijection.Vector.Unboxed as BU
-import qualified Data.Bijection.Vector.Storable as BS
-import qualified Data.Bijection.Map as BM
-import qualified Data.Bijection.Hash as HS
 import qualified Data.Bijection.Class as B
+import qualified Data.Bijection.Hash as HS
+import qualified Data.Bijection.Map as BM
+import qualified Data.Bijection.Vector as BV
+import qualified Data.Bijection.Vector.Storable as BS
+import qualified Data.Bijection.Vector.Unboxed as BU
 
 
 
@@ -41,11 +44,11 @@ benchLookup xs z = allLR -- bench s $ whnf allLR xs'
         f k _           = k
 {-# INLINE benchLookup #-}
 
-benchVU :: VU.Vector Int -> BU.Bimap Int Int -> Int
+benchVU :: VU.Vector Int -> BU.Bimap (VU.Vector Int) (VU.Vector Int) -> Int
 benchVU = benchLookup
 {-# NOINLINE benchVU #-}
 
-benchBM :: VU.Vector Int -> BM.Bimap Int Int -> Int
+benchBM :: VU.Vector Int -> BM.Bimap (M.Map Int Int) (M.Map Int Int) -> Int
 benchBM = benchLookup
 {-# NOINLINE benchBM #-}
 
@@ -53,11 +56,11 @@ main :: IO ()
 main = do
   lkup :: VU.Vector Int <- withSystemRandom . asGenIO $ \gen -> uniformVector gen 10
   inputs :: [[Int]] <- mapM (\l -> withSystemRandom . asGenIO $ \gen -> VU.toList <$> uniformVector gen l) [1, 5, 10, 50, 100, 1000] -- [1,10,100,1000,10000]
-  let zVV :: [BV.Bimap Int Int] = map (\i -> B.fromList $ zip i i) inputs
-  let zVU :: [BU.Bimap Int Int] = map (\i -> B.fromList $ zip i i) inputs
-  let zVS :: [BS.Bimap Int Int] = map (\i -> B.fromList $ zip i i) inputs
-  let zMS :: [BM.Bimap Int Int] = map (\i -> B.fromList $ zip i i) inputs
-  let zHS :: [HS.Bimap Int Int] = map (\i -> B.fromList $ zip i i) inputs
+  let zVV :: [BV.Bimap (VV.Vector Int) (VV.Vector Int)] = map (\i -> B.fromList $ zip i i) inputs
+  let zVU :: [BU.Bimap (VU.Vector Int) (VU.Vector Int)] = map (\i -> B.fromList $ zip i i) inputs
+  let zVS :: [BS.Bimap (VS.Vector Int) (VS.Vector Int)] = map (\i -> B.fromList $ zip i i) inputs
+  let zMS :: [BM.Bimap (M.Map Int Int) (M.Map Int Int)] = map (\i -> B.fromList $ zip i i) inputs
+  let zHS :: [HS.Bimap (H.HashMap Int Int) (H.HashMap Int Int)] = map (\i -> B.fromList $ zip i i) inputs
   deepseq (lkup,inputs,zVV,zVU,zVS,zMS,zHS) `seq` defaultMain
     [ bgroup "5"
       [ bench "vector/ unboxed" $ whnf (benchVU lkup) (zVU !! 1)
