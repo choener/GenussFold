@@ -3,6 +3,7 @@
 
 module Data.Bijection.Vector.Storable
   ( module Data.Bijection.Class
+  , Vector
   ) where
 
 import           Control.Applicative ((<$>))

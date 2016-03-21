@@ -3,6 +3,7 @@
 
 module Data.Bijection.Map
   ( module Data.Bijection.Class
+  , S.Map
   ) where
 
 import           Control.DeepSeq

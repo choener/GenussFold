@@ -1,6 +1,7 @@
 
 module Data.Bijection.Hash
   ( module Data.Bijection.Class
+  , H.HashMap
   ) where
 
 import           Control.DeepSeq
