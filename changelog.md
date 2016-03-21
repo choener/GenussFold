@@ -1,3 +1,9 @@
+0.1.0.0
+-------
+
+- heterogeneous structures are now allowed
+- HashMap, Map, Vector (boxed, unboxed, storable) instances predefined
+
 0.0.1.0
 -------
 
