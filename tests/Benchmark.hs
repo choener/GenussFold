@@ -15,7 +15,7 @@ import           System.Random.MWC
 import           Text.Printf
 
 import qualified Data.Bijection.Class as B
-import qualified Data.Bijection.Hash as HS
+import qualified Data.Bijection.HashMap as HS
 import qualified Data.Bijection.Map as BM
 import qualified Data.Bijection.Vector as BV
 import qualified Data.Bijection.Vector.Storable as BS

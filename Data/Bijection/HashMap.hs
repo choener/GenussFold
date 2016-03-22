@@ -1,5 +1,5 @@
 
-module Data.Bijection.Hash
+module Data.Bijection.HashMap
   ( module Data.Bijection.Class
   , H.HashMap
   ) where
