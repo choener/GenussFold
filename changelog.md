@@ -2,4 +2,5 @@
 -------
 
 - initial checkin
+- upper triangular and rectangular combinations
 
