@@ -48,7 +48,7 @@ test-suite properties
   main-is:
     properties.hs
   ghc-options:
-    -threaded -rtsopts -with-rtsopts=-N
+    -O2 -threaded -rtsopts -with-rtsopts=-N
   hs-source-dirs:
     tests
   default-language:
