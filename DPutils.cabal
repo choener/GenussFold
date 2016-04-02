@@ -28,11 +28,12 @@ extra-source-files:
 Library
   Exposed-modules:
     Data.Vector.Combined
-  build-depends: base                     >= 4.7      &&  < 4.9
-               , QuickCheck               >= 2.7      &&  < 2.9
-               , vector                   >= 0.10     &&  < 0.12
+  build-depends: base                     >= 4.7
+               , QuickCheck               >= 2.7
+               , vector                   >= 0.10
   default-extensions: BangPatterns
                     , ScopedTypeVariables
+                    , FlexibleContexts
   default-language:
     Haskell2010
   ghc-options:
@@ -59,9 +60,8 @@ test-suite properties
                , QuickCheck
                , tasty              >= 0.11
                , tasty-quickcheck   >= 0.8
---               , test-framework               >= 0.8  && < 0.9
---               , test-framework-quickcheck2   >= 0.3  && < 0.4
---               , test-framework-th            >= 0.2  && < 0.3
+               , tasty-th           >= 0.1
+               , vector
 
 
 
