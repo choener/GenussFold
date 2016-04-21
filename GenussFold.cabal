@@ -44,12 +44,12 @@ flag debug
 
 library
   build-depends: base                   >= 4.7      && < 4.9
-               , ADPfusion              >= 0.5.1    && < 0.5.2
+               , ADPfusion              >= 0.5.1    && < 0.5.3
                , ansi-wl-pprint         >= 0.6.7    && < 0.6.8
                , bytestring             >= 0.10     && < 0.11
                , containers
                , data-default           >= 0.5      && < 0.6
-               , FormalGrammars         >= 0.3.0    && < 0.3.1
+               , FormalGrammars         >= 0.3.0    && < 0.3.2
                , lens                   >= 4.0      && < 5.0
                , mtl                    >= 2.0      && < 3.0
                , PrimitiveArray         >= 0.6.0    && < 0.7.1
