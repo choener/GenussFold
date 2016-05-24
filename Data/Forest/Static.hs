@@ -13,6 +13,8 @@ import qualified Data.Tree as T
 import qualified Data.Vector as V
 import qualified Data.Vector.Generic as VG
 import qualified Data.Vector.Unboxed as VU
+import qualified Data.List as L
+import qualified Data.Set as Set
 
 
 
@@ -145,7 +147,33 @@ leftKeyRoots f = VU.fromList . sort . S.elems $ VU.foldl' go S.empty (VU.enumFro
   where go s k = S.insertWith max (lml VU.! k) k s
         lml  = leftMostLeaves f
 
-{-
+-- | Returns the list of all sorted subsets of subforests in the forest.
+-- The subsets are returned in reversed pre-order.
+
+sortedSubForests :: Forest Pre v a -> [VU.Vector Int]
+sortedSubForests f =
+  -- cleanup
+  map VU.fromList
+  . concat
+  -- make sure that in our partial order we have smaller forests come
+  -- first.
+  . map (map unSrt . Set.toList . Set.fromList . map Srt)
+  -- get all nonempty ordered subforests
+  . map (concatMap (L.tail . L.subsequences))
+  . map (L.permutations)
+  . map VG.toList . VG.toList
+  -- only nodes with children
+  . VG.filter (not . VG.null)
+  -- every node that has children in reverse order
+  -- make sure that the roots are there, but come last
+  $ VG.snoc (VG.reverse (children f)) (roots f)
+
+newtype Srt = Srt { unSrt :: [Int] }
+  deriving (Eq,Show)
+
+instance Ord Srt where
+  Srt xs <= Srt ys = length xs <= length ys
+
 test :: [T.Tree Char]
 test = [T.Node 'R' [T.Node 'a' [], T.Node 'b' []], T.Node 'S' [T.Node 'x' [], T.Node 'y' []]]
 
@@ -154,5 +182,5 @@ runtest = do
   print (forestPost test :: Forest Post V.Vector Char)
   print (forestPost [T.Node 'R' [T.Node 'a' []]] :: Forest Post V.Vector Char)
   print (forestPost [T.Node 'R' [T.Node 'a' [], T.Node 'b' []]] :: Forest Post V.Vector Char)
--}
+  print (sortedSubForests (forestPre test :: Forest Pre V.Vector Char))
 
