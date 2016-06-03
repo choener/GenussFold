@@ -154,6 +154,7 @@ sortedSubForests :: Forest Pre v a -> [VU.Vector Int]
 sortedSubForests f =
   -- cleanup
   map VU.fromList
+  . L.nub     -- TODO revise later, is in @O(n^2)@
   . concat
   -- make sure that in our partial order we have smaller forests come
   -- first.
@@ -174,13 +175,16 @@ newtype Srt = Srt { unSrt :: [Int] }
 instance Ord Srt where
   Srt xs <= Srt ys = length xs <= length ys
 
-test :: [T.Tree Char]
-test = [T.Node 'R' [T.Node 'a' [], T.Node 'b' []], T.Node 'S' [T.Node 'x' [], T.Node 'y' []]]
+test1 :: [T.Tree Char]
+test1 = [T.Node 'R' [T.Node 'a' [], T.Node 'b' []], T.Node 'S' [T.Node 'x' [], T.Node 'y' []]]
 
-runtest = do
-  print (forestPre test :: Forest Pre V.Vector Char)
-  print (forestPost test :: Forest Post V.Vector Char)
+test2 :: [T.Tree Char]
+test2 = [T.Node 'R' [T.Node 'a' [], T.Node 'b' [], T.Node 'c' []]]
+
+runtest t = do
+  print (forestPre t :: Forest Pre V.Vector Char)
+  print (forestPost t :: Forest Post V.Vector Char)
   print (forestPost [T.Node 'R' [T.Node 'a' []]] :: Forest Post V.Vector Char)
   print (forestPost [T.Node 'R' [T.Node 'a' [], T.Node 'b' []]] :: Forest Post V.Vector Char)
-  print (sortedSubForests (forestPre test :: Forest Pre V.Vector Char))
+  print (sortedSubForests (forestPre t :: Forest Pre V.Vector Char))
 
