@@ -33,9 +33,9 @@ library
     Data.Bijection.Vector.Unboxed
     Data.Bijection.Vector.Storable
 
-  build-depends: base                     >= 4.7      &&  < 4.10
+  build-depends: base                     >= 4.7      &&  < 5.0
                , aeson                    >= 0.8      &&  < 0.12
-               , binary                   >= 0.7      &&  < 0.8
+               , binary                   >= 0.7      &&  < 0.9
                , cereal                   >= 0.4      &&  < 0.6
                , cereal-vector            >= 0.2      &&  < 0.3
                , containers               >= 0.5      &&  < 0.6

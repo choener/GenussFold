@@ -1,4 +1,9 @@
 
+--
+--
+-- TODO if 'benchLookup' has no explicit type, compilation fails under
+-- ghc-8.0.1. Investigate!
+
 module Main where
 
 import           Control.Applicative ((<$>))
@@ -22,7 +27,11 @@ import qualified Data.Bijection.Vector.Storable as BS
 import qualified Data.Bijection.Vector.Unboxed as BU
 
 
-
+runLookupBench
+  :: (BU.Dom r ~ BU.Dom l, BU.Cod r ~ BU.Cod l, BU.DomCod r,
+      BU.DomCod l, VG.Vector v (BU.Dom l), Ord (BU.Cod l),
+      Num (BU.Cod l)) =>
+     v (BU.Dom r) -> BU.Bimap l r -> Benchmark
 runLookupBench xs' z = bench s $ whnf allLR xs'
   where s = printf "%5d" (B.size z)
         lL k = B.lookupL z k
@@ -32,8 +41,13 @@ runLookupBench xs' z = bench s $ whnf allLR xs'
         allLR xs = allL xs + allR xs
         f k (Just (!x)) = max k x
         f k _           = k
-{-# INLINE runLookupBench #-}
+{-# Inline runLookupBench #-}
 
+benchLookup
+  :: (BU.Dom r ~ BU.Dom l, BU.Cod r ~ BU.Cod l, BU.DomCod r,
+      BU.DomCod l, VG.Vector v (BU.Dom l), Ord (BU.Cod l),
+      Num (BU.Cod l)) =>
+     v (BU.Dom r) -> BU.Bimap l r -> BU.Cod l
 benchLookup xs z = allLR -- bench s $ whnf allLR xs'
   where lL k = B.lookupL z k
         lR k = B.lookupR z k
@@ -42,7 +56,7 @@ benchLookup xs z = allLR -- bench s $ whnf allLR xs'
         allLR = allL + allR
         f k (Just (!x)) = max k x
         f k _           = k
-{-# INLINE benchLookup #-}
+{-# Inline benchLookup #-}
 
 benchVU :: VU.Vector Int -> BU.Bimap (VU.Vector Int) (VU.Vector Int) -> Int
 benchVU = benchLookup
