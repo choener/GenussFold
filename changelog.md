@@ -1,3 +1,8 @@
+0.0.1.1
+-------
+
+- move to tasty framework for property tests
+
 0.0.1.0
 -------
 

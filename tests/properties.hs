@@ -10,9 +10,10 @@ import           Data.Maybe (isJust)
 import           Data.Word (Word)
 import           Debug.Trace
 import qualified Data.Vector.Unboxed as VU
-import           Test.Framework.Providers.QuickCheck2
-import           Test.Framework.TH
 import           Test.QuickCheck hiding ((.&.))
+import           Test.Tasty
+import           Test.Tasty.QuickCheck (testProperty)
+import           Test.Tasty.TH
 
 import           Data.Bits.Ordered
 
