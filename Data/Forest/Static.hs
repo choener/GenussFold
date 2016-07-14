@@ -149,6 +149,8 @@ leftKeyRoots f = VU.fromList . sort . S.elems $ VU.foldl' go S.empty (VU.enumFro
 
 -- | Returns the list of all sorted subsets of subforests in the forest.
 -- The subsets are returned in reversed pre-order.
+--
+-- TODO turn this into @newtype vectors@ that enforce @size >= 1@.
 
 sortedSubForests :: Forest Pre v a -> [VU.Vector Int]
 sortedSubForests f =
