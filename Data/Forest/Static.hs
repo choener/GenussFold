@@ -130,14 +130,22 @@ lrSibling = S.fromList . map splt . T.flatten . go ([]::[Int])
 -- | Return the left-most leaf for each node.
 
 leftMostLeaves :: Forest p v a -> VU.Vector Int
-leftMostLeaves f = VG.map go $ VG.enumFromN 0 $ VG.length $ parent f
+leftMostLeaves f = VG.map (leftMostLeaf f) $ VG.enumFromN 0 $ VG.length $ parent f
+
+-- | Just the leaf-most leaf for a certain node.
+
+leftMostLeaf :: Forest p v a -> Int -> Int
+leftMostLeaf f = go
   where go k = let cs = children f VG.! k
                in if VG.null cs then k else go (VG.head cs)
 
 -- | Return the right-most leaf for each node.
 
 rightMostLeaves :: Forest p v a -> VU.Vector Int
-rightMostLeaves f = VG.map go $ VG.enumFromN 0 $ VG.length $ parent f
+rightMostLeaves f = VG.map (rightMostLeaf f) $ VG.enumFromN 0 $ VG.length $ parent f
+
+rightMostLeaf :: Forest p v a -> Int -> Int
+rightMostLeaf f = go
   where go k = let cs = children f VG.! k
                in  if VG.null cs then k else go (VG.last cs)
 
