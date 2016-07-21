@@ -134,6 +134,13 @@ leftMostLeaves f = VG.map go $ VG.enumFromN 0 $ VG.length $ parent f
   where go k = let cs = children f VG.! k
                in if VG.null cs then k else go (VG.head cs)
 
+-- | Return the right-most leaf for each node.
+
+rightMostLeaves :: Forest p v a -> VU.Vector Int
+rightMostLeaves f = VG.map go $ VG.enumFromN 0 $ VG.length $ parent f
+  where go k = let cs = children f VG.! k
+               in  if VG.null cs then k else go (VG.last cs)
+
 -- | Return all left key roots. These are the nodes that have no (super-)
 -- parent with the same left-most leaf.
 --
