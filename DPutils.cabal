@@ -1,5 +1,5 @@
 Name:           DPutils
-Version:        0.0.0.1
+Version:        0.0.0.2
 License:        BSD3
 License-file:   LICENSE
 Maintainer:     choener@bioinf.uni-leipzig.de
@@ -27,8 +27,11 @@ extra-source-files:
 
 Library
   Exposed-modules:
-    Data.Vector.Combined
+    Data.Combined.Common
+    Data.Combined.Foldable
+    Data.Combined.Vector
   build-depends: base                     >= 4.7    &&  < 5.0
+               , containers
                , QuickCheck               >= 2.7
                , vector                   >= 0.10
   default-extensions: BangPatterns

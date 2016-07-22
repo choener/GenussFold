@@ -1,14 +1,11 @@
 
-module Data.Vector.Combined where
+module Data.Combined.Vector where
 
 import Data.Vector.Generic as VG
 
+import Data.Combined.Common
 
 
--- | Shall we combine elements on the main diagonal as well?
-
-data OnDiag = OnDiag | NoDiag
-  deriving (Eq)
 
 -- | Upper triangular elements.
 
