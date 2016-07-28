@@ -30,6 +30,7 @@ Library
     Data.Combined.Common
     Data.Combined.Foldable
     Data.Combined.Vector
+    Math.TriangularNumbers
   build-depends: base                     >= 4.7    &&  < 5.0
                , containers
                , QuickCheck               >= 2.7

@@ -5,6 +5,7 @@ module Data.Combined.Foldable where
 
 import Data.IntMap as IM
 import Data.Foldable as F
+import Data.List as L
 
 import Data.Combined.Common
 
@@ -29,12 +30,13 @@ upperTri
   -> Enumerate
   -> t a
   -> (IntMap a, Int, [(a,a)])
-upperTri d e xs' = (xmap, k, ys)
+upperTri d e xs' = enumerate e
   where xs   = F.toList xs'
-        xmap = undefined
-        k    = undefined
-        ys   = undefined
-        strt = (undefined, undefined)
+        ys   = L.unfoldr go undefined
+        imp  = 
+        go _ = Nothing
+        enumerate All = undefined
+        enumerate (FromN s n) = undefined
 
 {-
 upperTriVG d as = (z, unfoldrN z go (0,if d == OnDiag then 0 else 1))
