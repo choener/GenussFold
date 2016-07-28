@@ -33,7 +33,7 @@ upperTri
 upperTri d e xs' = enumerate e
   where xs   = F.toList xs'
         ys   = L.unfoldr go undefined
-        imp  = 
+        imp  = undefined
         go _ = Nothing
         enumerate All = undefined
         enumerate (FromN s n) = undefined
