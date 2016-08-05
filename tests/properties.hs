@@ -54,7 +54,7 @@ prop_rectangular (NonNegative k) (NonNegative l) = V.toList vs == ls
 
 prop_uniqueLinear :: NonNegative Int -> Bool
 prop_uniqueLinear (NonNegative n) = M.null $ M.filter ((/=1) . L.length) mp
-  where mp = M.fromListWith (L.++) [ (toLinear (0,n) (i,j), [(i,j)]) | i <- [0..n], j <- [i..n] ]
+  where mp = M.fromListWith (L.++) [ (toLinear n (i,j), [(i,j)]) | i <- [0..n], j <- [i..n] ]
 
 -- | Back and forth translation between paired and linear indices is
 -- unique.
@@ -63,7 +63,7 @@ prop_BackForth :: NonNegative Int -> Bool
 prop_BackForth (NonNegative n) = L.and xs
   where mb = M.fromList ls
         mf = M.fromList $ L.map swap ls
-        ls = [ (toLinear (0,n) (i,j), (i,j)) | i <- [0..n], j <- [i..n] ]
+        ls = [ (toLinear n (i,j), (i,j)) | i <- [0..n], j <- [i..n] ]
         xs = [ (mb M.! k == (i,j)) && (mf M.! (i,j) == k) && fromLinear n k == (i,j)
              | (k,(i,j)) <- ls ]
 

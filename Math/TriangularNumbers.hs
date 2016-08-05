@@ -48,11 +48,9 @@ upperTri (i,j) = triangularNumber $ j-i+1
 -- _
 -- _ _  the triangular number to subtract.
 -- @
---
--- TODO probably doesn't work right with non-zero base ?!
 
-toLinear :: (Int,Int) -> (Int,Int) -> Int
-toLinear (l,n) (i,j) = adr n (i,j) -- - adr n (l,n)
+toLinear :: Int -> (Int,Int) -> Int
+toLinear n (i,j) = adr n (i,j)
   where
     adr n (i,j) = (n+1)*i - triangularNumber i + j
     {-# Inline adr #-}
@@ -75,6 +73,6 @@ fromLinear n' k' = (i,j)
         n  = fromIntegral n'
         k  = fromIntegral k'
         i  = floor $ ll - rr + 1
-        j  = k' - toLinear (0,n') (i,0)
+        j  = k' - toLinear n' (i,0)
 {-# Inline fromLinear #-}
 
