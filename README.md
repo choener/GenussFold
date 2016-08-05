@@ -4,7 +4,10 @@
 
 Small set of utility functions. Currently centered around dynamic programming.
 
+*Math.TriangularNumbers* provides indexing into upper triangular tables. With
+back and forth between the index pair and the linear index.
 
+*Data.Paired.Vector*
 
 #### Contact
 
