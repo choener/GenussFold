@@ -1,5 +1,8 @@
 
-module Data.Combined.Vector where
+module Data.Combined.Vector
+  ( module Data.Combined.Vector
+  , module Data.Combined.Common
+  ) where
 
 import Data.Vector.Generic as VG
 

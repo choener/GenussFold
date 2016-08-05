@@ -60,6 +60,7 @@ test-suite properties
   default-extensions: CPP
                     , TemplateHaskell
   build-depends: base
+               , containers
                , DPutils
                , QuickCheck
                , tasty              >= 0.11
