@@ -51,11 +51,12 @@ upperTri (i,j) = triangularNumber $ j-i+1
 --
 -- TODO probably doesn't work right with non-zero base ?!
 
-subwordIndex :: (Int,Int) -> (Int,Int) -> Int
-subwordIndex (l,n) (i,j) = adr n (i,j) -- - adr n (l,n)
+toLinear :: (Int,Int) -> (Int,Int) -> Int
+toLinear (l,n) (i,j) = adr n (i,j) -- - adr n (l,n)
   where
     adr n (i,j) = (n+1)*i - triangularNumber i + j
-{-# INLINE subwordIndex #-}
+    {-# Inline adr #-}
+{-# INLINE toLinear #-}
 
 
 
@@ -67,12 +68,13 @@ subwordIndex (l,n) (i,j) = adr n (i,j) -- - adr n (l,n)
 -- (N+1)*i - (i*(i+1)/2) + j == K
 -- @
 
-linearToPair :: Int -> Int -> (Int,Int)
-linearToPair n' k' = (i,j)
+fromLinear :: Int -> Int -> (Int,Int)
+fromLinear n' k' = (i,j)
   where ll = (2*n+1) / 2
         rr = sqrt $ ((2*(n+1)+1) / 2)^2 - 2*k
         n  = fromIntegral n'
         k  = fromIntegral k'
         i  = floor $ ll - rr + 1
-        j  = k' - subwordIndex (0,n') (i,0)
+        j  = k' - toLinear (0,n') (i,0)
+{-# Inline fromLinear #-}
 
