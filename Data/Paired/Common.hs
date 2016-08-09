@@ -1,9 +1,12 @@
 
-module Data.Combined.Common where
+module Data.Paired.Common where
 
 
 
 -- | Shall we combine elements on the main diagonal as well?
+--
+-- If we choose @NoDiag@, we deal with upper triangular matrices that are
+-- effectively one element smaller.
 
 data OnDiag = OnDiag | NoDiag
   deriving (Eq)

@@ -1,13 +1,15 @@
 
 -- | 
 
-module Data.Combined.Foldable where
+module Data.Paired.Foldable where
 
 import Data.IntMap as IM
 import Data.Foldable as F
 import Data.List as L
+import Control.Arrow ((***))
 
-import Data.Combined.Common
+import Data.Paired.Common
+import Math.TriangularNumbers
 
 
 
@@ -16,10 +18,7 @@ import Data.Combined.Common
 -- all ordered pairs with @i<j@ (if @NoDiag@onal elements), or @i<=j@ (if
 -- @OnDiag@onal elements).
 --
--- In particular, we make sure that we access the elements in the input @t
--- a@ structure lazily. Assuming that the resulting list is forced at some
--- point, this should make sure that we do not do useless work in
--- evaluating elements of the input that are never used.
+-- @upperTri@ will force the spine of @t a@.
 --
 -- This is important if the @Enumerate@ type is set to @FromN k n@. We
 -- start at the @k@th element, and produce @n@ elements.
@@ -30,13 +29,19 @@ upperTri
   -> Enumerate
   -> t a
   -> (IntMap a, Int, [(a,a)])
-upperTri d e xs' = enumerate e
+upperTri d e xs' = undefined $ initEnum e d
   where xs   = F.toList xs'
         ys   = L.unfoldr go undefined
         imp  = undefined
         go _ = Nothing
-        enumerate All = undefined
-        enumerate (FromN s n) = undefined
+        -- Initialize the enumeration at the correct pair @(i,j)@. From
+        -- then on we can @take@ the correct number of elements, or stream
+        -- all of them.
+        initEnum All OnDiag = (0,0)
+        initEnum All NoDiag = (0,1)
+        initEnum (FromN s k) OnDiag = fromLinear sz s
+        initEnum (FromN s k) NoDiag = id *** (+1) $ fromLinear (sz-1) s
+        sz = F.length xs'
 
 {-
 upperTriVG d as = (z, unfoldrN z go (0,if d == OnDiag then 0 else 1))

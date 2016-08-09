@@ -1,12 +1,12 @@
 
-module Data.Combined.Vector
-  ( module Data.Combined.Vector
-  , module Data.Combined.Common
+module Data.Paired.Vector
+  ( module Data.Paired.Vector
+  , module Data.Paired.Common
   ) where
 
 import Data.Vector.Generic as VG
 
-import Data.Combined.Common
+import Data.Paired.Common
 
 
 

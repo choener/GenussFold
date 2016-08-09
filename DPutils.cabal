@@ -27,9 +27,9 @@ extra-source-files:
 
 Library
   Exposed-modules:
-    Data.Combined.Common
-    Data.Combined.Foldable
-    Data.Combined.Vector
+    Data.Paired.Common
+    Data.Paired.Foldable
+    Data.Paired.Vector
     Math.TriangularNumbers
   build-depends: base                     >= 4.7    &&  < 5.0
                , containers
