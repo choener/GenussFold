@@ -77,8 +77,9 @@ library
                , vector             >= 0.11   &&  < 0.12
                --
                , ADPfusion          == 0.5.2.*
+               , DPutils            == 0.0.0.*
                , OrderedBits        == 0.0.1.*
-               , PrimitiveArray     == 0.7.0.*
+               , PrimitiveArray     == 0.7.1.*
 
   exposed-modules:
     ADP.Fusion.Subword

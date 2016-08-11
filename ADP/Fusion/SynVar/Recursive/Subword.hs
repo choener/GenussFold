@@ -7,6 +7,5 @@ import Data.Vector.Fusion.Util (delay_inline)
 import Debug.Trace
 import Prelude hiding (map)
 
-import ADP.Fusion.Base
-import ADP.Fusion.SynVar.Recursive.Type
-import ADP.Fusion.SynVar.Backtrack
+import ADP.Fusion.Core
+

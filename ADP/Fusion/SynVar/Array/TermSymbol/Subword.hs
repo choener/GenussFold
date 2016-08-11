@@ -16,11 +16,8 @@ import Prelude hiding (map,mapM)
 
 import Data.PrimitiveArray hiding (map)
 
-import ADP.Fusion.Base
+import ADP.Fusion.Core
 import ADP.Fusion.Base.Subword
-import ADP.Fusion.SynVar.Array.Type
-import ADP.Fusion.SynVar.Backtrack
-import ADP.Fusion.SynVar.TableWrap
 
 
 

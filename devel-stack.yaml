@@ -7,6 +7,8 @@ packages:
   extra-dep: true
 - location: ../Lib-ADPfusion
   extra-dep: true
+- location: ../Lib-DPutils
+  extra-dep: true
 
 extra-deps:
 - BenchmarkHistory-0.0.0.2

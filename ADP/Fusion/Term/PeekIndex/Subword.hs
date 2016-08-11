@@ -7,9 +7,8 @@ import Prelude hiding (map)
 
 import Data.PrimitiveArray hiding (map)
 
-import ADP.Fusion.Base
+import ADP.Fusion.Core
 import ADP.Fusion.Base.Subword
-import ADP.Fusion.Term.PeekIndex.Type
 
 
 

@@ -6,10 +6,10 @@
 -- write context-free grammars on strings.
 
 module ADP.Fusion.Subword
-  ( module ADP.Fusion
+  ( module ADP.Fusion.Core
   ) where
 
-import ADP.Fusion
+import ADP.Fusion.Core
 import ADP.Fusion.Base.Subword
 import ADP.Fusion.SynVar.Array.TermSymbol.Subword
 import ADP.Fusion.SynVar.Indices.Subword
