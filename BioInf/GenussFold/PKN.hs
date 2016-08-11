@@ -14,7 +14,7 @@ import qualified Data.Vector.Fusion.Stream.Monadic as SM
 import qualified Data.Vector.Unboxed as VU
 import           Text.Printf
 
-import           ADP.Fusion
+import           ADP.Fusion.Subword
 import           Data.PrimitiveArray as PA hiding (map)
 
 import           FormalLanguage
@@ -116,8 +116,8 @@ pknPairMax k inp = (d, take k bs) where
   bs = runInsideBacktrack i (Z:.t:.u:.v)
 {-# NOINLINE pknPairMax #-}
 
-type X = ITbl Id Unboxed EmptyOk (Subword I) Int
-type T = ITbl Id Unboxed (Z:.EmptyOk:.EmptyOk) (Z:.Subword I:.Subword I) Int
+type X = TwITbl Id Unboxed EmptyOk (Subword I) Int
+type T = TwITbl Id Unboxed (Z:.EmptyOk:.EmptyOk) (Z:.Subword I:.Subword I) Int
 
 runInsideForward :: VU.Vector Char -> Z:.X:.T:.T
 runInsideForward i = mutateTablesWithHints (Proxy :: Proxy MonotoneMCFG)
@@ -131,6 +131,8 @@ runInsideForward i = mutateTablesWithHints (Proxy :: Proxy MonotoneMCFG)
 {-# NoInline runInsideForward #-}
 
 runInsideBacktrack :: VU.Vector Char -> Z:.X:.T:.T -> [[String]]
+runInsideBacktrack = undefined
+{-
 runInsideBacktrack i (Z:.t:.u:.v) = unId $ axiom b
   where !(Z:.b:._:._) = gPKN (bpmax <|| pretty)
                           (toBacktrack t (undefined :: Id a -> Id a))
@@ -138,5 +140,6 @@ runInsideBacktrack i (Z:.t:.u:.v) = unId $ axiom b
                           (toBacktrack v (undefined :: Id a -> Id a))
                           (chr i)
                           (chr i)
+-}
 {-# NoInline runInsideBacktrack #-}
 

@@ -1,15 +1,19 @@
 
-resolver: lts-5.10
+resolver: lts-6.5
 
 packages:
 - '.'
-- location: ../Lib-ADPfusion/
+- location: ../Lib-ADPfusion
   extra-dep: true
-- location: ../Lib-FormalGrammars/
+- location: ../Lib-ADPfusionSubword
   extra-dep: true
-- location: ../Lib-OrderedBits/
+- location: ../Lib-FormalGrammars
   extra-dep: true
-- location: ../Lib-PrimitiveArray/
+- location: ../Lib-OrderedBits
+  extra-dep: true
+- location: ../Lib-PrimitiveArray
+  extra-dep: true
+- location: ../Lib-DPutils
   extra-dep: true
 
 extra-deps:
