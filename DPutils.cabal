@@ -16,6 +16,15 @@ Synopsis:       utilities for DP
 Description:
                 Small set of utility functions
                 .
+                @Math.TriangularNumbers@ provides from/to functions for
+                indexing into triangular tables.
+                .
+                @Data.Paired.*@ modules to pair up data points. Either in
+                upper-triangular form, or rectangular form.
+                .
+                @pipes@ extensions in @Pipes.Parallel@ for parallelism and
+                consumption of paired data points.
+                .
 
 
 
@@ -31,10 +40,14 @@ Library
     Data.Paired.Foldable
     Data.Paired.Vector
     Math.TriangularNumbers
-  build-depends: base                     >= 4.7    &&  < 5.0
+    Pipes.Parallel
+  build-depends: base             >= 4.7    &&  < 5.0
                , containers
-               , QuickCheck               >= 2.7
-               , vector                   >= 0.10
+               , kan-extensions   >= 4.0    &&  < 5.0
+               , parallel         >= 3.0    &&  < 4.0
+               , pipes            >= 4.0    &&  < 4.3
+               , QuickCheck       >= 2.7
+               , vector           >= 0.10   &&  < 0.12
   default-extensions: BangPatterns
                     , ScopedTypeVariables
                     , FlexibleContexts
