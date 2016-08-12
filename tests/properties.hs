@@ -10,7 +10,7 @@ import Test.Tasty
 import Test.Tasty.QuickCheck as QC
 import Test.Tasty.TH
 
-import Data.Combined.Vector
+import Data.Paired.Vector
 import Math.TriangularNumbers
 
 
