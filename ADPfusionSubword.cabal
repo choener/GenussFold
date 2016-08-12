@@ -372,9 +372,7 @@ test-suite properties
   main-is:
     properties.hs
   other-modules:
-    QuickCheck.Common
-    QuickCheck.Point
-    QuickCheck.Set
+    -- QuickCheck.Common
     QuickCheck.Subword
   ghc-options:
     -threaded -rtsopts -with-rtsopts=-N
@@ -387,6 +385,7 @@ test-suite properties
                     , FlexibleContexts
                     , FlexibleInstances
                     , MultiParamTypeClasses
+                    , ScopedTypeVariables
                     , TemplateHaskell
                     , TypeFamilies
                     , TypeOperators
