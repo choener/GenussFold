@@ -10,7 +10,7 @@ module ADP.Fusion.Subword
   ) where
 
 import ADP.Fusion.Core
-import ADP.Fusion.Base.Subword
+import ADP.Fusion.Core.Subword
 import ADP.Fusion.SynVar.Array.TermSymbol.Subword
 import ADP.Fusion.SynVar.Indices.Subword
 import ADP.Fusion.SynVar.Recursive.Subword

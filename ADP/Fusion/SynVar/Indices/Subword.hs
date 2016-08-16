@@ -18,7 +18,7 @@ import Debug.Trace
 import Data.PrimitiveArray hiding (map)
 
 import ADP.Fusion.Core
-import ADP.Fusion.Base.Subword
+import ADP.Fusion.Core.Subword
 
 
 

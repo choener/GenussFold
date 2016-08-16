@@ -84,7 +84,7 @@ library
   exposed-modules:
     ADP.Fusion.Subword
     --
-    ADP.Fusion.Base.Subword
+    ADP.Fusion.Core.Subword
     ADP.Fusion.SynVar.Array.TermSymbol.Subword
     ADP.Fusion.SynVar.Indices.Subword
     ADP.Fusion.SynVar.Recursive.Subword

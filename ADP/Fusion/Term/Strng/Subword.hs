@@ -12,7 +12,7 @@ import qualified Data.Vector.Generic as VG
 import           Data.PrimitiveArray
 
 import           ADP.Fusion.Core
-import           ADP.Fusion.Base.Subword
+import           ADP.Fusion.Core.Subword
 
 
 
