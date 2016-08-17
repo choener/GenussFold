@@ -11,7 +11,7 @@ Stability:      Experimental
 Category:       Data
 Build-type:     Simple
 Cabal-version:  >=1.10.0
-tested-with:    GHC == 7.8.4, GHC == 7.10.3
+tested-with:    GHC == 7.8.4, GHC == 7.10.3, GHC == 8.0.1
 Synopsis:       utilities for DP
 Description:
                 Small set of utility functions
