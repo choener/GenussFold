@@ -18,4 +18,5 @@ data Enumerate
   = All
   -- | Enumerate from a value and at most @N@ elements
   | FromN Int Int
+  deriving (Eq)
 

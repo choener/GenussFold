@@ -11,7 +11,7 @@ Stability:      Experimental
 Category:       Data
 Build-type:     Simple
 Cabal-version:  >=1.10.0
-tested-with:    GHC == 7.8.4, GHC == 7.10.3, GHC == 8.0.1
+tested-with:    GHC == 7.10.3, GHC == 8.0.1
 Synopsis:       utilities for DP
 Description:
                 Small set of utility functions
@@ -41,7 +41,7 @@ Library
     Data.Paired.Vector
     Math.TriangularNumbers
     Pipes.Parallel
-  build-depends: base             >= 4.7    &&  < 5.0
+  build-depends: base             >= 4.8    &&  < 5.0
                , containers
                , kan-extensions   >= 4.0    &&  < 6.0
                , parallel         >= 3.0    &&  < 4.0
@@ -75,6 +75,9 @@ test-suite properties
   build-depends: base
                , containers
                , DPutils
+               , kan-extensions
+               , parallel
+               , pipes
                , QuickCheck
                , tasty              >= 0.11
                , tasty-quickcheck   >= 0.8

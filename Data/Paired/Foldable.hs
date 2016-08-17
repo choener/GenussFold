@@ -7,6 +7,8 @@ import Data.IntMap as IM
 import Data.Foldable as F
 import Data.List as L
 import Control.Arrow ((***))
+import Data.Vector as V
+import Data.Vector.Generic as VG
 
 import Data.Paired.Common
 import Math.TriangularNumbers
@@ -29,11 +31,29 @@ upperTri
   -> Enumerate
   -> t a
   -> (IntMap a, Int, [(a,a)])
-upperTri d e xs' = undefined $ initEnum e d
-  where xs   = F.toList xs'
-        ys   = L.unfoldr go undefined
+upperTri d e xs' = (undefined, numElems, ys)
+  where xs   = V.fromList . F.toList $ xs'
+        ys   = L.unfoldr go $ initEnum e d
+        -- how many elements we will emit depends on enumeration and on
+        -- diagonal element counting
+        numElems
+          | All <- e       = allSize
+          | FromN s k <- e = if s+k > allSize then max 0 (allSize - s) else k
+        -- We repeat part of @go@ because we generally do not want to force
+        -- all of @xs@.
+        --
+        -- TODO if we do this right, we should consider getting rid of @xs@
+        -- and use @imp@ directly. This will, however, incur some overhead
+        -- as we then index into an @IntMap@, not a @vector@ anymore.
         imp  = undefined
-        go _ = Nothing
+        len = VG.length xs
+        allSize = len * (len + if d == OnDiag then 1 else 0) `div` 2
+        -- index into the generated vector @xs@ when generating elements
+        -- via @go@
+        go (k,l)
+          | k >= len  = Nothing
+          | l >= len  = go (k+1,k+1 + if d == OnDiag then 0 else 1)
+          | otherwise = Just ((xs VG.! k, xs VG.! l), (k,l+1))
         -- Initialize the enumeration at the correct pair @(i,j)@. From
         -- then on we can @take@ the correct number of elements, or stream
         -- all of them.

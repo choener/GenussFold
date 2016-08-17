@@ -5,20 +5,24 @@ import Data.List as L
 import Data.Map.Strict as M
 import Data.Tuple (swap)
 import Data.Vector as V
+import Debug.Trace
 import Test.QuickCheck
 import Test.Tasty
 import Test.Tasty.QuickCheck as QC
 import Test.Tasty.TH
 
-import Data.Paired.Vector
+import Data.Paired.Vector as DPV
+import Data.Paired.Foldable as DPF
 import Math.TriangularNumbers
 
 
 
+-- * Data.Paired.Vector
+
 -- |
 
-prop_upperTri_On :: NonNegative Int -> Bool
-prop_upperTri_On (NonNegative k) = V.toList vs == ls
+prop_vector_upperTri_On :: NonNegative Int -> Bool
+prop_vector_upperTri_On (NonNegative k) = V.toList vs == ls
   where vs = snd $ upperTriVG OnDiag v
         ls = [ (a,b)
              | as@(a:_) <- L.init . L.tails $ V.toList v
@@ -28,8 +32,8 @@ prop_upperTri_On (NonNegative k) = V.toList vs == ls
 
 -- |
 
-prop_upperTri_No :: NonNegative Int -> Bool
-prop_upperTri_No (NonNegative k) = V.toList vs == ls
+prop_vector_upperTri_No :: NonNegative Int -> Bool
+prop_vector_upperTri_No (NonNegative k) = V.toList vs == ls
   where vs = snd $ upperTriVG NoDiag v
         ls = [ (a,b)
              | (a:as) <- L.init . L.tails $ V.toList v
@@ -39,8 +43,8 @@ prop_upperTri_No (NonNegative k) = V.toList vs == ls
 
 -- |
 
-prop_rectangular :: NonNegative Int -> NonNegative Int -> Bool
-prop_rectangular (NonNegative k) (NonNegative l) = V.toList vs == ls
+prop_vector_rectangular :: NonNegative Int -> NonNegative Int -> Bool
+prop_vector_rectangular (NonNegative k) (NonNegative l) = V.toList vs == ls
   where vs = snd $ rectangularVG as bs
         ls = [ (a,b)
              | a <- V.toList as
@@ -48,6 +52,38 @@ prop_rectangular (NonNegative k) (NonNegative l) = V.toList vs == ls
              ]
         as = V.enumFromTo 0 k
         bs = V.enumFromTo 0 l
+
+
+
+-- * Data.Paired.Foldable
+
+prop_foldable_upperTri_OnAll :: NonNegative Int -> Bool
+prop_foldable_upperTri_OnAll (NonNegative k)
+  | chk       = True
+  | otherwise = traceShow (ls,vs) False
+  where (_,_,vs) = DPF.upperTri OnDiag All xs
+        ls = [ (a,b)
+             | as@(a:_) <- L.init . L.tails $ xs
+             , b <- as
+             ]
+        xs = [ 0 .. k-1 ]
+        chk = vs == ls
+
+prop_foldable_upperTri_NoAll :: NonNegative Int -> Bool
+prop_foldable_upperTri_NoAll (NonNegative k)
+  | chk       = True
+  | otherwise = traceShow (ls,vs) False
+  where (_,_,vs) = DPF.upperTri NoDiag All xs
+        ls = [ (a,b)
+             | (a:as) <- L.init . L.tails $ xs
+             , b <- as
+             ]
+        xs = [ 0 .. k-1 ]
+        chk = vs == ls
+
+
+
+-- * Math.TriangularNumbers
 
 -- | Test that each index pair @(i,j)@ is assigned a unique linear index
 -- @k@ given @0 <= i <= j <= n@.
