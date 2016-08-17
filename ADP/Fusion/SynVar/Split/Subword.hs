@@ -33,7 +33,7 @@ instance
   ) => MkStream m (ls :!: Split uId Fragment (TwITbl m arr c j x)) (Subword I) where
   mkStream (ls :!: Split _) (IStatic ()) hh (Subword (i:.j))
     = map (\s -> let RiSwI l = getIdx s
-                 in  ElmSplitITbl Proxy () (RiSwI j) s)
+                 in  ElmSplitITbl Proxy () (RiSwI j) s (subword l j))
     $ mkStream ls (IVariable ()) hh (delay_inline Subword (i:.j)) -- TODO (see TODO in @Split@) - minSize c))
   mkStream (ls :!: Split _) (IVariable ()) hh (Subword (i:.j))
     = flatten mk step $ mkStream ls (IVariable ()) hh (delay_inline Subword (i:.j)) -- TODO (see above) - minSize c))
@@ -41,7 +41,7 @@ instance
           step (s:.z) | z >= 0 = do let RiSwI k = getIdx s
                                         l       = j - z
                                         kl      = subword k l
-                                    return $ Yield (ElmSplitITbl Proxy () (RiSwI l) s) (s:. z-1)
+                                    return $ Yield (ElmSplitITbl Proxy () (RiSwI l) s kl) (s:. z-1)
                       | otherwise = return $ Done
           {-# Inline [0] mk   #-}
           {-# Inline [0] step #-}
@@ -59,7 +59,7 @@ instance
   mkStream (ls :!: Split (TW (ITbl _ _ (_:.c) t) _)) (IStatic ()) hh (Subword (i:.j))
     = map (\s -> let RiSwI l = getIdx s
                      fmbkm :: mix = collectIx (Proxy :: Proxy uId) s :. subword l j
-                 in  ElmSplitITbl Proxy (t ! fmbkm) (RiSwI j) s)
+                 in  ElmSplitITbl Proxy (t ! fmbkm) (RiSwI j) s (subword l j))
     $ mkStream ls (IVariable ()) hh (delay_inline Subword (i:.j - minSize c))
   mkStream (ls :!: Split (TW (ITbl _ _ (_:.c) t) _)) (IVariable ()) hh (Subword (i:.j))
     = flatten mk step $ mkStream ls (IVariable ()) hh (delay_inline Subword (i:.j - minSize c))
@@ -68,7 +68,7 @@ instance
                                         l            = j - z
                                         kl           = subword k l
                                         fmbkm :: mix = collectIx (Proxy :: Proxy uId) s :. kl
-                                    return $ Yield (ElmSplitITbl Proxy (t ! fmbkm) (RiSwI l) s) (s:. z-1)
+                                    return $ Yield (ElmSplitITbl Proxy (t ! fmbkm) (RiSwI l) s kl) (s:. z-1)
                       | otherwise = return $ Done
           {-# Inline [0] mk   #-}
           {-# Inline [0] step #-}
@@ -85,7 +85,7 @@ instance
   ) => MkStream mB (ls :!: Split uId Fragment (TwITblBt arr c j x mF mB r)) (Subword I) where
   mkStream (ls :!: Split (TW (BtITbl _ _) _)) (IStatic ()) hh (Subword (i:.j))
     = map (\s -> let RiSwI l = getIdx s
-                 in  ElmSplitBtITbl Proxy () (RiSwI j) s)
+                 in  ElmSplitBtITbl Proxy () (RiSwI j) s (subword l j))
     $ mkStream ls (IVariable ()) hh (delay_inline Subword (i:.j)) -- TODO (see TODO in @Split@) - minSize c))
   mkStream (ls :!: Split _) (IVariable ()) hh (Subword (i:.j))
     = flatten mk step $ mkStream ls (IVariable ()) hh (delay_inline Subword (i:.j)) -- TODO (see above) - minSize c))
@@ -93,7 +93,7 @@ instance
           step (s:.z) | z >= 0 = do let RiSwI k = getIdx s
                                         l       = j - z
                                         kl      = subword k l
-                                    return $ Yield (ElmSplitBtITbl Proxy () (RiSwI l) s) (s:. z-1)
+                                    return $ Yield (ElmSplitBtITbl Proxy () (RiSwI l) s kl) (s:. z-1)
                       | otherwise = return $ Done
           {-# Inline [0] mk   #-}
           {-# Inline [0] step #-}
@@ -113,7 +113,7 @@ instance
                       lj           = subword l j
                       fmbkm :: mix = collectIx (Proxy :: Proxy uId) s :. lj
                       (_,hhhh)     = bounds t -- This is an ugly hack, but we need a notation of higher bound from somewhere
-                  in  bt hhhh fmbkm >>= \ ~bb -> return $ ElmSplitBtITbl Proxy (t ! fmbkm,bb) (RiSwI j) s)
+                  in  bt hhhh fmbkm >>= \ ~bb -> return $ ElmSplitBtITbl Proxy (t ! fmbkm,bb) (RiSwI j) s lj)
     $ mkStream ls (IVariable ()) hh (delay_inline Subword (i:.j - minSize c))
   mkStream (ls :!: Split (TW (BtITbl (_:.c) t) bt)) (IVariable ()) hh (Subword (i:.j))
     = flatten mk step $ mkStream ls (IVariable ()) hh (delay_inline Subword (i:.j))
@@ -123,7 +123,7 @@ instance
                                         kl           = subword k l
                                         fmbkm :: mix = collectIx (Proxy :: Proxy uId) s :. kl
                                         (_,hhhh)     = bounds t -- same ugly hack
-                                    bt hhhh fmbkm >>= \ ~bb -> return $ Yield (ElmSplitBtITbl Proxy (t ! fmbkm,bb) (RiSwI l) s) (s:. z-1)
+                                    bt hhhh fmbkm >>= \ ~bb -> return $ Yield (ElmSplitBtITbl Proxy (t ! fmbkm,bb) (RiSwI l) s kl) (s:. z-1)
                       | otherwise = return $ Done
           {-# Inline [0] mk   #-}
           {-# Inline [0] step #-}
