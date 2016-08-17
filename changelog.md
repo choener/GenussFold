@@ -2,7 +2,9 @@
 -------
 
 - Math.TriangularNumbers collects functions for triangular numbers and indexing
-- Data.Combined.Foldable
+- Data.Paired.Foldable for upper triangular pairings [work in progress]
+- renamed modules into new Paired hierarchy
+- helper functions for parallelisation within a pipes pipe
 
 0.0.0.1
 -------
