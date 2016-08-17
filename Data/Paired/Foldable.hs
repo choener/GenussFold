@@ -32,8 +32,9 @@ upperTri
   -> t a
   -> (IntMap a, Int, [(a,a)])
 upperTri d e xs' = (undefined, numElems, ys)
-  where xs   = V.fromList . F.toList $ xs'
-        ys   = L.unfoldr go $ initEnum e d
+  where -- xs   = V.fromList . F.toList $ xs'
+        ys   = case e of {All -> id ; FromN _ s -> L.take s}
+             . L.unfoldr go $ initEnum e d
         -- how many elements we will emit depends on enumeration and on
         -- diagonal element counting
         numElems
@@ -45,23 +46,41 @@ upperTri d e xs' = (undefined, numElems, ys)
         -- TODO if we do this right, we should consider getting rid of @xs@
         -- and use @imp@ directly. This will, however, incur some overhead
         -- as we then index into an @IntMap@, not a @vector@ anymore.
-        imp  = undefined
-        len = VG.length xs
-        allSize = len * (len + if d == OnDiag then 1 else 0) `div` 2
+        imp = IM.fromList . L.filter (inRange . fst) . L.zip [0..] $ F.toList xs'
+        -- TODO combine with @imp@, otherwise we'll force the spine of the
+        -- list!
+        len = F.length xs'
+        allSize = len * (len + if d == OnDiag then 1 else -1) `div` 2
+        -- with minL we know the starting index for the 1st element, with
+        -- strtR the starting index for the 2nd element. With maxL we know
+        -- the stopping index for the 1st element.
+        (minL,strtR) = case e of { All -> (0,len-1) ; FromN s k -> fromLinear (len-1) s     }
+        (maxL,stopR) = case e of { All -> (0,len-1) ; FromN s k -> fromLinear (len-1) (s+k) }
+        strtZ = case e of { All -> len-1 ; FromN s k -> min (len-1) (strtR+k) }
+        stopA = case e of { All -> 0 ; FromN s k -> max 0 (stopR-k) }
+        inRange z = True
+        {-
+        inRange z =  minL  <= z && z <= maxL
+                  || strtR <= z && z <= strtZ
+                  || stopA <= z && z <= stopR
+                  -}
         -- index into the generated vector @xs@ when generating elements
         -- via @go@
         go (k,l)
           | k >= len  = Nothing
           | l >= len  = go (k+1,k+1 + if d == OnDiag then 0 else 1)
-          | otherwise = Just ((xs VG.! k, xs VG.! l), (k,l+1))
+          | otherwise = Just ((imp IM.! k, imp IM.! l), (k,l+1))
         -- Initialize the enumeration at the correct pair @(i,j)@. From
         -- then on we can @take@ the correct number of elements, or stream
         -- all of them.
         initEnum All OnDiag = (0,0)
         initEnum All NoDiag = (0,1)
-        initEnum (FromN s k) OnDiag = fromLinear sz s
-        initEnum (FromN s k) NoDiag = id *** (+1) $ fromLinear (sz-1) s
-        sz = F.length xs'
+        initEnum (FromN s k) OnDiag
+          | s >= allSize = (len,len)
+          | otherwise    = fromLinear (len-1) s
+        initEnum (FromN s k) NoDiag
+          | s >= allSize = (len,len)
+          | otherwise    = id *** (+1) $ fromLinear (len-2) s
 
 {-
 upperTriVG d as = (z, unfoldrN z go (0,if d == OnDiag then 0 else 1))

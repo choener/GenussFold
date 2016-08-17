@@ -57,8 +57,8 @@ prop_vector_rectangular (NonNegative k) (NonNegative l) = V.toList vs == ls
 
 -- * Data.Paired.Foldable
 
-prop_foldable_upperTri_OnAll :: NonNegative Int -> Bool
-prop_foldable_upperTri_OnAll (NonNegative k)
+prop_foldable_upperTri_On_All :: NonNegative Int -> Bool
+prop_foldable_upperTri_On_All (NonNegative n)
   | chk       = True
   | otherwise = traceShow (ls,vs) False
   where (_,_,vs) = DPF.upperTri OnDiag All xs
@@ -66,11 +66,25 @@ prop_foldable_upperTri_OnAll (NonNegative k)
              | as@(a:_) <- L.init . L.tails $ xs
              , b <- as
              ]
-        xs = [ 0 .. k-1 ]
+        xs = [ 0 .. n-1 ]
         chk = vs == ls
 
-prop_foldable_upperTri_NoAll :: NonNegative Int -> Bool
-prop_foldable_upperTri_NoAll (NonNegative k)
+prop_foldable_upperTri_On_FromN :: (NonNegative Int, NonNegative Int, NonNegative Int) -> Bool
+prop_foldable_upperTri_On_FromN (NonNegative n, NonNegative k, NonNegative s)
+  | chk       = True
+  | otherwise = traceShow (ls,vs) False
+  where (_,_,vs) = DPF.upperTri OnDiag (FromN k s) xs
+        ls = L.take s
+           . L.drop k
+           $ [ (a,b)
+             | as@(a:_) <- L.init . L.tails $ xs
+             , b <- as
+             ]
+        xs = [ 0 .. n-1 ]
+        chk = vs == ls
+
+prop_foldable_upperTri_No_All :: NonNegative Int -> Bool
+prop_foldable_upperTri_No_All (NonNegative k)
   | chk       = True
   | otherwise = traceShow (ls,vs) False
   where (_,_,vs) = DPF.upperTri NoDiag All xs
@@ -79,6 +93,20 @@ prop_foldable_upperTri_NoAll (NonNegative k)
              , b <- as
              ]
         xs = [ 0 .. k-1 ]
+        chk = vs == ls
+
+prop_foldable_upperTri_No_FromN :: (NonNegative Int, NonNegative Int, NonNegative Int) -> Bool
+prop_foldable_upperTri_No_FromN (NonNegative n, NonNegative k, NonNegative s)
+  | chk       = True
+  | otherwise = traceShow (ls,vs) False
+  where (_,_,vs) = DPF.upperTri NoDiag (FromN k s) xs
+        ls = L.take s
+           . L.drop k
+           $ [ (a,b)
+             | (a:as) <- L.init . L.tails $ xs
+             , b <- as
+             ]
+        xs = [ 0 .. n-1 ]
         chk = vs == ls
 
 
