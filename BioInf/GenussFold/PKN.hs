@@ -130,9 +130,10 @@ runInsideForward i = mutateTablesWithHints (Proxy :: Proxy MonotoneMCFG)
   where n = VU.length i
 {-# NoInline runInsideForward #-}
 
+type X' = TwITblBt Unboxed EmptyOk (Subword I) Int Id Id [String]
+type T' = TwITblBt Unboxed (Z:.EmptyOk:.EmptyOk) (Z:.Subword I:.Subword I) Int Id Id [String]
+
 runInsideBacktrack :: VU.Vector Char -> Z:.X:.T:.T -> [[String]]
-runInsideBacktrack = undefined
-{-
 runInsideBacktrack i (Z:.t:.u:.v) = unId $ axiom b
   where !(Z:.b:._:._) = gPKN (bpmax <|| pretty)
                           (toBacktrack t (undefined :: Id a -> Id a))
@@ -140,6 +141,6 @@ runInsideBacktrack i (Z:.t:.u:.v) = unId $ axiom b
                           (toBacktrack v (undefined :: Id a -> Id a))
                           (chr i)
                           (chr i)
--}
+                          :: Z:.X':.T':.T'
 {-# NoInline runInsideBacktrack #-}
 
