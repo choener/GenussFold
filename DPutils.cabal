@@ -43,7 +43,7 @@ Library
     Pipes.Parallel
   build-depends: base             >= 4.7    &&  < 5.0
                , containers
-               , kan-extensions   >= 4.0    &&  < 5.0
+               , kan-extensions   >= 4.0    &&  < 6.0
                , parallel         >= 3.0    &&  < 4.0
                , pipes            >= 4.0    &&  < 4.3
                , QuickCheck       >= 2.7
