@@ -58,6 +58,7 @@ upperTri d e xs' = (undefined, numElems, ys)
         (maxL,stopR) = case e of { All -> (0,len-1) ; FromN s k -> fromLinear (len-1) (s+k) }
         strtZ = case e of { All -> len-1 ; FromN s k -> min (len-1) (strtR+k) }
         stopA = case e of { All -> 0 ; FromN s k -> max 0 (stopR-k) }
+        -- TODO we have a lot of redundant switching around All/FromN On/No
         inRange z = True
         {-
         inRange z =  minL  <= z && z <= maxL
