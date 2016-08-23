@@ -2,6 +2,7 @@
 module Data.Bijection.HashMap
   ( module Data.Bijection.Class
   , H.HashMap
+  , BimapHashMap
   ) where
 
 import           Control.DeepSeq
@@ -16,6 +17,8 @@ import qualified Data.HashMap.Strict as H
 import           Data.Bijection.Class
 
 
+
+type BimapHashMap d c = Bimap (H.HashMap d c) (H.HashMap c d)
 
 instance (Eq d, Hashable d) => DomCod (H.HashMap d c) where
   type Dom (H.HashMap d c) = d

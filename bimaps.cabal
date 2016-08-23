@@ -102,8 +102,10 @@ test-suite properties
     tests
   default-language:
     Haskell2010
-  default-extensions: TemplateHaskell
+  default-extensions: BangPatterns
                     , ScopedTypeVariables
+                    , TemplateHaskell
+                    , TypeFamilies
   build-depends: base
                , bimaps
                , QuickCheck                   >= 2.7  &&  < 2.9

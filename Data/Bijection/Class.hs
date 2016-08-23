@@ -9,6 +9,7 @@ import Data.Serialize
 import Data.Tuple (swap)
 import GHC.Generics
 import Prelude (Bool,Maybe,map,($),Int, maybe, id, (.), seq, Read, Show, Eq, return)
+import Data.List (foldl')
 
 
 
@@ -73,30 +74,31 @@ null (Bimap l r) = nullDC l
 size :: DomCod l => Bimap l r -> Int
 size (Bimap l r) = sizeDC l
 
--- |
---
--- This function has a memory leak. We go over the input list twice.
+-- | Given a list of pairs @[(x,y)]@, turn it into a bimap @(x->y, y->x)@.
 
 fromList :: DomCodCnt l r => [(Dom l, Dom r)] -> Bimap l r
-fromList xs = Bimap (fromListDC xs) (fromListDC $ map swap xs)
+fromList = foldl' insert empty
 
 toList :: DomCodCnt l r => Bimap l r -> [(Dom l, Dom r)]
 toList (Bimap l r) = toListDC l
 
 insert :: (DomCodCnt l r) => Bimap l r -> (Dom l, Cod l) -> Bimap l r
 insert (Bimap l r) (u,v) = Bimap (insertDC l (u,v)) (insertDC r (v,u))
+{-# Inline insert #-}
 
 deleteByL :: DomCodCnt l r => Bimap l r -> Dom l -> Bimap l r
 deleteByL b@(Bimap l r) k = maybe b id $ do
   (k',l') <- deleteDC l k
   (_ ,r') <- deleteDC r k'
   return $ Bimap l' r'
+{-# Inline deleteByL #-}
 
 deleteByR :: DomCodCnt l r => Bimap l r -> Dom r -> Bimap l r
 deleteByR b@(Bimap l r) k = maybe b id $ do
   (k',r') <- deleteDC r k
   (_ ,l') <- deleteDC l k'
   return $ Bimap l' r'
+{-# Inline deleteByR #-}
 
 findWithDefaultL :: DomCodCnt l r => Cod l -> Bimap l r -> Dom l -> Cod l
 findWithDefaultL def = (maybe def id . ) . lookupL

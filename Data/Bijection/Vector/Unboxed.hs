@@ -4,6 +4,7 @@
 module Data.Bijection.Vector.Unboxed
   ( module Data.Bijection.Class
   , Vector
+  , Bi
   ) where
 
 import           Control.Applicative ((<$>))
@@ -21,6 +22,8 @@ import qualified Data.Vector.Generic as G
 import           Data.Bijection.Class
 
 
+
+type Bi d c = Bimap (Vector d) (Vector c)
 
 instance (Unbox c) => DomCod (Vector c) where
   type Dom (Vector c) = Int
