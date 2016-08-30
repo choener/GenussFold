@@ -11,7 +11,7 @@ license-file:   LICENSE
 build-type:     Simple
 stability:      experimental
 cabal-version:  >= 1.10.0
-tested-with:    GHC == 7.8.4, GHC == 7.10.3
+tested-with:    GHC == 7.8.4, GHC == 7.10.3, GHC == 8.0.1
 synopsis:       Tree- and forest structures
 description:
                 This library provides both static and dynamic tree and forest
@@ -30,7 +30,7 @@ Extra-Source-Files:
 
 
 library
-  build-depends: base                   >= 4.7      &&  < 4.9
+  build-depends: base                   >= 4.7      &&  < 5.0
                , containers             >= 0.5      &&  < 0.6
                , fgl                    >= 5.5      &&  < 5.6
                , unordered-containers   >= 0.2      &&  < 0.3
