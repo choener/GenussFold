@@ -5,6 +5,7 @@ module Data.Bijection.HashMap
   , BimapHashMap
   ) where
 
+import           Control.Applicative ((<$>))
 import           Control.DeepSeq
 import           Data.Aeson
 import           Data.Binary
