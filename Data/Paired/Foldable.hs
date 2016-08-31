@@ -20,10 +20,16 @@ import Math.TriangularNumbers
 -- all ordered pairs with @i<j@ (if @NoDiag@onal elements), or @i<=j@ (if
 -- @OnDiag@onal elements).
 --
--- @upperTri@ will force the spine of @t a@.
+-- @upperTri@ will force the spine of @t a@ but is consumed linearly with
+-- a strict @Data.Foldable.foldl'@. Internally we keep a @Data.IntMap@ of
+-- the retained elements.
 --
 -- This is important if the @Enumerate@ type is set to @FromN k n@. We
 -- start at the @k@th element, and produce @n@ elements.
+--
+-- TODO compare @IntMap@ and @HashMap@.
+--
+-- TODO inRange is broken.
 
 upperTri
   :: (Foldable t)
@@ -32,24 +38,22 @@ upperTri
   -> t a
   -> (IntMap a, Int, [(a,a)])
 upperTri d e xs' = (undefined, numElems, ys)
-  where -- xs   = V.fromList . F.toList $ xs'
-        ys   = case e of {All -> id ; FromN _ s -> L.take s}
+  where ys   = case e of {All -> id ; FromN _ s -> L.take s}
              . L.unfoldr go $ initEnum e d
         -- how many elements we will emit depends on enumeration and on
         -- diagonal element counting
         numElems
           | All <- e       = allSize
           | FromN s k <- e = if s+k > allSize then max 0 (allSize - s) else k
-        -- We repeat part of @go@ because we generally do not want to force
-        -- all of @xs@.
-        --
-        -- TODO if we do this right, we should consider getting rid of @xs@
-        -- and use @imp@ directly. This will, however, incur some overhead
-        -- as we then index into an @IntMap@, not a @vector@ anymore.
-        imp = IM.fromList . L.filter (inRange . fst) . L.zip [0..] $ F.toList xs'
-        -- TODO combine with @imp@, otherwise we'll force the spine of the
-        -- list!
-        len = F.length xs'
+        -- Construct an intmap @imp@ of all elements in the accepted range.
+        -- At the same time, return the length or size of the foldable
+        -- container we gave as input. @xs'@ is touched only once and can
+        -- be efficiently consumed.
+        -- @
+        -- imp = IM.fromList . L.filter (inRange . fst) . L.zip [0..] $ F.toList xs'
+        -- len = F.length xs'
+        -- @
+        (!imp,!len) = F.foldl' (\(!i,!l) x -> (if inRange l then IM.insert l x i else i,l+1)) (IM.empty, 0) xs'
         allSize = len * (len + if d == OnDiag then 1 else -1) `div` 2
         -- with minL we know the starting index for the 1st element, with
         -- strtR the starting index for the 2nd element. With maxL we know
