@@ -33,11 +33,12 @@ import Math.TriangularNumbers
 
 upperTri
   :: (Foldable t)
-  => OnDiag
+  => SizeHint
+  -> OnDiag
   -> Enumerate
   -> t a
   -> (IntMap a, Int, [(a,a)])
-upperTri d e xs' = (undefined, numElems, ys)
+upperTri sz d e xs' = (undefined, numElems, ys)
   where ys   = case e of {All -> id ; FromN _ s -> L.take s}
              . L.unfoldr go $ initEnum e d
         -- how many elements we will emit depends on enumeration and on
@@ -50,11 +51,26 @@ upperTri d e xs' = (undefined, numElems, ys)
         -- container we gave as input. @xs'@ is touched only once and can
         -- be efficiently consumed.
         -- @
-        -- imp = IM.fromList . L.filter (inRange . fst) . L.zip [0..] $ F.toList xs'
-        -- len = F.length xs'
+        imp = IM.fromList . L.filter (inRange . fst) . L.zip [0..] . L.take len $ F.toList xs'
+        len = case sz of { UnknownSize -> F.length xs' ; KnownSize z -> z }
         -- @
-        (!imp,!len) = F.foldl' (\(!i,!l) x -> (if inRange l then IM.insert l x i else i,l+1)) (IM.empty, 0) xs'
+        --(!imp,!len) = F.foldl' (\(!i,!l) x -> (if inRange l then IM.insert l x i else i,l+1)) (IM.empty, 0) xs'
         allSize = len * (len + if d == OnDiag then 1 else -1) `div` 2
+        -- we need three ranges. @cMin@ and @cMax@ are the range for the
+        -- slow-moving first element in the tuple. @rMin@ and @rMax@ are
+        -- the first and last element of the range starting at @cMin@ (we
+        -- can actually start at @cMax@ but it doesn't matter).
+        -- Finally, @lMin@ and @lMax@ are the range to the left of @cMin@.
+        -- TODO OnDiag !!!
+        (lMin,lMax,cMin,cMax,rMin,rMax) = case e of
+          All -> (0, len-1, 0, len-1, 0, len-1)
+          FromN s k ->
+            let (cmin,rmin) = fromLinear (len-1) s
+                (cmax,_   ) = fromLinear (len-1) (s+k)
+                rmax = rmin+k -- if this is @>= len@ we are safe anyway.
+                lmin = if rmin+k >= len then 0 else cmin
+                lmax = if rmin+k >= len then lmin + toLinear (len-1) (cmin+1,cmin+1+rmin+k-len) else cmax
+            in  (lmin, lmax, cmin, cmax, rmin, lmax)
         -- with minL we know the starting index for the 1st element, with
         -- strtR the starting index for the 2nd element. With maxL we know
         -- the stopping index for the 1st element.
@@ -63,12 +79,10 @@ upperTri d e xs' = (undefined, numElems, ys)
         strtZ = case e of { All -> len-1 ; FromN s k -> min (len-1) (strtR+k) }
         stopA = case e of { All -> 0 ; FromN s k -> max 0 (stopR-k) }
         -- TODO we have a lot of redundant switching around All/FromN On/No
-        inRange z = True
-        {-
-        inRange z =  minL  <= z && z <= maxL
-                  || strtR <= z && z <= strtZ
-                  || stopA <= z && z <= stopR
-                  -}
+        inRange z =  lMin <= z && z <= lMax
+                  || cMin <= z && z <= cMax
+                  || rMin <= z && z <= rMax
+                  || True
         -- index into the generated vector @xs@ when generating elements
         -- via @go@
         go (k,l)

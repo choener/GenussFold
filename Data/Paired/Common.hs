@@ -20,3 +20,10 @@ data Enumerate
   | FromN Int Int
   deriving (Eq)
 
+-- | If the size of the input is known before-hand or not.
+
+data SizeHint
+  = UnknownSize
+  | KnownSize Int
+  deriving (Eq)
+
