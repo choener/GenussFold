@@ -70,7 +70,11 @@ upperTri sz d e xs
           | FromN s k <- e = if s+k > allSize then max 0 (allSize - s) else k
         -- The length of the input. With a given size hint, @xs :: t a@
         -- will only be touched once.
+#if MIN_VERSION_base(4,8,0)
         szLen = case sz of { UnknownSize -> F.length xs ; KnownSize z -> z }
+#else
+        szLen = case sz of { UnknownSize -> L.length . F.toList $ xs ; KnownSize z -> z }
+#endif
         szLn' = case d of { OnDiag -> szLen - 1 ; NoDiag -> szLen - 2 }
         -- Construct an intmap @imp@ of all elements in the accepted range.
         -- At the same time, return the length or size of the foldable

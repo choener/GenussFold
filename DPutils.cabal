@@ -49,6 +49,7 @@ Library
                , QuickCheck       >= 2.7
                , vector           >= 0.10   &&  < 0.12
   default-extensions: BangPatterns
+                    , CPP
                     , ScopedTypeVariables
                     , FlexibleContexts
   default-language:
