@@ -57,52 +57,58 @@ prop_vector_rectangular (NonNegative k) (NonNegative l) = V.toList vs == ls
 
 -- * Data.Paired.Foldable
 
-prop_foldable_upperTri_On_All :: NonNegative Int -> Bool
-prop_foldable_upperTri_On_All (NonNegative n)
+-- | Generalized upper triangular elements. We want to enumerate all
+-- elements, including those on the main diagonal.
+
+prop_foldable_upperTri_On_All :: (NonNegative Int, Bool) -> Bool
+prop_foldable_upperTri_On_All (NonNegative n, b)
   | chk       = True
   | otherwise = traceShow (ls,vs) False
-  where Right (_,_,vs) = DPF.upperTri UnknownSize OnDiag All xs
-        ls = [ (a,b)
+  where Right (_,_,vs) = DPF.upperTri (if b then KnownSize n else UnknownSize) OnDiag All xs
+        ls = [ ((a,b),(a,b))
              | as@(a:_) <- L.init . L.tails $ xs
              , b <- as
              ]
         xs = [ 0 .. n-1 ]
         chk = vs == ls
 
-prop_foldable_upperTri_On_FromN :: (NonNegative Int, NonNegative Int, NonNegative Int) -> Bool
-prop_foldable_upperTri_On_FromN (NonNegative n, NonNegative k, NonNegative s)
+-- | Only a subset of elements, starting at @k@ (counting from 0) and
+-- taking @s@ elements.
+
+prop_foldable_upperTri_On_FromN :: (NonNegative Int, NonNegative Int, NonNegative Int, Bool) -> Bool
+prop_foldable_upperTri_On_FromN (NonNegative n, NonNegative k, NonNegative s, b)
   | chk       = True
   | otherwise = traceShow (ls,vs) False
-  where Right (_,_,vs) = DPF.upperTri UnknownSize OnDiag (FromN k s) xs
+  where Right (_,_,vs) = DPF.upperTri (if b then KnownSize n else UnknownSize) OnDiag (FromN k s) xs
         ls = L.take s
            . L.drop k
-           $ [ (a,b)
+           $ [ ((a,b),(a,b))
              | as@(a:_) <- L.init . L.tails $ xs
              , b <- as
              ]
         xs = [ 0 .. n-1 ]
         chk = vs == ls
 
-prop_foldable_upperTri_No_All :: NonNegative Int -> Bool
-prop_foldable_upperTri_No_All (NonNegative k)
+prop_foldable_upperTri_No_All :: (NonNegative Int, Bool) -> Bool
+prop_foldable_upperTri_No_All (NonNegative n, b)
   | chk       = True
   | otherwise = traceShow (ls,vs) False
-  where Right (_,_,vs) = DPF.upperTri UnknownSize NoDiag All xs
-        ls = [ (a,b)
+  where Right (_,_,vs) = DPF.upperTri (if b then KnownSize n else UnknownSize) NoDiag All xs
+        ls = [ ((a,b),(a,b))
              | (a:as) <- L.init . L.tails $ xs
              , b <- as
              ]
-        xs = [ 0 .. k-1 ]
+        xs = [ 0 .. n-1 ]
         chk = vs == ls
 
-prop_foldable_upperTri_No_FromN :: (NonNegative Int, NonNegative Int, NonNegative Int) -> Bool
-prop_foldable_upperTri_No_FromN (NonNegative n, NonNegative k, NonNegative s)
+prop_foldable_upperTri_No_FromN :: (NonNegative Int, NonNegative Int, NonNegative Int, Bool) -> Bool
+prop_foldable_upperTri_No_FromN (NonNegative n, NonNegative k, NonNegative s, b)
   | chk       = True
   | otherwise = traceShow (ls,vs) False
-  where Right (_,_,vs) = DPF.upperTri UnknownSize NoDiag (FromN k s) xs
+  where Right (_,_,vs) = DPF.upperTri (if b then KnownSize n else UnknownSize) NoDiag (FromN k s) xs
         ls = L.take s
            . L.drop k
-           $ [ (a,b)
+           $ [ ((a,b),(a,b))
              | (a:as) <- L.init . L.tails $ xs
              , b <- as
              ]

@@ -1,5 +1,8 @@
 
--- | 
+-- | Efficient enumeration of subsets of triangular elements. Given a list
+-- @[1..n]@ we want to enumerate a subset @[(i,j)]@ of ordered pairs in
+-- such a way that we only have to hold the elements necessary for this
+-- subset in memory.
 
 module Data.Paired.Foldable where
 
@@ -36,10 +39,25 @@ import Math.TriangularNumbers
 upperTri
   :: (Foldable t)
   => SizeHint
+  -- ^ If the size of @t a@ is known beforehand, give the appropriate
+  -- @KnownSize n@, otherwise give @UnknownSize@. Using @UnknownSize@ will
+  -- force the complete spine of @t a@.
   -> OnDiag
+  -- ^ The enumeration will include the pairs on the main diagonal with
+  -- @OnDiag@, meaning @(i,i)@ will be included for all @i@. Otherwise,
+  -- @NoDiag@ will exclude these elements.
   -> Enumerate
+  -- ^ Either enumerate @All@ elements or enumerate the @s@ elements
+  -- starting at @k@ with @FromN k s@.
   -> t a
-  -> Either String (IntMap a, Int, [(a,a)])
+  -- ^ The foldable data structure to enumerate over.
+  -> Either String (IntMap a, Int, [((Int,Int),(a,a))])
+  -- ^ If there is any error then return @Left errorMsg@. Otherwise we have
+  -- @Right (imap, numElems, list)@. The @imap@ structure holds the subset
+  -- of elements with which we actually generate elements. @numElems@ is
+  -- the total number of elements that will be generated. This is
+  -- calculated without touch @list@. Finally, @list@ is the lazy list of
+  -- elements to be generated.
 upperTri sz d e xs
   | szLen /= readLen = Left $ printf "Expected SizeHint %d elements, but processed only %d elements!" szLen readLen
   | otherwise        = Right (imp, numElems, ys)
@@ -84,7 +102,7 @@ upperTri sz d e xs
         go (k,l)
           | k >= szLen  = Nothing
           | l >= szLen  = go (k+1,k+1 + if d == OnDiag then 0 else 1)
-          | otherwise = Just ((imp IM.! k, imp IM.! l), (k,l+1))
+          | otherwise = Just (((k,l),(imp IM.! k, imp IM.! l)), (k,l+1))
         -- Initialize the enumeration at the correct pair @(i,j)@. From
         -- then on we can @take@ the correct number of elements, or stream
         -- all of them.
