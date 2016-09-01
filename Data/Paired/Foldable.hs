@@ -10,6 +10,7 @@ import Control.Arrow ((***))
 import Data.Vector as V
 import Data.Vector.Generic as VG
 import Debug.Trace (traceShow)
+import Text.Printf
 
 import Data.Paired.Common
 import Math.TriangularNumbers
@@ -38,8 +39,10 @@ upperTri
   -> OnDiag
   -> Enumerate
   -> t a
-  -> (IntMap a, Int, [(a,a)])
-upperTri sz d e xs' = {- traceShow (lMin,lMax,cMin,cMax,rMin,rMax) -} (imp, numElems, ys)
+  -> Either String (IntMap a, Int, [(a,a)])
+upperTri sz d e xs
+  | szLen /= readLen = Left $ printf "Expected SizeHint %d elements, but processed only %d elements!" szLen readLen
+  | otherwise        = Right (imp, numElems, ys)
   where ys   = case e of {All -> id ; FromN _ s -> L.take s}
              . L.unfoldr go $ initEnum e d
         -- how many elements we will emit depends on enumeration and on
@@ -47,23 +50,21 @@ upperTri sz d e xs' = {- traceShow (lMin,lMax,cMin,cMax,rMin,rMax) -} (imp, numE
         numElems
           | All <- e       = allSize
           | FromN s k <- e = if s+k > allSize then max 0 (allSize - s) else k
+        -- The length of the input. With a given size hint, @xs :: t a@
+        -- will only be touched once.
+        szLen = case sz of { UnknownSize -> F.length xs ; KnownSize z -> z }
+        szLn' = case d of { OnDiag -> szLen - 1 ; NoDiag -> szLen - 2 }
         -- Construct an intmap @imp@ of all elements in the accepted range.
         -- At the same time, return the length or size of the foldable
-        -- container we gave as input. @xs'@ is touched only once and can
+        -- container we gave as input. @xs@ is touched only once and can
         -- be efficiently consumed.
-        -- @
-        --imp = IM.fromList . L.filter (inRange . fst) . L.zip [0..] . L.take len $ F.toList xs'
-        szLen = case sz of { UnknownSize -> F.length xs' ; KnownSize z -> z }
-        szLn' = case d of { OnDiag -> szLen - 1 ; NoDiag -> szLen - 2 }
-        -- @
-        (!imp,!readLen) = F.foldl' (\(!i,!l) x -> (if inRange l then IM.insert l x i else i,l+1)) (IM.empty, 0) xs'
+        (!imp,!readLen) = F.foldl' (\(!i,!l) x -> (if inRange l then IM.insert l x i else i,l+1)) (IM.empty, 0) xs
         allSize = szLen * (szLen + if d == OnDiag then 1 else -1) `div` 2
         -- we need three ranges. @cMin@ and @cMax@ are the range for the
         -- slow-moving first element in the tuple. @rMin@ and @rMax@ are
         -- the first and last element of the range starting at @cMin@ (we
         -- can actually start at @cMax@ but it doesn't matter).
         -- Finally, @lMin@ and @lMax@ are the range to the left of @cMin@.
-        -- TODO OnDiag !!!
         (lMin,lMax,cMin,cMax,rMin,rMax) = case e of
           All -> (0, szLen-1, 0, szLen-1, 0, szLen-1)
           FromN s k ->
@@ -73,14 +74,8 @@ upperTri sz d e xs' = {- traceShow (lMin,lMax,cMin,cMax,rMin,rMax) -} (imp, numE
                 lmin = if rmin+k >= szLen then 0 else cmin
                 lmax = if rmin+k >= szLen then lmin + toLinear szLn' (cmin+1,cmin+1+rmin+k-szLn') else cmax
             in  (lmin, lmax, cmin, cmax, rmin, rmax)
-        -- with minL we know the starting index for the 1st element, with
-        -- strtR the starting index for the 2nd element. With maxL we know
-        -- the stopping index for the 1st element.
-        (minL,strtR) = case e of { All -> (0,szLn') ; FromN s k -> fromLinear szLn' s     }
-        (maxL,stopR) = case e of { All -> (0,szLn') ; FromN s k -> fromLinear szLn' (s+k) }
-        strtZ = case e of { All -> szLn' ; FromN s k -> min szLn' (strtR+k) }
-        stopA = case e of { All -> 0 ; FromN s k -> max 0 (stopR-k) }
-        -- TODO we have a lot of redundant switching around All/FromN On/No
+        -- Determine if an element at linear index @z@ is in the range to
+        -- be consumed.
         inRange z =  lMin <= z && z <= lMax
                   || cMin <= z && z <= cMax
                   || rMin <= z && z <= rMax
@@ -101,15 +96,4 @@ upperTri sz d e xs' = {- traceShow (lMin,lMax,cMin,cMax,rMin,rMax) -} (imp, numE
         initEnum (FromN s k) NoDiag
           | s >= allSize = (szLen,szLen)
           | otherwise    = id *** (+1) $ fromLinear szLn' s
-
-{-
-upperTriVG d as = (z, unfoldrN z go (0,if d == OnDiag then 0 else 1))
-  where la = VG.length as
-        z  = la * (la + if d == OnDiag then 1 else 0) `div` 2
-        go (k,l)
-          | k >= la   = Nothing
-          | l >= la   = go (k+1,k+1 + if d == OnDiag then 0 else 1)
-          | otherwise = Just ((as `VG.unsafeIndex` k, as `VG.unsafeIndex` l), (k,l+1))
-{-# Inline upperTriVG #-}
--}
 

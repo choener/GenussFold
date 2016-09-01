@@ -61,7 +61,7 @@ prop_foldable_upperTri_On_All :: NonNegative Int -> Bool
 prop_foldable_upperTri_On_All (NonNegative n)
   | chk       = True
   | otherwise = traceShow (ls,vs) False
-  where (_,_,vs) = DPF.upperTri UnknownSize OnDiag All xs
+  where Right (_,_,vs) = DPF.upperTri UnknownSize OnDiag All xs
         ls = [ (a,b)
              | as@(a:_) <- L.init . L.tails $ xs
              , b <- as
@@ -73,7 +73,7 @@ prop_foldable_upperTri_On_FromN :: (NonNegative Int, NonNegative Int, NonNegativ
 prop_foldable_upperTri_On_FromN (NonNegative n, NonNegative k, NonNegative s)
   | chk       = True
   | otherwise = traceShow (ls,vs) False
-  where (_,_,vs) = DPF.upperTri UnknownSize OnDiag (FromN k s) xs
+  where Right (_,_,vs) = DPF.upperTri UnknownSize OnDiag (FromN k s) xs
         ls = L.take s
            . L.drop k
            $ [ (a,b)
@@ -87,7 +87,7 @@ prop_foldable_upperTri_No_All :: NonNegative Int -> Bool
 prop_foldable_upperTri_No_All (NonNegative k)
   | chk       = True
   | otherwise = traceShow (ls,vs) False
-  where (_,_,vs) = DPF.upperTri UnknownSize NoDiag All xs
+  where Right (_,_,vs) = DPF.upperTri UnknownSize NoDiag All xs
         ls = [ (a,b)
              | (a:as) <- L.init . L.tails $ xs
              , b <- as
@@ -99,7 +99,7 @@ prop_foldable_upperTri_No_FromN :: (NonNegative Int, NonNegative Int, NonNegativ
 prop_foldable_upperTri_No_FromN (NonNegative n, NonNegative k, NonNegative s)
   | chk       = True
   | otherwise = traceShow (ls,vs) False
-  where (_,_,vs) = DPF.upperTri UnknownSize NoDiag (FromN k s) xs
+  where Right (_,_,vs) = DPF.upperTri UnknownSize NoDiag (FromN k s) xs
         ls = L.take s
            . L.drop k
            $ [ (a,b)
