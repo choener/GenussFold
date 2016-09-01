@@ -16,15 +16,6 @@ Synopsis:       utilities for DP
 Description:
                 Small set of utility functions
                 .
-                @Math.TriangularNumbers@ provides from/to functions for
-                indexing into triangular tables.
-                .
-                @Data.Paired.*@ modules to pair up data points. Either in
-                upper-triangular form, or rectangular form.
-                .
-                @pipes@ extensions in @Pipes.Parallel@ for parallelism and
-                consumption of paired data points.
-                .
 
 
 
