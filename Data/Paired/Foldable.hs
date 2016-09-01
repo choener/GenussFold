@@ -9,6 +9,7 @@ import Data.List as L
 import Control.Arrow ((***))
 import Data.Vector as V
 import Data.Vector.Generic as VG
+import Debug.Trace (traceShow)
 
 import Data.Paired.Common
 import Math.TriangularNumbers
@@ -38,7 +39,7 @@ upperTri
   -> Enumerate
   -> t a
   -> (IntMap a, Int, [(a,a)])
-upperTri sz d e xs' = (undefined, numElems, ys)
+upperTri sz d e xs' = {- traceShow (lMin,lMax,cMin,cMax,rMin,rMax) -} (imp, numElems, ys)
   where ys   = case e of {All -> id ; FromN _ s -> L.take s}
              . L.unfoldr go $ initEnum e d
         -- how many elements we will emit depends on enumeration and on
@@ -51,11 +52,12 @@ upperTri sz d e xs' = (undefined, numElems, ys)
         -- container we gave as input. @xs'@ is touched only once and can
         -- be efficiently consumed.
         -- @
-        imp = IM.fromList . L.filter (inRange . fst) . L.zip [0..] . L.take len $ F.toList xs'
-        len = case sz of { UnknownSize -> F.length xs' ; KnownSize z -> z }
+        --imp = IM.fromList . L.filter (inRange . fst) . L.zip [0..] . L.take len $ F.toList xs'
+        szLen = case sz of { UnknownSize -> F.length xs' ; KnownSize z -> z }
+        szLn' = case d of { OnDiag -> szLen - 1 ; NoDiag -> szLen - 2 }
         -- @
-        --(!imp,!len) = F.foldl' (\(!i,!l) x -> (if inRange l then IM.insert l x i else i,l+1)) (IM.empty, 0) xs'
-        allSize = len * (len + if d == OnDiag then 1 else -1) `div` 2
+        (!imp,!readLen) = F.foldl' (\(!i,!l) x -> (if inRange l then IM.insert l x i else i,l+1)) (IM.empty, 0) xs'
+        allSize = szLen * (szLen + if d == OnDiag then 1 else -1) `div` 2
         -- we need three ranges. @cMin@ and @cMax@ are the range for the
         -- slow-moving first element in the tuple. @rMin@ and @rMax@ are
         -- the first and last element of the range starting at @cMin@ (we
@@ -63,31 +65,30 @@ upperTri sz d e xs' = (undefined, numElems, ys)
         -- Finally, @lMin@ and @lMax@ are the range to the left of @cMin@.
         -- TODO OnDiag !!!
         (lMin,lMax,cMin,cMax,rMin,rMax) = case e of
-          All -> (0, len-1, 0, len-1, 0, len-1)
+          All -> (0, szLen-1, 0, szLen-1, 0, szLen-1)
           FromN s k ->
-            let (cmin,rmin) = fromLinear (len-1) s
-                (cmax,_   ) = fromLinear (len-1) (s+k)
+            let (cmin,rmin) = fromLinear szLn' s
+                (cmax,_   ) = fromLinear szLn' (s+k)
                 rmax = rmin+k -- if this is @>= len@ we are safe anyway.
-                lmin = if rmin+k >= len then 0 else cmin
-                lmax = if rmin+k >= len then lmin + toLinear (len-1) (cmin+1,cmin+1+rmin+k-len) else cmax
-            in  (lmin, lmax, cmin, cmax, rmin, lmax)
+                lmin = if rmin+k >= szLen then 0 else cmin
+                lmax = if rmin+k >= szLen then lmin + toLinear szLn' (cmin+1,cmin+1+rmin+k-szLn') else cmax
+            in  (lmin, lmax, cmin, cmax, rmin, rmax)
         -- with minL we know the starting index for the 1st element, with
         -- strtR the starting index for the 2nd element. With maxL we know
         -- the stopping index for the 1st element.
-        (minL,strtR) = case e of { All -> (0,len-1) ; FromN s k -> fromLinear (len-1) s     }
-        (maxL,stopR) = case e of { All -> (0,len-1) ; FromN s k -> fromLinear (len-1) (s+k) }
-        strtZ = case e of { All -> len-1 ; FromN s k -> min (len-1) (strtR+k) }
+        (minL,strtR) = case e of { All -> (0,szLn') ; FromN s k -> fromLinear szLn' s     }
+        (maxL,stopR) = case e of { All -> (0,szLn') ; FromN s k -> fromLinear szLn' (s+k) }
+        strtZ = case e of { All -> szLn' ; FromN s k -> min szLn' (strtR+k) }
         stopA = case e of { All -> 0 ; FromN s k -> max 0 (stopR-k) }
         -- TODO we have a lot of redundant switching around All/FromN On/No
         inRange z =  lMin <= z && z <= lMax
                   || cMin <= z && z <= cMax
                   || rMin <= z && z <= rMax
-                  || True
         -- index into the generated vector @xs@ when generating elements
         -- via @go@
         go (k,l)
-          | k >= len  = Nothing
-          | l >= len  = go (k+1,k+1 + if d == OnDiag then 0 else 1)
+          | k >= szLen  = Nothing
+          | l >= szLen  = go (k+1,k+1 + if d == OnDiag then 0 else 1)
           | otherwise = Just ((imp IM.! k, imp IM.! l), (k,l+1))
         -- Initialize the enumeration at the correct pair @(i,j)@. From
         -- then on we can @take@ the correct number of elements, or stream
@@ -95,11 +96,11 @@ upperTri sz d e xs' = (undefined, numElems, ys)
         initEnum All OnDiag = (0,0)
         initEnum All NoDiag = (0,1)
         initEnum (FromN s k) OnDiag
-          | s >= allSize = (len,len)
-          | otherwise    = fromLinear (len-1) s
+          | s >= allSize = (szLen,szLen)
+          | otherwise    = fromLinear szLn' s
         initEnum (FromN s k) NoDiag
-          | s >= allSize = (len,len)
-          | otherwise    = id *** (+1) $ fromLinear (len-2) s
+          | s >= allSize = (szLen,szLen)
+          | otherwise    = id *** (+1) $ fromLinear szLn' s
 
 {-
 upperTriVG d as = (z, unfoldrN z go (0,if d == OnDiag then 0 else 1))

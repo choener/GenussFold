@@ -27,9 +27,9 @@ triangularNumber x = (x * (x+1)) `quot` 2
 -- | Size of an upper triangle starting at 'i' and ending at 'j'. "(0,N)" what
 -- be the normal thing to use.
 
-upperTri :: (Int,Int) -> Int
-upperTri (i,j) = triangularNumber $ j-i+1
-{-# INLINE upperTri #-}
+linearizeUppertri :: (Int,Int) -> Int
+linearizeUppertri (i,j) = triangularNumber $ j-i+1
+{-# INLINE linearizeUppertri #-}
 
 -- | Subword indexing. Given the longest subword and the current subword,
 -- calculate a linear index "[0,..]". "(l,n)" in this case means "l"ower bound,
