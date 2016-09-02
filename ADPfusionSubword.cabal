@@ -11,7 +11,7 @@ license-file:   LICENSE
 build-type:     Simple
 stability:      experimental
 cabal-version:  >= 1.10.0
-tested-with:    GHC == 7.8.4, GHC == 7.10.3
+tested-with:    GHC == 7.8.4, GHC == 7.10.3, GHC == 8.0.1
 synopsis:       Efficient, high-level dynamic programming.
 description:
                 <http://www.bioinf.uni-leipzig.de/Software/gADP/ generalized Algebraic Dynamic Programming>
@@ -131,10 +131,11 @@ executable Nussinov
     buildable:
       True
     build-depends:  base
-                 ,  ADPfusionSubword
-                 ,  PrimitiveArray
                  ,  template-haskell
                  ,  vector
+                 --
+                 ,  ADPfusionSubword
+                 ,  PrimitiveArray
   else
     buildable:
       False
@@ -174,11 +175,12 @@ executable PartNussinov
     buildable:
       True
     build-depends:  base
-                 ,  ADPfusionSubword
                  ,  log-domain        == 0.10.*
-                 ,  PrimitiveArray
                  ,  template-haskell
                  ,  vector
+                 --
+                 ,  ADPfusionSubword
+                 ,  PrimitiveArray
   else
     buildable:
       False
@@ -214,10 +216,11 @@ executable Durbin
     buildable:
       True
     build-depends:  base
-                 ,  ADPfusionSubword
-                 ,  PrimitiveArray
                  ,  template-haskell
                  ,  vector
+                 --
+                 ,  ADPfusionSubword
+                 ,  PrimitiveArray
   else
     buildable:
       False
@@ -253,10 +256,11 @@ executable Pseudoknot
     buildable:
       True
     build-depends:  base
-                 ,  ADPfusionSubword
-                 ,  PrimitiveArray
                  ,  template-haskell
                  ,  vector
+                 --
+                 ,  ADPfusionSubword
+                 ,  PrimitiveArray
   else
     buildable:
       False
@@ -293,10 +297,11 @@ executable OverlappingPalindromes
     buildable:
       True
     build-depends:  base
-                 ,  ADPfusionSubword
-                 ,  PrimitiveArray
                  ,  template-haskell
                  ,  vector
+                 --
+                 ,  ADPfusionSubword
+                 ,  PrimitiveArray
   else
     buildable:
       False
@@ -332,10 +337,11 @@ executable SplitTests
     buildable:
       True
     build-depends:  base
-                 ,  ADPfusionSubword
-                 ,  PrimitiveArray
                  ,  template-haskell
                  ,  vector
+                 --
+                 ,  ADPfusionSubword
+                 ,  PrimitiveArray
   else
     buildable:
       False
@@ -393,16 +399,17 @@ test-suite properties
   cpp-options:
     -DADPFUSION_TEST_SUITE_PROPERTIES
   build-depends: base
-               , ADPfusionSubword
                , bits
-               , OrderedBits
-               , PrimitiveArray
                , QuickCheck
                , strict
                , test-framework               >= 0.8  && < 0.9
                , test-framework-quickcheck2   >= 0.3  && < 0.4
                , test-framework-th            >= 0.2  && < 0.3
                , vector
+               --
+               , ADPfusionSubword
+               , OrderedBits
+               , PrimitiveArray
 
 
 
@@ -435,10 +442,12 @@ benchmark performance
                     , StandaloneDeriving
                     , DeriveGeneric
   build-depends: base
-               , ADPfusionSubword
-               , BenchmarkHistory   >= 0.0.0  && < 0.0.1
-               , PrimitiveArray
                , vector
+               --
+               , ADPfusionSubword
+               , PrimitiveArray
+               --
+               , BenchmarkHistory   == 0.0.0.*
 
 
 
