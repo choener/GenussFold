@@ -3,18 +3,22 @@
 
 module Data.Forest.Static where
 
+import           Control.Applicative ((<$>),(<*>))
+import           Control.Monad (replicateM)
 import           Data.Foldable (toList)
 import           Data.Graph.Inductive.Basic
 import           Data.List (span,uncons,sort)
 import           Data.Traversable (mapAccumL)
+import           Data.Tree (Tree)
 import           Debug.Trace
+import qualified Data.List as L
 import qualified Data.Map.Strict as S
+import qualified Data.Set as Set
 import qualified Data.Tree as T
 import qualified Data.Vector as V
 import qualified Data.Vector.Generic as VG
 import qualified Data.Vector.Unboxed as VU
-import qualified Data.List as L
-import qualified Data.Set as Set
+import           Test.QuickCheck
 
 
 
@@ -24,7 +28,7 @@ import qualified Data.Set as Set
 --
 -- TODO @Unordered@ for trees that have no sorted order?
 
-data TreeOrder = Pre | Post
+data TreeOrder = Pre | Post | Unordered
 
 
 
@@ -32,16 +36,26 @@ data TreeOrder = Pre | Post
 -- possible by following the indices, the nodes themselves shall always be
 -- ordered by the type @p :: TreeOrder@. This is not completely enforced,
 -- given that @Forest@ is exporting the constructor, but encouraged via
--- construction with helper functions.
+-- construction with helper functions. The labels of type @a@ (in @label@)
+-- require a vector structure @v@ for @O(1)@ access.
 
 data Forest (p :: TreeOrder) v a where
   Forest :: (VG.Vector v a) =>
     { label     :: v a
+      -- ^ Each node @k@ in @[0..n-1]@ has a label at @label ! k@.
     , parent    :: VU.Vector Int
+      -- ^ Each node @k@ has a parent node, or @-1@ if there is no such
+      -- parent.
     , children  :: V.Vector (VU.Vector Int)
+      -- ^ Each node @k@ has a vector of indices for its children. For leaf
+      -- nodes, the vector is empty.
     , lsib      :: VU.Vector Int
+      -- ^ The left sibling for a node @k@.
     , rsib      :: VU.Vector Int
+      -- ^ The right sibling for a node @k@.
     , roots     :: VU.Vector Int
+      -- ^ The roots of the individual trees, the forest was constructed
+      -- from.
     } -> Forest p v a
 
 deriving instance (Show a, Show (v a)) => Show (Forest p v a)
@@ -51,6 +65,8 @@ deriving instance (Show a, Show (v a)) => Show (Forest p v a)
 -- | Construct a static 'Forest' with a tree traversal function. I.e.
 -- @forestWith preorderF trees@ will construct a pre-order forest from the
 -- list of @trees@.
+--
+-- Siblings span trees in the forest!
 
 forestWith :: (VG.Vector v a) => (forall a . [T.Tree a] -> [a]) -> [T.Tree a] -> Forest (p::TreeOrder) v a
 forestWith f ts
@@ -89,18 +105,18 @@ forestPre = forestWith preorderF
 forestPost :: (VG.Vector v a) => [T.Tree a] -> Forest Post v a
 forestPost = forestWith postorderF
 
--- | Add @pre-ordered@ !!! indices. First argument is the starting index.
+-- | Add @pre-ordered@ @(!)@ indices. First argument is the starting index.
 
 addIndices :: Int -> T.Tree a -> T.Tree (Int,a)
 addIndices k = snd . mapAccumL (\i e -> (i+1, (i,e))) k
 
--- | Add @pre-ordered@ !!! indices, but to a forest.
+-- | Add @pre-ordered@ @(!)@ indices, but to a forest.
 
 addIndicesF :: Int -> [T.Tree a] -> [T.Tree (Int,a)]
 addIndicesF k = snd . mapAccumL go k
   where go = mapAccumL (\i e -> (i+1, (i,e)))
 
--- | Add @pre-ordered@ !!! indices to a forest, but throw the label away as
+-- | Add @pre-ordered@ @(!)@ indices to a forest, but throw the label away as
 -- well.
 
 addIndicesF' :: Int -> [T.Tree a] -> [T.Tree Int]
@@ -143,6 +159,9 @@ leftMostLeaf f = go
 
 rightMostLeaves :: Forest p v a -> VU.Vector Int
 rightMostLeaves f = VG.map (rightMostLeaf f) $ VG.enumFromN 0 $ VG.length $ parent f
+
+-- | Given a tree, and a node index, return the right-most leaf for the
+-- node.
 
 rightMostLeaf :: Forest p v a -> Int -> Int
 rightMostLeaf f = go
@@ -192,6 +211,37 @@ newtype Srt = Srt { unSrt :: [Int] }
 
 instance Ord Srt where
   Srt xs <= Srt ys = length xs <= length ys
+
+-- | Given a forest, return the list of trees that constitue the forest.
+
+forestToTrees :: Forest p v a -> T.Forest a
+forestToTrees Forest{..} = map getTree . VG.toList $ roots
+  where getTree k = T.Node (label VG.! k) (map getTree . VG.toList $ children VG.! k)
+
+
+
+-- * QuickCheck
+
+-- | Wrapped quickcheck instance for 'T.Tree'.
+
+newtype QCTree a = QCTree { getTree :: T.Tree a }
+  deriving (Show)
+
+instance (Arbitrary a) => Arbitrary (QCTree a) where
+  arbitrary =
+    let go = sized $ \n ->
+               do val <- arbitrary
+                  let n' = n `div` 2
+                  nodes <- if n' > 0
+                    then do k <- choose (0,n')
+                            resize n' $ replicateM k (getTree <$> arbitrary)
+                    else return []
+                  return $ T.Node val nodes
+    in  QCTree <$> go
+  shrink (QCTree (T.Node val forest)) =
+    [ QCTree $ T.Node v f | v <- shrink val, f <- map (map getTree) $ shrink $ map QCTree forest ]
+
+-- * Test functions
 
 test1 :: [T.Tree Char]
 test1 = [T.Node 'R' [T.Node 'a' [], T.Node 'b' []], T.Node 'S' [T.Node 'x' [], T.Node 'y' []]]
