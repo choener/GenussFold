@@ -239,7 +239,7 @@ instance (Arbitrary a) => Arbitrary (QCTree a) where
                   return $ T.Node val nodes
     in  QCTree <$> go
   shrink (QCTree (T.Node val forest)) =
-    [ QCTree $ T.Node v f | v <- shrink val, f <- map (map getTree) $ shrink $ map QCTree forest ]
+    [] -- [ QCTree $ T.Node v f | v <- shrink val, f <- map (map getTree) $ shrink $ map QCTree forest ]
 
 -- * Test functions
 
