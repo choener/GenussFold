@@ -17,7 +17,7 @@ import           Test.QuickCheck.Instances
 import           Test.Tasty
 import           Test.Tasty.QuickCheck as QC
 import           Test.Tasty.TH
-import qualified Data.ByteString.Lazy as BL
+import qualified Data.ByteString.Lazy as BSL
 import qualified Pipes.ByteString as PB
 import qualified Pipes.Prelude as P
 
@@ -153,30 +153,60 @@ prop_BackForth (NonNegative n) = L.and xs
 -- | Check if both splitKeepEnd and simple tokenization provide the same
 -- result.
 
-prop_splitKeepEnd :: ByteString -> Small Int -> Small Int -> Bool
-prop_splitKeepEnd str' (Small k) (Small l) = ss == tt
-  where str = BS.concat $ L.replicate 1000 str'
+prop_splitKeepEndStrict :: String -> Small Int -> Small Int -> Bool
+prop_splitKeepEndStrict str' (Small k) (Small l)
+  | tt == ss  = True
+  | otherwise = traceShow ("ske",pat,str,k,l,tt,ss,ee) False
+  where str = BS.concat . L.replicate skeMult $ BS.pack str'
         -- make a small pattern with a chance that it repeats
         pat = BS.take (l `mod` 2 + 1) $ BS.drop (k `mod` 10) str
         -- what ske thinks is a good split
-        (ss,_) = ske str pat
+        (ss,ee,_) = ske pat str
         -- manual splitting
-        tokenise x y | BS.null x = []
-        tokenise x y = (h `BS.append` BS.take (BS.length x) t) : if BS.null t then [] else tokenise x (BS.drop (BS.length x) t)
-            where (h,t) = BS.breakSubstring x y
-        tt = tokenise pat str
+        tt = referenceByteStringTokenizer pat str
+
+-- | Check if both splitKeepEnd and simple tokenization provide the same
+-- result.
+
+prop_splitKeepEndLazy :: String -> Small Int -> Small Int -> Bool
+prop_splitKeepEndLazy str' (Small k) (Small l)
+  | tt == ll  = True
+  | otherwise = traceShow ("ske'",pat,str',str,strL,k,l,tt,ll,ee,rr) False
+  where str = BS.concat . L.replicate skeMult $ BS.pack str'
+        strL = BSL.fromChunks $ L.replicate skeMult $ BS.pack str'
+        -- make a small pattern with a chance that it repeats
+        pat = BS.take (l `mod` 2 + 1) $ BS.drop (k `mod` 10) str
+        -- what we get with the lazy version
+        (ll,ee,rr) = ske' pat strL
+        -- manual splitting
+        tt = referenceByteStringTokenizer pat str
 
 -- The actual splitting system
 
-ske _   pat | BS.null pat = ([],[])
-ske str pat =
+ske :: ByteString -> ByteString -> ([ByteString],[ByteString],[ByteString])
+ske pat str | BS.null pat || BS.null str = ([],[],[])
+ske pat str =
   let parse = do
         xs <- zoom (splitKeepEnd pat) PP.drawAll
         case xs of
-          [x] -> return $ Right x
-          _   -> return $ Left  xs
+          [] -> return $ Left []
+          xs -> return $ Right $ BS.concat xs
       (a,(b,p)) = runIdentity . P.toListM' $ PP.parsed parse $ PP.yield str
-  in (a,b)
+  in (a,b, fst . runIdentity . P.toListM' $ p)
+
+ske' :: ByteString -> BSL.ByteString -> ([ByteString],[ByteString],[ByteString])
+ske' pat _ | BS.null pat = ([],[],[])
+ske' pat str =
+  let parse = do
+        xs <- zoom (splitKeepEnd pat) PP.drawAll
+        case xs of
+          [] -> return $ Left []
+          xs -> return $ Right $ BS.concat xs
+      (a,(b,p)) = runIdentity . P.toListM' $ PP.parsed parse $ PB.fromLazy str
+  in (a,b, fst . runIdentity . P.toListM' $ p)
+
+skeMult :: Int
+skeMult = 1000
 
 main :: IO ()
 main = $(defaultMainGenerator)

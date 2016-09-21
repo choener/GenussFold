@@ -69,6 +69,7 @@ test-suite properties
     Haskell2010
   default-extensions: CPP
                     , RankNTypes
+                    , ScopedTypeVariables
                     , TemplateHaskell
   build-depends: base
                , bytestring
