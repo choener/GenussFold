@@ -1,3 +1,9 @@
+0.0.1.0
+-------
+
+- Pipes.Split.ByteString splits a bytestring based on a given pattern (example
+  usage in tests/properties.hs)
+
 0.0.0.2
 -------
 

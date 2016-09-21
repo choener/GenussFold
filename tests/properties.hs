@@ -1,19 +1,30 @@
 
 module Main where
 
-import Data.List as L
-import Data.Map.Strict as M
-import Data.Tuple (swap)
-import Data.Vector as V
-import Debug.Trace
-import Test.QuickCheck
-import Test.Tasty
-import Test.Tasty.QuickCheck as QC
-import Test.Tasty.TH
+import           Control.Monad.Identity
+import           Control.Lens
+import           Data.ByteString (ByteString)
+import           Data.List as L
+import           Data.Map.Strict as M
+import           Data.Tuple (swap)
+import           Data.Vector as V
+import           Debug.Trace
+import qualified Data.ByteString.Char8 as BS
+import qualified Pipes as P
+import qualified Pipes.Parse as PP
+import           Test.QuickCheck
+import           Test.QuickCheck.Instances
+import           Test.Tasty
+import           Test.Tasty.QuickCheck as QC
+import           Test.Tasty.TH
+import qualified Data.ByteString.Lazy as BL
+import qualified Pipes.ByteString as PB
+import qualified Pipes.Prelude as P
 
-import Data.Paired.Vector as DPV
-import Data.Paired.Foldable as DPF
-import Math.TriangularNumbers
+import           Data.Paired.Foldable as DPF
+import           Data.Paired.Vector as DPV
+import           Math.TriangularNumbers
+import           Pipes.Split.ByteString
 
 
 
@@ -138,6 +149,34 @@ prop_BackForth (NonNegative n) = L.and xs
              | (k,(i,j)) <- ls ]
 
 --
+
+-- | Check if both splitKeepEnd and simple tokenization provide the same
+-- result.
+
+prop_splitKeepEnd :: ByteString -> Small Int -> Small Int -> Bool
+prop_splitKeepEnd str' (Small k) (Small l) = ss == tt
+  where str = BS.concat $ L.replicate 1000 str'
+        -- make a small pattern with a chance that it repeats
+        pat = BS.take (l `mod` 2 + 1) $ BS.drop (k `mod` 10) str
+        -- what ske thinks is a good split
+        (ss,_) = ske str pat
+        -- manual splitting
+        tokenise x y | BS.null x = []
+        tokenise x y = (h `BS.append` BS.take (BS.length x) t) : if BS.null t then [] else tokenise x (BS.drop (BS.length x) t)
+            where (h,t) = BS.breakSubstring x y
+        tt = tokenise pat str
+
+-- The actual splitting system
+
+ske _   pat | BS.null pat = ([],[])
+ske str pat =
+  let parse = do
+        xs <- zoom (splitKeepEnd pat) PP.drawAll
+        case xs of
+          [x] -> return $ Right x
+          _   -> return $ Left  xs
+      (a,(b,p)) = runIdentity . P.toListM' $ PP.parsed parse $ PP.yield str
+  in (a,b)
 
 main :: IO ()
 main = $(defaultMainGenerator)
