@@ -27,6 +27,7 @@ extra-source-files:
 
 Library
   Exposed-modules:
+    Data.Char.Util
     Data.Paired.Common
     Data.Paired.Foldable
     Data.Paired.Vector
