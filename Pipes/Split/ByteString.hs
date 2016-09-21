@@ -1,5 +1,7 @@
 
 -- | Split incombing bytestrings based on bytestrings.
+--
+-- TODO put reference tokenizer in here
 
 module Pipes.Split.ByteString where
 
@@ -15,6 +17,8 @@ type Lens' a b = forall f . Functor f => (b -> f b) -> (a -> f a)
 
 -- | Splits bytestrings after each pattern @pat@. Tries to minimize the
 -- number of intermediate bytestring constructors.
+--
+-- TODO insert sample code as comment
 
 splitKeepEnd :: Monad m => ByteString -> Lens' (Producer ByteString m x) (Producer ByteString m (Producer ByteString m x))
 splitKeepEnd pat k p0 = fmap join (k (go BS.empty p0)) where
