@@ -1,8 +1,8 @@
 
 module Main where
 
-import           Control.Monad.Identity
 import           Control.Lens
+import           Control.Monad.Identity
 import           Data.ByteString (ByteString)
 import           Data.List as L
 import           Data.Map.Strict as M
@@ -10,16 +10,16 @@ import           Data.Tuple (swap)
 import           Data.Vector as V
 import           Debug.Trace
 import qualified Data.ByteString.Char8 as BS
+import qualified Data.ByteString.Lazy as BSL
 import qualified Pipes as P
+import qualified Pipes.ByteString as PB
 import qualified Pipes.Parse as PP
+import qualified Pipes.Prelude as P
 import           Test.QuickCheck
 import           Test.QuickCheck.Instances
 import           Test.Tasty
 import           Test.Tasty.QuickCheck as QC
 import           Test.Tasty.TH
-import qualified Data.ByteString.Lazy as BSL
-import qualified Pipes.ByteString as PB
-import qualified Pipes.Prelude as P
 
 import           Data.Paired.Foldable as DPF
 import           Data.Paired.Vector as DPV
