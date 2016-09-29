@@ -1,6 +1,7 @@
 packages: .
---          ../Lib-PrimitiveArray
---          ../Lib-OrderedBits
---          ../Lib-DPutils
---          ../Lib-ADPfusion
+          ../Lib-ADPfusion
           ../Lib-BenchmarkHistory
+          ../Lib-DPutils
+          ../Lib-OrderedBits
+          ../Lib-PrimitiveArray
+

@@ -17,8 +17,8 @@ import           Test.QuickCheck
 import           Test.QuickCheck.All
 import           Test.QuickCheck.Monadic
 #ifdef ADPFUSION_TEST_SUITE_PROPERTIES
-import           Test.Framework.TH
-import           Test.Framework.Providers.QuickCheck2
+import           Test.Tasty.QuickCheck
+import           Test.Tasty.TH
 #endif
 
 import           Data.PrimitiveArray

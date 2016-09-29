@@ -4,12 +4,12 @@
 
 module Main where
 
-import Test.Framework
+import Test.Tasty
 
 import QuickCheck.Subword (testgroup_subword)
 
 
 
 main :: IO ()
-main = defaultMain [testgroup_subword]
+main = defaultMain testgroup_subword
 
