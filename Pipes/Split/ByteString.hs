@@ -66,6 +66,20 @@ splitKeepEnd pat k p0 = fmap join (k (go BS.empty p0)) where
 
 
 
+-- | Split a string into substrings, where each substring starts with @pat@
+-- and continues until just before the next @pat@ (or until there is no
+-- more input).
+--
+-- Since each substring is supposed to start with @pat@, there is a small
+-- problem. What about a header that prefixes the string we are interested
+-- in?
+
+splitKeepStart :: Monad m => ByteString -> Lens' (Producer ByteString m x) (Producer ByteString m (Producer ByteString m x))
+splitKeepStart pat k p0 = fmap join (k (go BS.empty p0)) where
+  go = undefined
+
+
+
 -- manual splitting
 referenceByteStringTokenizer pat str | BS.null pat || BS.null str = []
 referenceByteStringTokenizer pat str
