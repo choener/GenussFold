@@ -12,6 +12,8 @@ import           Debug.Trace
 import           Pipes (Producer,next,yield)
 import qualified Data.ByteString as BS
 
+
+
 type Lens' a b = forall f . Functor f => (b -> f b) -> (a -> f a)
 
 -- | Splits bytestrings after each pattern @pat@. Tries to minimize the
@@ -63,6 +65,7 @@ splitKeepEnd pat k p0 = fmap join (k (go BS.empty p0)) where
             return (yield suf >> p')
   l = BS.length pat
   fnd = indices pat
+{-# Inlineable splitKeepEnd #-}
 
 
 
@@ -70,17 +73,65 @@ splitKeepEnd pat k p0 = fmap join (k (go BS.empty p0)) where
 -- and continues until just before the next @pat@ (or until there is no
 -- more input).
 --
+-- Any prefix that does not start with the substring is /kept/!
+--
 -- Since each substring is supposed to start with @pat@, there is a small
 -- problem. What about a header that prefixes the string we are interested
 -- in?
 
 splitKeepStart :: Monad m => ByteString -> Lens' (Producer ByteString m x) (Producer ByteString m (Producer ByteString m x))
-splitKeepStart pat k p0 = fmap join (k (go BS.empty p0)) where
-  go = undefined
+splitKeepStart = splitGeneric (\bs k p l -> BS.splitAt (k - p) bs)
+{-# Inlineable splitKeepStart #-}
 
 
 
--- manual splitting
+-- | Generic splitting function. Takes a bytestring @[a,b,c]@ (where
+-- @a,b,c@ are substrings of the bytestring!) and performs the split.
+--
+
+splitGeneric
+  :: Monad m
+  => (ByteString -> Int -> Int -> Int -> (ByteString,ByteString))
+  -- ^ splitter function
+  -> ByteString
+  -- ^ pattern to split on
+  -> Lens' (Producer ByteString m x) (Producer ByteString m (Producer ByteString m x))
+  -- ^ lens into the individual split off bytestrings
+splitGeneric splt pat k p0 = fmap join (k (go BS.empty p0)) where
+  go pre p = do
+    x <- lift (next p)
+    case x of
+      Left r -> do
+        -- yield final split off string
+        unless (BS.null pre) (yield pre)
+        return $ return r
+      Right (bs, p') -> do
+        -- will not search in the part of the prefix that *can not contain*
+        -- the @pat@tern.
+        case fnd ((BS.drop (BS.length pre - l) pre) <> bs) of
+          -- no hit yet, send the prefix down completely, make bs new
+          -- prefix if possible. If either @pre@ or @bs@ are too short, we
+          -- keep @pre <> bs@ for the next round. This should not happen if
+          -- the pattern is reasonably short compared to the size of the
+          -- bytestring chunks.
+          [] -> do
+            if (BS.length bs >= l)
+            then yield pre >> go bs p'
+            else go (pre <> bs) p'
+          -- at least one hit, split off the correct part, remainder goes
+          -- back.
+          (k:_) -> do
+            let (y,suf) = splt bs k (BS.length pre) l
+            yield y
+            return (yield suf >> p')
+  l = BS.length pat
+  fnd = indices pat
+{-# Inline splitGeneric #-}
+
+
+
+-- manual splitting, for @splitKeepEnd@
+
 referenceByteStringTokenizer pat str | BS.null pat || BS.null str = []
 referenceByteStringTokenizer pat str
   = (h `BS.append` BS.take (BS.length pat) t)
