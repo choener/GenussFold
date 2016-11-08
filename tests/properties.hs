@@ -13,8 +13,8 @@ import           Data.Forest.Static
 
 -- Finite tree ?
 
-prop_finite :: [Small (QCTree ())] -> Bool
-prop_finite qs = traceShow qs True
+--prop_finite :: [QCTree ()] -> Bool
+--prop_finite qs = True -- traceShow qs True
 
 ---- Given trees, create a pre-order forest and then generate the trees from
 ---- the pre-order forest again.

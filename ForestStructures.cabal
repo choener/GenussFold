@@ -1,5 +1,5 @@
 name:           ForestStructures
-version:        0.0.0.1
+version:        0.0.0.2
 author:         Christian Hoener zu Siederdissen, Sarah Berkemer, 2015-2016
 copyright:      Christian Hoener zu Siederdissen, 2015-2016
 homepage:       https://github.com/choener/ForestStructures
@@ -31,12 +31,12 @@ Extra-Source-Files:
 
 library
   build-depends: base                   >= 4.7      &&  < 5.0
-               , containers             >= 0.5      &&  < 0.6
-               , fgl                    >= 5.5      &&  < 5.6
-               , QuickCheck             >= 2.0      &&  < 3.0
-               , unordered-containers   >= 0.2      &&  < 0.3
-               , vector                 >= 0.10     &&  < 0.12
-               , vector-th-unbox        >= 0.2      &&  < 0.3
+               , containers             >= 0.5
+               , fgl                    >= 5.5
+               , QuickCheck             >= 2.0
+               , unordered-containers   >= 0.2
+               , vector                 >= 0.10
+               , vector-th-unbox        >= 0.2
   exposed-modules:
     Data.Forest.Static
   default-language:
@@ -85,7 +85,7 @@ test-suite properties
 
 benchmark benchmark
   build-depends:  base
-               ,  criterion         >=  1.0.2 &&  < 1.2
+               ,  criterion         >=  1.0.2
                ,  ForestStructures
   default-language:
     Haskell2010
