@@ -1,4 +1,10 @@
+0.1.0.2
+-------
+
+- removed upper bounds
+
 0.1.0.1
+-------
 
 - aeson-1.0 accepted
 
