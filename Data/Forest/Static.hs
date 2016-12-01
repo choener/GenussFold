@@ -50,7 +50,8 @@ data Forest (p :: TreeOrder) v a where
       -- ^ Each node @k@ has a vector of indices for its children. For leaf
       -- nodes, the vector is empty.
     , lsib      :: VU.Vector Int
-      -- ^ The left sibling for a node @k@.
+      -- ^ The left sibling for a node @k@. Will *not* cross subtrees. I.e.
+      -- if @k@ is @lsib@ of @l@, then @k@ and @l@ have the same parent.
     , rsib      :: VU.Vector Int
       -- ^ The right sibling for a node @k@.
     , roots     :: VU.Vector Int
