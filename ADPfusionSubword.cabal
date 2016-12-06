@@ -79,7 +79,7 @@ library
                , ADPfusion          == 0.5.2.*
                , DPutils            == 0.0.1.*
                , OrderedBits        == 0.0.1.*
-               , PrimitiveArray     == 0.7.1.*
+               , PrimitiveArray     == 0.7.2.*
 
   exposed-modules:
     ADP.Fusion.Subword
