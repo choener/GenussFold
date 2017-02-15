@@ -1,5 +1,5 @@
 
-resolver: lts-6.5
+resolver: lts-8.0
 
 packages:
 - '.'
@@ -16,9 +16,9 @@ packages:
 - location: ../Lib-DPutils
   extra-dep: true
 
-extra-deps:
-- tuple-0.3.0.2
-- OneTuple-0.2.1
+#extra-deps:
+#- tuple-0.3.0.2
+#- OneTuple-0.2.1
 
 flags: {}
 

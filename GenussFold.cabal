@@ -44,18 +44,18 @@ flag debug
 
 library
   build-depends: base                   >= 4.7      && < 5.0
-               , ansi-wl-pprint         >= 0.6.7    && < 0.6.8
-               , bytestring             >= 0.10     && < 0.11
+               , ansi-wl-pprint         >= 0.6.7
+               , bytestring             >= 0.10
                , containers
-               , data-default           >= 0.5      && < 0.6
-               , lens                   >= 4.0      && < 5.0
-               , mtl                    >= 2.0      && < 3.0
-               , semigroups             >= 0.16     && < 0.19
+               , data-default           >= 0.5
+               , lens                   >= 4.0
+               , mtl                    >= 2.0
+               , semigroups             >= 0.16
                , template-haskell
-               , text                   >= 1.0      && < 1.3
-               , transformers           >= 0.3      && < 0.6
-               , unordered-containers   >= 0.2      && < 0.3
-               , vector                 >= 0.10     && < 0.12
+               , text                   >= 1.0
+               , transformers           >= 0.3
+               , unordered-containers   >= 0.2
+               , vector                 >= 0.10
                --
                , ADPfusion              == 0.5.2.*
                , ADPfusionSubword       == 0.0.0.*
@@ -95,7 +95,7 @@ library
 
 executable GenussFold
   build-depends: base
-               , cmdargs          >= 0.10   && < 0.11
+               , cmdargs          >= 0.10
                , FormalGrammars
                , GenussFold
   hs-source-dirs:
@@ -131,9 +131,9 @@ test-suite haskell-c-impl
   build-depends: base
                , GenussFold
                , QuickCheck
-               , test-framework               >= 0.8  && < 0.9
-               , test-framework-quickcheck2   >= 0.3  && < 0.4
-               , test-framework-th            >= 0.2  && < 0.3
+               , test-framework               >= 0.8
+               , test-framework-quickcheck2   >= 0.3
+               , test-framework-th            >= 0.2
   c-sources: C/genussfold.c
   cc-options: -fPIC
 
