@@ -79,7 +79,7 @@ library
   ghc-options:
     -O2
     -funbox-strict-fields
-    -fllvm -optlo-O3
+--    -fllvm -optlo-O3
 --    -fcpr-off
 --    -fno-liberate-case
   if flag(debug)
@@ -109,7 +109,7 @@ executable GenussFold
   ghc-options:
     -O2
     -funbox-strict-fields
-    -fllvm -optlo-O3
+--    -fllvm -optlo-O3
 
 
 
