@@ -31,6 +31,7 @@ Library
     Data.Paired.Common
     Data.Paired.Foldable
     Data.Paired.Vector
+    Data.Vector.Generic.Unstream
     Math.TriangularNumbers
     Pipes.Parallel
     Pipes.Split.ByteString
@@ -48,6 +49,7 @@ Library
                     , CPP
                     , RankNTypes
                     , ScopedTypeVariables
+                    , TypeFamilies
                     , FlexibleContexts
   default-language:
     Haskell2010
