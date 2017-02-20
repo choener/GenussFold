@@ -77,7 +77,6 @@ test-suite properties
   build-depends: base
                , bytestring
                , containers
-               , DPutils
                , kan-extensions
                , lens                 >= 4.0
                , mtl
@@ -91,6 +90,8 @@ test-suite properties
                , tasty-quickcheck     >= 0.8
                , tasty-th             >= 0.1
                , vector
+               --
+               , DPutils
 
 
 
@@ -99,8 +100,9 @@ benchmark benchmark
     exitcode-stdio-1.0
   build-depends: base
                , criterion  >= 1.1
-               , DPutils
                , vector
+               --
+               , DPutils
   hs-source-dirs:
     tests
   main-is:
