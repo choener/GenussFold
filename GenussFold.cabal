@@ -96,6 +96,7 @@ library
 executable GenussFold
   build-depends: base
                , cmdargs          >= 0.10
+               --
                , FormalGrammars
                , GenussFold
   hs-source-dirs:
@@ -129,11 +130,12 @@ test-suite haskell-c-impl
                     , ForeignFunctionInterface
                     , TemplateHaskell
   build-depends: base
-               , GenussFold
                , QuickCheck
                , test-framework               >= 0.8
                , test-framework-quickcheck2   >= 0.3
                , test-framework-th            >= 0.2
+               --
+               , GenussFold
   c-sources: C/genussfold.c
   cc-options: -fPIC
 
