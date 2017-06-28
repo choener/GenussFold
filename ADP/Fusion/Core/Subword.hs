@@ -7,6 +7,7 @@ module ADP.Fusion.Core.Subword where
 import Data.Vector.Fusion.Stream.Monadic (singleton,filter,enumFromStepN,map,unfoldr)
 import Debug.Trace
 import Prelude hiding (map,filter)
+import GHC.Exts
 
 import Data.PrimitiveArray hiding (map)
 
@@ -57,30 +58,32 @@ data instance RunningIndex (Subword C) = RiSwC !Int !Int
 -- TODO shouldn't the new @staticCheck@ impl handle this?
 
 instance (Monad m) => MkStream m S (Subword I) where
-  mkStream S (IStatic ()) (Subword (_:.h)) (Subword (i:.j))
-    -- = staticCheck (0<=i && i<=j)
-    = filter (const $ 0<=i && i<=j)
+  mkStream grd S (IStatic ()) (Subword (_:.h)) (Subword (I# i:.I# j))
+    = staticCheck# (grd `andI#` (0# <=# i) `andI#` (i <=# j))
     . singleton
-    . ElmS $ RiSwI i
-  mkStream S (IVariable ()) (Subword (_:.h)) (Subword (i:.j))
-    -- = staticCheck (0<=i && i<=j)
-    = filter (const $ 0<=i && i<=j && j<=h)
+    . ElmS $ RiSwI (I# i)
+  mkStream grd S (IVariable ()) (Subword (_:.h)) (Subword (I# i:.I# j))
+    = staticCheck# (grd `andI#` (0# <=# i) `andI#` (i <=# j))
     . singleton
-    . ElmS $ RiSwI i
+    . ElmS $ RiSwI (I# i)
   {-# Inline mkStream #-}
 
 instance (Monad m) => MkStream m S (Subword O) where
-  mkStream S (OStatic (di:.dj)) (Subword (_:.h)) (Subword (i:.j))
-    = staticCheck (i==0 && j+dj==h) . singleton . ElmS $ RiSwO i j  i (j+dj)
-  mkStream S (OFirstLeft (di:.dj)) (Subword (_:.h)) (Subword (i:.j))
-    = let i' = i-di
-      in  staticCheck (0 <= i' && i<=j && j+dj<=h) . singleton . ElmS $ RiSwO i' i' i' i'
-  mkStream S (OLeftOf (di:.dj)) (Subword (_:.h)) (Subword (i:.j))
-    = let i' = i-di
-      in  staticCheck (0 <= i' && i<=j && j+dj<=h)
-    $ map (\k -> ElmS $ RiSwO 0 k k j)
-    $ enumFromStepN 0 1 (i'+1)
-  mkStream S e _ _ = error $ show e ++ "maybe only inside syntactic terminals on the RHS of an outside rule?" -- TODO mostly because I'm not sure if that would be useful
+  mkStream grd S (OStatic (di:.I# dj)) (Subword (_:.I# h)) (Subword (I# i:.I# j))
+    = staticCheck# (grd `andI#` (i ==# 0#) `andI#` ((j +# dj) ==# h))
+    . singleton
+    . ElmS $ RiSwO (I# i) (I# j)  (I# i) (I# (j +# dj))
+  mkStream grd S (OFirstLeft (I# di:.I# dj)) (Subword (_:.I# h)) (Subword (I# i:.I# j))
+    = staticCheck# (grd `andI#` (0# <=# i') `andI#` (i <=# j) `andI#` ((j +# dj) <=# h))
+    . singleton
+    . ElmS $ RiSwO (I# i') (I# i') (I# i') (I# i')
+    where i' = i -# di
+  mkStream grd S (OLeftOf (I# di:.I# dj)) (Subword (_:.I# h)) (Subword (I# i:.I# j))
+    = staticCheck# (grd `andI#` (0# <=# i') `andI#` (i <=# j) `andI#` ((j +# dj) <=# h))
+    . map (\k -> ElmS $ RiSwO 0 k k (I# j))
+    $ enumFromStepN 0 1 (I# i' + 1)
+    where i' = i -# di
+  mkStream grd S e _ _ = error $ show e ++ "maybe only inside syntactic terminals on the RHS of an outside rule?" -- TODO mostly because I'm not sure if that would be useful
   {-# Inline mkStream #-}
 
 -- | 
@@ -88,8 +91,9 @@ instance (Monad m) => MkStream m S (Subword O) where
 -- TODO The @go@ here needs an explanation.
 
 instance (Monad m) => MkStream m S (Subword C) where
-  mkStream S Complemented (Subword (_:.h)) (Subword (i:.j))
-    = map (\(k,l) -> ElmS $ RiSwC k l)
+  mkStream grd S Complemented (Subword (_:.h)) (Subword (i:.j))
+    = staticCheck# grd
+    . map (\(k,l) -> ElmS $ RiSwC k l)
     $ unfoldr go (i,i)
     where go (k,l)
             | k >h || k >j = Nothing
@@ -98,21 +102,16 @@ instance (Monad m) => MkStream m S (Subword C) where
           {-# Inline [0] go #-}
   {-# Inline mkStream #-}
 
-
-
 instance
   ( Monad m
   , MkStream m S is
---  , Context (is:.Subword) ~ (Context is:.(InsideContext ()))
   ) => MkStream m S (is:.Subword I) where
-  mkStream S (vs:.IStatic ()) (lus:.Subword (_:.h)) (ixs:.Subword(i:.j))
-    = staticCheck (0<=i && i==j) -- && j<=h)
-    . map (\(ElmS zi) -> ElmS (zi:.:RiSwI i))
-    $ mkStream S vs lus ixs
-  mkStream S (vs:.IVariable ()) (lus:.Subword (_:.h)) (ixs:.Subword (i:.j))
-    = map (\(ElmS zi) -> ElmS (zi:.:RiSwI i))
-    . staticCheck (0<=i && i<=j) -- filter (const $ 0<=i && i<=j && j<=h)
-    $ mkStream S vs lus ixs
+  mkStream grd S (vs:.IStatic ()) (lus:.Subword (_:.h)) (ixs:.Subword(I# i:.I# j))
+    = map (\(ElmS zi) -> ElmS (zi:.:RiSwI (I# i)))
+    $ mkStream (grd `andI#` (0# <=# i) `andI#` (i ==# j)) S vs lus ixs
+  mkStream grd S (vs:.IVariable ()) (lus:.Subword (_:.h)) (ixs:.Subword (I# i:.I# j))
+    = map (\(ElmS zi) -> ElmS (zi:.:RiSwI (I# i)))
+    $ mkStream (grd `andI#` (0# <=# i) `andI#` (i <=# j)) S vs lus ixs
   {-# Inline mkStream #-}
 
 instance (MinSize c) => TableStaticVar u c (Subword I) where

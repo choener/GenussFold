@@ -4,6 +4,7 @@ module ADP.Fusion.Term.Deletion.Subword where
 import Data.Proxy
 import Data.Strict.Tuple
 import Data.Vector.Fusion.Stream.Monadic as S
+import GHC.Exts
 import Prelude hiding (map)
 
 import Data.PrimitiveArray hiding (map)
@@ -16,10 +17,10 @@ import ADP.Fusion.Core.Subword
 instance
   ( TmkCtx1 m ls Deletion (Subword i)
   ) => MkStream m (ls :!: Deletion) (Subword i) where
-  mkStream (ls :!: Deletion) sv us is
+  mkStream grd (ls :!: Deletion) sv us is
     = map (\(ss,ee,ii) -> ElmDeletion ii ss)
     . addTermStream1 Deletion sv us is
-    $ mkStream ls (termStaticVar Deletion sv is) us (termStreamIndex Deletion sv is)
+    $ mkStream (grd `andI#` termStaticCheck Deletion is) ls (termStaticVar Deletion sv is) us (termStreamIndex Deletion sv is)
   {-# Inline mkStream #-}
 
 
@@ -80,12 +81,16 @@ instance
 instance TermStaticVar Deletion (Subword I) where
   termStaticVar _ sv _ = sv
   termStreamIndex _ _ ij = ij
+  termStaticCheck _ _ = 1#
   {-# Inline [0] termStaticVar   #-}
   {-# Inline [0] termStreamIndex #-}
+  {-# Inline [0] termStaticCheck #-}
 
 instance TermStaticVar Deletion (Subword O) where
   termStaticVar _ sv _ = sv
   termStreamIndex _ _ ij = ij
+  termStaticCheck _ _ = 1#
   {-# Inline [0] termStaticVar   #-}
   {-# Inline [0] termStreamIndex #-}
+  {-# Inline [0] termStaticCheck #-}
 

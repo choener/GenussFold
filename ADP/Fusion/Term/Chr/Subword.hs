@@ -3,11 +3,12 @@ module ADP.Fusion.Term.Chr.Subword where
 
 import           Data.Proxy
 import           Data.Strict.Tuple
+import           Data.Vector.Fusion.Stream.Monadic as S
 import           Data.Vector.Fusion.Util (delay_inline)
 import           Debug.Trace
-import           Data.Vector.Fusion.Stream.Monadic as S
-import qualified Data.Vector.Generic as VG
+import           GHC.Exts
 import           Prelude hiding (map)
+import qualified Data.Vector.Generic as VG
 
 import           Data.PrimitiveArray hiding (map)
 
@@ -19,10 +20,10 @@ import           ADP.Fusion.Core.Subword
 instance
   ( TmkCtx1 m ls (Chr r x) (Subword i)
   ) => MkStream m (ls :!: Chr r x) (Subword i) where
-  mkStream (ls :!: Chr f xs) sv us is
+  mkStream grd (ls :!: Chr f xs) sv us is
     = S.map (\(ss,ee,ii) -> ElmChr ee ii ss)
     . addTermStream1 (Chr f xs) sv us is
-    $ mkStream ls (termStaticVar (Chr f xs) sv is) us (termStreamIndex (Chr f xs) sv is)
+    $ mkStream (grd `andI#` termStaticCheck (Chr f xs) is) ls (termStaticVar (Chr f xs) sv is) us (termStreamIndex (Chr f xs) sv is)
   {-# Inline mkStream #-}
 
 
@@ -32,6 +33,8 @@ instance
 -- NOTE We do not run 'staticCheck'. Running @staticCheck@ costs about
 -- @10%@ performance and we assume that the frontend will take care of
 -- correct indices anyway.
+--
+-- TODO lets see if this is still true with the new @grd@ system
 
 instance
   ( TstCtx m ts s x0 i0 is (Subword I)
@@ -84,8 +87,10 @@ instance
 instance TermStaticVar (Chr r x) (Subword I) where
   termStaticVar _ sv _ = sv
   termStreamIndex _ _ (Subword (i:.j)) = subword i (j-1)
+  termStaticCheck _ _ = 1#
   {-# Inline [0] termStaticVar   #-}
   {-# Inline [0] termStreamIndex #-}
+  {-# Inline [0] termStaticCheck #-}
 
 instance TermStaticVar (Chr r x) (Subword O) where
   termStaticVar _ (OStatic    (di:.dj)) _ = OStatic    (di  :.dj+1)
@@ -93,6 +98,8 @@ instance TermStaticVar (Chr r x) (Subword O) where
   termStaticVar _ (OFirstLeft (di:.dj)) _ = OFirstLeft (di+1:.dj  )
   termStaticVar _ (OLeftOf    (di:.dj)) _ = OLeftOf    (di+1:.dj  )
   termStreamIndex _ _ sw = sw
+  termStaticCheck _ _ = 1#
   {-# Inline [0] termStaticVar   #-}
   {-# Inline [0] termStreamIndex #-}
+  {-# Inline [0] termStaticCheck #-}
 

@@ -4,6 +4,7 @@ module ADP.Fusion.Term.Epsilon.Subword where
 import Data.Proxy
 import Data.Strict.Tuple
 import Data.Vector.Fusion.Stream.Monadic as S
+import GHC.Exts
 import Prelude hiding (map)
 
 import Data.PrimitiveArray hiding (map)
@@ -16,10 +17,10 @@ import ADP.Fusion.Core.Subword
 instance
   ( TmkCtx1 m ls Epsilon (Subword i)
   ) => MkStream m (ls :!: Epsilon) (Subword i) where
-  mkStream (ls :!: Epsilon) sv us is
+  mkStream grd (ls :!: Epsilon) sv us is
     = map (\(ss,ee,ii) -> ElmEpsilon ii ss)
     . addTermStream1 Epsilon sv us is
-    $ mkStream ls (termStaticVar Epsilon sv is) us (termStreamIndex Epsilon sv is)
+    $ mkStream (grd `andI#` termStaticCheck Epsilon is) ls (termStaticVar Epsilon sv is) us (termStreamIndex Epsilon sv is)
   {-# Inline mkStream #-}
 
 
@@ -50,12 +51,16 @@ instance
 instance TermStaticVar Epsilon (Subword I) where
   termStaticVar _ sv _ = sv
   termStreamIndex _ _ ij = ij
-  {-# Inline [0] termStaticVar #-}
+  termStaticCheck _ _ = 1#
+  {-# Inline [0] termStaticVar   #-}
   {-# Inline [0] termStreamIndex #-}
+  {-# Inline [0] termStaticCheck #-}
 
 instance TermStaticVar Epsilon (Subword O) where
   termStaticVar _ sv _ = sv
   termStreamIndex _ _ ij = ij
-  {-# Inline [0] termStaticVar #-}
+  termStaticCheck _ _ = 1#
+  {-# Inline [0] termStaticVar   #-}
   {-# Inline [0] termStreamIndex #-}
+  {-# Inline [0] termStaticCheck #-}
 

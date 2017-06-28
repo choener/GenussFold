@@ -11,34 +11,11 @@ license-file:   LICENSE
 build-type:     Simple
 stability:      experimental
 cabal-version:  >= 1.10.0
-tested-with:    GHC == 7.8.4, GHC == 7.10.3, GHC == 8.0.1
-synopsis:       Efficient, high-level dynamic programming.
+tested-with:    GHC == 7.10.3, GHC == 8.0.1
+synopsis:       Efficient, high-level dynamic programming for CFGs on strings
 description:
                 <http://www.bioinf.uni-leipzig.de/Software/gADP/ generalized Algebraic Dynamic Programming>
                 .
-                ADPfusion combines stream-fusion (using the stream interface
-                provided by the vector library) and type-level programming to
-                provide highly efficient dynamic programming combinators.
-                .
-                ADPfusion allows writing dynamic programs for single- and
-                multi-tape problems. Inputs can be sequences, or sets. New
-                input types can be defined, without having to rewrite this
-                library thanks to the open-world assumption of ADPfusion.
-                .
-                The library provides the machinery for Outside and Ensemble
-                algorithms as well. Ensemble algorithms combine Inside and
-                Outside calculations.
-                .
-                Starting with version 0.4.1 we support writing multiple
-                context-free grammars (interleaved syntactic variables). Such
-                grammars have applications in bioinformatics and linguistics.
-                .
-                The homepage provides a number of tutorial-style examples, with
-                linear and context-free grammars over sequence and set inputs.
-                .
-                The formal background for generalized algebraic dynamic
-                progrmaming and ADPfusion is described in a number of papers.
-                These can be found on the gADP homepage and in the README.
                 .
 
 
@@ -76,7 +53,7 @@ library
                , tuple              >= 0.3
                , vector             >= 0.11
                --
-               , ADPfusion          == 0.5.2.*
+               , ADPfusion          == 0.5.3.*
                , DPutils            == 0.0.1.*
                , OrderedBits        == 0.0.1.*
                , PrimitiveArray     == 0.8.0.*
@@ -104,6 +81,7 @@ library
                     , FlexibleInstances
                     , GADTs
                     , KindSignatures
+                    , MagicHash
                     , MultiParamTypeClasses
                     , RankNTypes
                     , RecordWildCards
