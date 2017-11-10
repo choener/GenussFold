@@ -1,3 +1,9 @@
+0.0.2.0
+-------
+
+- Data.ByteString.Streaming.Split with generic splitting operations for the
+  bytestring-streaming library
+
 0.0.1.0
 -------
 
