@@ -1,3 +1,8 @@
+0.0.1.0
+-------
+
+- structured forests, mostly for secondary structures of RNA
+
 0.0.0.2
 -------
 

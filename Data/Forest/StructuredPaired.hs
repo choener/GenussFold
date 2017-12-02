@@ -24,7 +24,7 @@ data SPForest r t
   -- monoid @SPJ (SPR a) (SPR b) `equiv` SPR (a<>b)@ should hold.
   = SPR r
   -- | A tree within the forest brackets the forest on the left and right side
-  -- with elements of type @r@.
+  -- with elements of type @t@.
   | SPT t (SPForest r t) t
   -- | Juxtaposition of two forests. This allows for simple concatenation of
   -- forests. In particular, there is no particular position, while lists
