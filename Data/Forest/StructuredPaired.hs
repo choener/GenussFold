@@ -29,7 +29,7 @@ data SPForest r t
   -- | Juxtaposition of two forests. This allows for simple concatenation of
   -- forests. In particular, there is no particular position, while lists
   -- prefer @x:xs@ vs @xs++[x]@.
-  | SPJ (SPForest r t) (SPForest r t)
+  | SPJ [SPForest r t]
   -- | An empty forest. @SPJ SPE SPE `equiv` SPE@ should hold.
   | SPE
   deriving (Read,Show,Eq,Ord,Generic)
@@ -39,19 +39,19 @@ instance Bifunctor SPForest where
   first f = \case
     SPR r     → SPR (f r)
     SPT l t r → SPT l (first f t) r
-    SPJ l   r → SPJ (first f l) (first f r)
+    SPJ xs    → SPJ (map (first f) xs)
     SPE       → SPE
   {-# Inlinable first #-}
   second g = \case
     SPR r     → SPR r
     SPT l t r → SPT (g l) (second g t) (g r)
-    SPJ l   r → SPJ (second g l) (second g r)
+    SPJ xs    → SPJ (map (second g) xs)
     SPE       → SPE
   {-# Inlinable second #-}
   bimap f g = \case
     SPR r     → SPR (f r)
     SPT l t r → SPT (g l) (bimap f g t) (g r)
-    SPJ l   r → SPJ (bimap f g l) (bimap f g r)
+    SPJ xs    → SPJ (map (bimap f g) xs)
     SPE       → SPE
   {-# Inlinable bimap #-}
 
@@ -59,7 +59,7 @@ instance Bifoldable SPForest where
   bifoldMap f g = \case
     SPR r     → f r
     SPT l t r → g l <> bifoldMap f g t <> g r
-    SPJ l   r → bifoldMap f g l <> bifoldMap f g r
+    SPJ xs    → error "Bifoldable" -- mconcatMap (bifoldMap f g) xs
     SPE       → mempty
   {-# Inlinable bifoldMap #-}
 
@@ -67,7 +67,7 @@ instance Bitraversable SPForest where
   bitraverse f g = \case
     SPR r     → SPR <$> f r
     SPT l t r → SPT <$> g l <*> bitraverse f g t <*> g r
-    SPJ l   r → SPJ <$> bitraverse f g l <*> bitraverse f g r
+    SPJ xs    → error "Bitraversable" -- SPJ <$> bitraverse f g l <*> bitraverse f g r
     SPE       → pure SPE
   {-# Inlinable bitraverse #-}
 
