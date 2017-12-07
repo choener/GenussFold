@@ -27,25 +27,25 @@ import           ADP.Fusion.Subword
 
 
 
--- * Epsilon
-
-prop_I_Epsilon ix@(Subword (i:.j)) = zs == ls where
-  zs = (id <<< Epsilon ... stoList) maxSWi ix
-  ls = [ () | i==j ]
-
-prop_O_Epsilon ix@(Subword (i:.j)) = zs == ls where
-  zs = (id <<< Epsilon ... stoList) maxSWo ix
-  ls = [ () | ix == maxSWo ]
-
--- * Deletion
-
-prop_I_ItNC ix@(Subword (i:.j)) = zs == ls where
-  t = TW (ITbl 0 0 EmptyOk xsS) (\ (_::Subword I) (_::Subword I) -> Id (1::Int,1::Int))
-  zs = ((,,) <<< t % Deletion % chr csS ... stoList) maxSWi ix
-  ls = [ ( unsafeIndex xsS (subwordI i (j-1))
-         , ()
-         , csS VU.! (j-1)
-         ) | i >= 0, j >= 1, i<j, j <= highest ]
+---- * Epsilon
+--
+--prop_I_Epsilon ix@(Subword (i:.j)) = zs == ls where
+--  zs = (id <<< Epsilon ... stoList) maxSWi ix
+--  ls = [ () | i==j ]
+--
+--prop_O_Epsilon ix@(Subword (i:.j)) = zs == ls where
+--  zs = (id <<< Epsilon ... stoList) maxSWo ix
+--  ls = [ () | ix == maxSWo ]
+--
+---- * Deletion
+--
+--prop_I_ItNC ix@(Subword (i:.j)) = zs == ls where
+--  t = TW (ITbl 0 0 EmptyOk xsS) (\ (_::Subword I) (_::Subword I) -> Id (1::Int,1::Int))
+--  zs = ((,,) <<< t % Deletion % chr csS ... stoList) maxSWi ix
+--  ls = [ ( unsafeIndex xsS (subwordI i (j-1))
+--         , ()
+--         , csS VU.! (j-1)
+--         ) | i >= 0, j >= 1, i<j, j <= highest ]
 
 -- * Outside checks
 
@@ -214,24 +214,24 @@ stoList = unId . SM.toList
 
 highest = 20
 
-maxSWi :: Subword I
-maxSWi = subword 0 highest
-
-maxSWo :: Subword O
-maxSWo = subword 0 highest
-
-csS :: VU.Vector (Int,Int)
-csS = VU.fromList [ (i,i+1) | i <- [0 .. highest-1] ] -- this should be @highest -1@, we should die if we see @(highest,highest+1)@
-
-xsS :: Unboxed (Subword I) (Int,Int)
-xsS = fromList (subword 0 0) (subword 0 highest) [ (i,j) | i <- [ 0 .. highest ] , j <- [ i .. highest ] ]
-
-xoS :: Unboxed (Subword O) (Int,Int)
-xoS = fromList (subword 0 0) (subword 0 highest) [ (i,j) | i <- [ 0 .. highest ] , j <- [ i .. highest ] ]
-
-xsSS :: Unboxed (Z:.Subword I:.Subword I) ( (Int,Int) , (Int,Int) )
-xsSS = fromAssocs (Z:.subword 0 0:.subword 0 0) (Z:.subword 0 highest:.subword 0 highest) ((-1,-1),(-1,-1))
-        $ Prelude.map (\((i,j),(k,l)) -> (Z:.subword i j:.subword k l, ((i,j),(k,l)) )) [ ((i,j) , (k,l)) | i <- [0 .. highest], j <-[i .. highest], k <- [0 .. highest], l <- [0 .. highest] ]
+--maxSWi :: Subword I
+--maxSWi = subword 0 highest
+--
+--maxSWo :: Subword O
+--maxSWo = subword 0 highest
+--
+--csS :: VU.Vector (Int,Int)
+--csS = VU.fromList [ (i,i+1) | i <- [0 .. highest-1] ] -- this should be @highest -1@, we should die if we see @(highest,highest+1)@
+--
+--xsS :: Unboxed (Subword I) (Int,Int)
+--xsS = fromList (subword 0 0) (subword 0 highest) [ (i,j) | i <- [ 0 .. highest ] , j <- [ i .. highest ] ]
+--
+--xoS :: Unboxed (Subword O) (Int,Int)
+--xoS = fromList (subword 0 0) (subword 0 highest) [ (i,j) | i <- [ 0 .. highest ] , j <- [ i .. highest ] ]
+--
+--xsSS :: Unboxed (Z:.Subword I:.Subword I) ( (Int,Int) , (Int,Int) )
+--xsSS = fromAssocs (Z:.subword 0 0:.subword 0 0) (Z:.subword 0 highest:.subword 0 highest) ((-1,-1),(-1,-1))
+--        $ Prelude.map (\((i,j),(k,l)) -> (Z:.subword i j:.subword k l, ((i,j),(k,l)) )) [ ((i,j) , (k,l)) | i <- [0 .. highest], j <-[i .. highest], k <- [0 .. highest], l <- [0 .. highest] ]
 
 -- * general quickcheck stuff
 
