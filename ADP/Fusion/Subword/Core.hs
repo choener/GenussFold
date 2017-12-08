@@ -2,7 +2,7 @@
 -- | Instances to allow 'Subword's to be used as index structures in
 -- @ADPfusion@.
 
-module ADP.Fusion.Core.Subword where
+module ADP.Fusion.Subword.Core where
 
 import Data.Vector.Fusion.Stream.Monadic (singleton,filter,enumFromStepN,map,unfoldr)
 import Debug.Trace
@@ -11,10 +11,13 @@ import GHC.Exts
 
 import Data.PrimitiveArray hiding (map)
 
-import ADP.Fusion.Core.Classes
-import ADP.Fusion.Core.Multi
+import ADP.Fusion.Core
 
 
+
+type instance InitialContext (Subword I) = IStatic 0
+
+{-
 
 instance RuleContext (Subword I) where
   type Context (Subword I) = InsideContext ()
@@ -30,6 +33,7 @@ instance RuleContext (Subword C) where
   type Context (Subword C) = ComplementContext
   initialContext _ = Complemented
   {-# Inline initialContext #-}
+-}
 
 -- | The moving index @k@ in @Subword (i:.k)@.
 
@@ -57,17 +61,27 @@ data instance RunningIndex (Subword C) = RiSwC !Int !Int
 --
 -- TODO shouldn't the new @staticCheck@ impl handle this?
 
-instance (Monad m) => MkStream m S (Subword I) where
-  mkStream grd S (IStatic ()) (Subword (_:.h)) (Subword (I# i:.I# j))
-    = staticCheck# (grd `andI#` (0# <=# i) `andI#` (i <=# j))
-    . singleton
-    . ElmS $ RiSwI (I# i)
-  mkStream grd S (IVariable ()) (Subword (_:.h)) (Subword (I# i:.I# j))
+instance
+  ( Monad m
+  )
+  ⇒ MkStream m (IStatic d) S (Subword I) where
+  mkStream Proxy S grd (LtSubword (I# h)) (Subword (I# i:.I# j))
     = staticCheck# (grd `andI#` (0# <=# i) `andI#` (i <=# j))
     . singleton
     . ElmS $ RiSwI (I# i)
   {-# Inline mkStream #-}
 
+instance
+  ( Monad m
+  )
+  ⇒ MkStream m (IVariable d) S (Subword I) where
+  mkStream Proxy grd S (IVariable ()) (Subword (_:.h)) (Subword (I# i:.I# j))
+    = staticCheck# (grd `andI#` (0# <=# i) `andI#` (i <=# j))
+    . singleton
+    . ElmS $ RiSwI (I# i)
+  {-# Inline mkStream #-}
+
+{-
 instance (Monad m) => MkStream m S (Subword O) where
   mkStream grd S (OStatic (di:.I# dj)) (Subword (_:.I# h)) (Subword (I# i:.I# j))
     = staticCheck# (grd `andI#` (i ==# 0#) `andI#` ((j +# dj) ==# h))
@@ -158,4 +172,6 @@ instance TableStaticVar (u O) c (Subword C) where
   tableStreamIndex _ c _ (Subword (i:.j)) = subword i j
   {-# INLINE [0] tableStaticVar   #-}
   {-# INLINE [0] tableStreamIndex #-}
+
+-}
 
