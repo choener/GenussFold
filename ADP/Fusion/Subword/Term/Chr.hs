@@ -1,5 +1,5 @@
 
-module ADP.Fusion.Term.Chr.Subword where
+module ADP.Fusion.Subword.Term.Chr where
 
 import           Data.Proxy
 import           Data.Strict.Tuple
@@ -13,17 +13,30 @@ import qualified Data.Vector.Generic as VG
 import           Data.PrimitiveArray hiding (map)
 
 import           ADP.Fusion.Core
-import           ADP.Fusion.Core.Subword
+import           ADP.Fusion.Subword.Core
 
+
+
+type instance LeftPosTy (IStatic d)   (Chr r x) (Subword I) = IStatic   d
+type instance LeftPosTy (IVariable d) (Chr r x) (Subword I) = IVariable d
 
 
 instance
-  ( TmkCtx1 m ls (Chr r x) (Subword i)
-  ) => MkStream m (ls :!: Chr r x) (Subword i) where
-  mkStream grd (ls :!: Chr f xs) sv us is
+  forall pos posLeft m ls i r x
+  . ( TermStream m (Z:.pos) (TermSymbol M (Chr r x)) (Elm (Term1 (Elm ls (Subword i))) (Z:.Subword i)) (Z:.Subword i)
+    , posLeft ~ LeftPosTy pos (Chr r x) (Subword i)
+    , TermStaticVar pos (Chr r x) (Subword i)
+    , MkStream m posLeft ls (Subword i)
+  )
+  ⇒ MkStream m pos (ls :!: (Chr r x)) (Subword i) where
+  mkStream Proxy (ls :!: Chr f xs) grd us is
     = S.map (\(ss,ee,ii) -> ElmChr ee ii ss)
-    . addTermStream1 (Chr f xs) sv us is
-    $ mkStream (grd `andI#` termStaticCheck (Chr f xs) is) ls (termStaticVar (Chr f xs) sv is) us (termStreamIndex (Chr f xs) sv is)
+    . addTermStream1 (Proxy ∷ Proxy pos) (Chr f xs) us is
+    $ mkStream (Proxy ∷ Proxy posLeft)
+               ls
+               (grd `andI#` termStaticCheck (Proxy ∷ Proxy pos) (Chr f xs) is)
+               us
+               (termStreamIndex (Proxy ∷ Proxy pos) (Chr f xs) is)
   {-# Inline mkStream #-}
 
 
@@ -37,21 +50,26 @@ instance
 -- TODO lets see if this is still true with the new @grd@ system
 
 instance
-  ( TstCtx m ts s x0 i0 is (Subword I)
-  ) => TermStream m (TermSymbol ts (Chr r x)) s (is:.Subword I) where
-  termStream (ts:|Chr f xs) (cs:.IStatic ()) (us:.u) (is:.Subword (i:.j))
+  ( TstCtx m ps ts s x0 i0 is (Subword I)
+  ) => TermStream m (ps:.IStatic d) (TermSymbol ts (Chr r x)) s (is:.Subword I) where
+  termStream Proxy (ts:|Chr f xs) (us:..u) (is:.Subword (i:.j))
     = id -- staticCheck (i>=0 && i < j && j <= VG.length xs)
     . map (\(TState s ii ee) ->
               TState s (ii:.: RiSwI j) (ee:.f xs (j-1)) )
-    . termStream ts cs us is
-  --
-  termStream (ts:|Chr f xs) (cs:.IVariable ()) (us:.u) (is:.Subword (i:.j))
+    . termStream (Proxy ∷ Proxy ps) ts us is
+  {-# Inline termStream #-}
+
+instance
+  ( TstCtx m ps ts s x0 i0 is (Subword I)
+  ) => TermStream m (ps:.IVariable d) (TermSymbol ts (Chr r x)) s (is:.Subword I) where
+  termStream Proxy (ts:|Chr f xs) (us:..u) (is:.Subword (i:.j))
     = map (\(TState s ii ee) ->
               let RiSwI l = getIndex (getIdx s) (Proxy :: PRI is (Subword I))
               in  TState s (ii:.:RiSwI (l+1)) (ee:.f xs l) )
-    . termStream ts cs us is
+    . termStream (Proxy ∷ Proxy ps) ts us is
   {-# Inline termStream #-}
 
+{-
 instance
   ( TstCtx m ts s x0 i0 is (Subword O)
   ) => TermStream m (TermSymbol ts (Chr r x)) s (is:.Subword O) where
@@ -81,17 +99,22 @@ instance
               in  TState s (ii:.:RiSwO k (k+1) oi oj) (ee:.f xs k) )
     . termStream ts cs us is
   {-# Inline termStream #-}
+-}
 
 
-
-instance TermStaticVar (Chr r x) (Subword I) where
-  termStaticVar _ sv _ = sv
-  termStreamIndex _ _ (Subword (i:.j)) = subword i (j-1)
-  termStaticCheck _ _ = 1#
-  {-# Inline [0] termStaticVar   #-}
+instance TermStaticVar (IStatic d) (Chr r x) (Subword I) where
+  termStreamIndex Proxy (Chr f x) (Subword (i:.j)) = subword i (j-1)
+  termStaticCheck Proxy (Chr f x) (Subword (i:.j)) = 1#
   {-# Inline [0] termStreamIndex #-}
   {-# Inline [0] termStaticCheck #-}
 
+instance TermStaticVar (IVariable d) (Chr r x) (Subword I) where
+  termStreamIndex Proxy (Chr f x) (Subword (i:.j)) = subword i (j-1)
+  termStaticCheck Proxy (Chr f x) (Subword (i:.j)) = 1#
+  {-# Inline [0] termStreamIndex #-}
+  {-# Inline [0] termStaticCheck #-}
+
+{-
 instance TermStaticVar (Chr r x) (Subword O) where
   termStaticVar _ (OStatic    (di:.dj)) _ = OStatic    (di  :.dj+1)
   termStaticVar _ (ORightOf   (di:.dj)) _ = ORightOf   (di  :.dj+1)
@@ -102,4 +125,5 @@ instance TermStaticVar (Chr r x) (Subword O) where
   {-# Inline [0] termStaticVar   #-}
   {-# Inline [0] termStreamIndex #-}
   {-# Inline [0] termStaticCheck #-}
+-}
 
