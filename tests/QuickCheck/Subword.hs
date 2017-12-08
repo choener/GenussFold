@@ -27,12 +27,16 @@ import           ADP.Fusion.Subword
 
 
 
----- * Epsilon
---
---prop_I_Epsilon ix@(Subword (i:.j)) = zs == ls where
---  zs = (id <<< Epsilon ... stoList) maxSWi ix
---  ls = [ () | i==j ]
---
+-- * Epsilon
+
+prop_I_Epsilon ix@(Subword (i:.j)) = zs == ls where
+  zs = (id <<< Epsilon ... stoList) maxSWi ix
+  ls = [ () | i==j ]
+
+prop_Z1I_Epsilon ix@(Z:.Subword (i:.j)) = zs == ls where
+  zs = (id <<< (M:|Epsilon) ... stoList) (ZZ:..maxSWi) ix
+  ls = [ Z:.() | i==j ]
+
 --prop_O_Epsilon ix@(Subword (i:.j)) = zs == ls where
 --  zs = (id <<< Epsilon ... stoList) maxSWo ix
 --  ls = [ () | ix == maxSWo ]
@@ -214,9 +218,9 @@ stoList = unId . SM.toList
 
 highest = 20
 
---maxSWi :: Subword I
---maxSWi = subword 0 highest
---
+maxSWi :: LimitType (Subword I)
+maxSWi = LtSubword highest
+
 --maxSWo :: Subword O
 --maxSWo = subword 0 highest
 --

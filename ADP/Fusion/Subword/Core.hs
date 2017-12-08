@@ -63,6 +63,7 @@ data instance RunningIndex (Subword C) = RiSwC !Int !Int
 
 instance
   ( Monad m
+  , KnownNat d
   )
   ⇒ MkStream m (IStatic d) S (Subword I) where
   mkStream Proxy S grd (LtSubword (I# h)) (Subword (I# i:.I# j))
@@ -75,7 +76,7 @@ instance
   ( Monad m
   )
   ⇒ MkStream m (IVariable d) S (Subword I) where
-  mkStream Proxy grd S (IVariable ()) (Subword (_:.h)) (Subword (I# i:.I# j))
+  mkStream Proxy S grd (LtSubword (I# h)) (Subword (I# i:.I# j))
     = staticCheck# (grd `andI#` (0# <=# i) `andI#` (i <=# j))
     . singleton
     . ElmS $ RiSwI (I# i)
@@ -115,19 +116,27 @@ instance (Monad m) => MkStream m S (Subword C) where
             | otherwise    = Just ( (k,l) , (k  ,l+1) )
           {-# Inline [0] go #-}
   {-# Inline mkStream #-}
+-}
 
 instance
   ( Monad m
-  , MkStream m S is
-  ) => MkStream m S (is:.Subword I) where
-  mkStream grd S (vs:.IStatic ()) (lus:.Subword (_:.h)) (ixs:.Subword(I# i:.I# j))
+  , MkStream m ps S is
+  ) => MkStream m (ps:.IStatic d) S (is:.Subword I) where
+  mkStream Proxy S grd (lus:..LtSubword (I# h)) (ixs:.Subword(I# i:.I# j))
     = map (\(ElmS zi) -> ElmS (zi:.:RiSwI (I# i)))
-    $ mkStream (grd `andI#` (0# <=# i) `andI#` (i ==# j)) S vs lus ixs
-  mkStream grd S (vs:.IVariable ()) (lus:.Subword (_:.h)) (ixs:.Subword (I# i:.I# j))
-    = map (\(ElmS zi) -> ElmS (zi:.:RiSwI (I# i)))
-    $ mkStream (grd `andI#` (0# <=# i) `andI#` (i <=# j)) S vs lus ixs
+    $ mkStream (Proxy ∷ Proxy ps) S (grd `andI#` (0# <=# i) `andI#` (i ==# j)) lus ixs
   {-# Inline mkStream #-}
 
+instance
+  ( Monad m
+  , MkStream m ps S is
+  ) => MkStream m (ps:.IVariable d) S (is:.Subword I) where
+  mkStream Proxy S grd (lus:..LtSubword (I# h)) (ixs:.Subword(I# i:.I# j))
+    = map (\(ElmS zi) -> ElmS (zi:.:RiSwI (I# i)))
+    $ mkStream (Proxy ∷ Proxy ps) S (grd `andI#` (0# <=# i) `andI#` (i <=# j)) lus ixs
+  {-# Inline mkStream #-}
+
+{-
 instance (MinSize c) => TableStaticVar u c (Subword I) where
   tableStaticVar _ _ (IStatic   d) _ = IVariable d
   tableStaticVar _ _ (IVariable d) _ = IVariable d

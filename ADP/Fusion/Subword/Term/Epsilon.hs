@@ -1,40 +1,54 @@
 
-module ADP.Fusion.Term.Epsilon.Subword where
+module ADP.Fusion.Subword.Term.Epsilon where
 
 import Data.Proxy
 import Data.Strict.Tuple
 import Data.Vector.Fusion.Stream.Monadic as S
 import GHC.Exts
+import GHC.TypeLits
 import Prelude hiding (map)
 
 import Data.PrimitiveArray hiding (map)
 
 import ADP.Fusion.Core
-import ADP.Fusion.Core.Subword
+import ADP.Fusion.Subword.Core
 
 
+
+type instance LeftPosTy (IStatic d) Epsilon (Subword I) = IStatic d
 
 instance
-  ( TmkCtx1 m ls Epsilon (Subword i)
-  ) => MkStream m (ls :!: Epsilon) (Subword i) where
-  mkStream grd (ls :!: Epsilon) sv us is
+  forall pos posLeft m ls i
+  . ( TermStream m (Z:.pos) (TermSymbol M Epsilon) (Elm (Term1 (Elm ls (Subword i))) (Z:.Subword i)) (Z:.Subword i)
+    , posLeft ~ LeftPosTy pos Epsilon (Subword i)
+    , TermStaticVar pos Epsilon (Subword i)
+    , MkStream m posLeft ls (Subword i)
+  )
+  ⇒ MkStream m pos (ls :!: Epsilon) (Subword i) where
+  mkStream Proxy (ls :!: Epsilon) grd us is
     = map (\(ss,ee,ii) -> ElmEpsilon ii ss)
-    . addTermStream1 Epsilon sv us is
-    $ mkStream (grd `andI#` termStaticCheck Epsilon is) ls (termStaticVar Epsilon sv is) us (termStreamIndex Epsilon sv is)
+    . addTermStream1 (Proxy ∷ Proxy pos) Epsilon us is
+    $ mkStream (Proxy ∷ Proxy posLeft)
+               ls
+               (grd `andI#` termStaticCheck (Proxy ∷ Proxy pos) Epsilon is)
+               us
+               (termStreamIndex (Proxy ∷ Proxy pos) Epsilon is)
   {-# Inline mkStream #-}
 
 
-
 instance
-  ( TstCtx m ts s x0 i0 is (Subword I)
-  ) => TermStream m (TermSymbol ts Epsilon) s (is:.Subword I) where
-  termStream (ts:|Epsilon) (cs:.IStatic ()) (us:.u) (is:.Subword (i:.j))
+  ( TstCtx m ps ts s x0 i0 is (Subword I)
+  )
+  ⇒ TermStream m (ps:.IStatic d) (TermSymbol ts Epsilon) s (is:.Subword I) where
+  termStream Proxy (ts:|Epsilon) (us:..u) (is:.Subword (i:.j))
     = map (\(TState s ii ee) ->
               TState s (ii:.:RiSwI j) (ee:.()) )
-    . termStream ts cs us is
+    . termStream (Proxy ∷ Proxy ps) ts us is
     . staticCheck (i==j)
   {-# Inline termStream #-}
 
+
+{-
 instance
   ( TstCtx m ts s xi0 i0 is (Subword O)
   ) => TermStream m (TermSymbol ts Epsilon) s (is:.Subword O) where
@@ -45,17 +59,16 @@ instance
               in  TState s (ii:.:io) (ee:.()) )
     . termStream ts cs us is
   {-# Inline termStream #-}
+-}
 
 
-
-instance TermStaticVar Epsilon (Subword I) where
-  termStaticVar _ sv _ = sv
-  termStreamIndex _ _ ij = ij
-  termStaticCheck _ _ = 1#
-  {-# Inline [0] termStaticVar   #-}
+instance TermStaticVar (IStatic 0) Epsilon (Subword I) where
+  termStreamIndex Proxy Epsilon ij = ij
+  termStaticCheck Proxy Epsilon ij = 1#
   {-# Inline [0] termStreamIndex #-}
   {-# Inline [0] termStaticCheck #-}
 
+{-
 instance TermStaticVar Epsilon (Subword O) where
   termStaticVar _ sv _ = sv
   termStreamIndex _ _ ij = ij
@@ -63,4 +76,5 @@ instance TermStaticVar Epsilon (Subword O) where
   {-# Inline [0] termStaticVar   #-}
   {-# Inline [0] termStreamIndex #-}
   {-# Inline [0] termStaticCheck #-}
+-}
 

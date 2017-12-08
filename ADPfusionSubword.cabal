@@ -67,7 +67,7 @@ library
 --    ADP.Fusion.SynVar.Split.Subword
 --    ADP.Fusion.Term.Chr.Subword
 --    ADP.Fusion.Term.Deletion.Subword
---    ADP.Fusion.Term.Epsilon.Subword
+    ADP.Fusion.Subword.Term.Epsilon
 --    ADP.Fusion.Term.PeekIndex.Subword
 --    ADP.Fusion.Term.Strng.Subword
 
@@ -82,6 +82,7 @@ library
                     , KindSignatures
                     , MagicHash
                     , MultiParamTypeClasses
+                    , PolyKinds
                     , RankNTypes
                     , RecordWildCards
                     , ScopedTypeVariables
@@ -388,6 +389,7 @@ test-suite properties
 --               , test-framework-th            >= 0.2  && < 0.3
                , vector
                --
+               , ADPfusion
                , ADPfusionSubword
                , OrderedBits
                , PrimitiveArray
