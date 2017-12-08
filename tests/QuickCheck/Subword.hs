@@ -40,8 +40,17 @@ prop_Z1I_Epsilon ix@(Z:.Subword (i:.j)) = zs == ls where
 --prop_O_Epsilon ix@(Subword (i:.j)) = zs == ls where
 --  zs = (id <<< Epsilon ... stoList) maxSWo ix
 --  ls = [ () | ix == maxSWo ]
---
----- * Deletion
+
+-- * Deletion
+
+prop_I_Deletion ix@(Subword (i:.j)) = zs == ls where
+  zs = (id <<< deletion ... stoList) maxSWi ix
+  ls = [ () | i<=j ]
+
+prop_Z1I_Deletion ix@(Z:.Subword (i:.j)) = zs == ls where
+  zs = (id <<< (M:|Deletion) ... stoList) (ZZ:..maxSWi) ix
+  ls = [ Z:.() | i<=j ]
+
 --
 --prop_I_ItNC ix@(Subword (i:.j)) = zs == ls where
 --  t = TW (ITbl 0 0 EmptyOk xsS) (\ (_::Subword I) (_::Subword I) -> Id (1::Int,1::Int))

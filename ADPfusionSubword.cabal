@@ -65,8 +65,8 @@ library
 --    ADP.Fusion.SynVar.Indices.Subword
 --    ADP.Fusion.SynVar.Recursive.Subword
 --    ADP.Fusion.SynVar.Split.Subword
---    ADP.Fusion.Term.Chr.Subword
---    ADP.Fusion.Term.Deletion.Subword
+    ADP.Fusion.Subword.Term.Chr
+    ADP.Fusion.Subword.Term.Deletion
     ADP.Fusion.Subword.Term.Epsilon
 --    ADP.Fusion.Term.PeekIndex.Subword
 --    ADP.Fusion.Term.Strng.Subword

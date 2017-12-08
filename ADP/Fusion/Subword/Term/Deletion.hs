@@ -1,5 +1,5 @@
 
-module ADP.Fusion.Term.Deletion.Subword where
+module ADP.Fusion.Subword.Term.Deletion where
 
 import Data.Proxy
 import Data.Strict.Tuple
@@ -10,34 +10,54 @@ import Prelude hiding (map)
 import Data.PrimitiveArray hiding (map)
 
 import ADP.Fusion.Core
-import ADP.Fusion.Core.Subword
+import ADP.Fusion.Subword.Core
 
 
+
+type instance LeftPosTy (IStatic d)   Deletion (Subword I) = IStatic d
+type instance LeftPosTy (IVariable d) Deletion (Subword I) = IVariable d
 
 instance
-  ( TmkCtx1 m ls Deletion (Subword i)
-  ) => MkStream m (ls :!: Deletion) (Subword i) where
-  mkStream grd (ls :!: Deletion) sv us is
+  forall pos posLeft m ls i
+  . ( TermStream m (Z:.pos) (TermSymbol M Deletion) (Elm (Term1 (Elm ls (Subword i))) (Z:.Subword i)) (Z:.Subword i)
+    , posLeft ~ LeftPosTy pos Deletion (Subword i)
+    , TermStaticVar pos Deletion (Subword i)
+    , MkStream m posLeft ls (Subword i)
+  )
+  ⇒ MkStream m pos (ls :!: Deletion) (Subword i) where
+  mkStream Proxy (ls :!: Deletion) grd us is
     = map (\(ss,ee,ii) -> ElmDeletion ii ss)
-    . addTermStream1 Deletion sv us is
-    $ mkStream (grd `andI#` termStaticCheck Deletion is) ls (termStaticVar Deletion sv is) us (termStreamIndex Deletion sv is)
+    . addTermStream1 (Proxy ∷ Proxy pos) Deletion us is
+    $ mkStream (Proxy ∷ Proxy posLeft)
+               ls
+               (grd `andI#` termStaticCheck (Proxy ∷ Proxy pos) Deletion is)
+               us
+               (termStreamIndex (Proxy ∷ Proxy pos) Deletion is)
   {-# Inline mkStream #-}
 
 
 
 instance
-  ( TstCtx m ts s x0 i0 is (Subword I)
-  ) => TermStream m (TermSymbol ts Deletion) s (is:.Subword I) where
-  termStream (ts:|Deletion) (cs:.IStatic d) (us:.u) (is:.Subword (i:.j))
+  ( TstCtx m ps ts s x0 i0 is (Subword I)
+  )
+  ⇒ TermStream m (ps:.IStatic d) (TermSymbol ts Deletion) s (is:.Subword I) where
+  termStream Proxy (ts:|Deletion) (us:..LtSubword u) (is:.Subword (i:.j))
     = S.map (\(TState s ii ee) -> TState s (ii:.:RiSwI j) (ee:.()) )
-    . termStream ts cs us is
-  termStream (ts:|Deletion) (cs:.IVariable d) (us:.u) (is:.Subword (i:.j))
+    . termStream (Proxy ∷ Proxy ps) ts us is
+  {-# Inline termStream #-}
+
+instance
+  ( TstCtx m ps ts s x0 i0 is (Subword I)
+  )
+  ⇒ TermStream m (ps:.IVariable d) (TermSymbol ts Deletion) s (is:.Subword I) where
+  termStream Proxy (ts:|Deletion) (us:..LtSubword u) (is:.Subword (i:.j))
     = S.map (\(TState s ii ee) ->
                 let l = getIndex (getIdx s) (Proxy :: PRI is (Subword I))
                 in  TState s (ii:.:l) (ee:.()) )
-    . termStream ts cs us is
+    . termStream (Proxy ∷ Proxy ps) ts us is
   {-# Inline termStream #-}
 
+{-
 instance
   ( TstCtx m ts s x0 i0 is (Subword O)
   ) => TermStream m (TermSymbol ts Deletion) s (is:.Subword O) where
@@ -75,17 +95,16 @@ instance
     . termStream ts cs us is
   -}
   {-# Inline termStream #-}
+-}
 
 
-
-instance TermStaticVar Deletion (Subword I) where
-  termStaticVar _ sv _ = sv
-  termStreamIndex _ _ ij = ij
-  termStaticCheck _ _ = 1#
-  {-# Inline [0] termStaticVar   #-}
+instance TermStaticVar (IStatic 0) Deletion (Subword I) where
+  termStreamIndex Proxy Deletion ij = ij
+  termStaticCheck Proxy Deletion ij = 1#
   {-# Inline [0] termStreamIndex #-}
   {-# Inline [0] termStaticCheck #-}
 
+{-
 instance TermStaticVar Deletion (Subword O) where
   termStaticVar _ sv _ = sv
   termStreamIndex _ _ ij = ij
@@ -93,4 +112,5 @@ instance TermStaticVar Deletion (Subword O) where
   {-# Inline [0] termStaticVar   #-}
   {-# Inline [0] termStreamIndex #-}
   {-# Inline [0] termStaticCheck #-}
+-}
 
