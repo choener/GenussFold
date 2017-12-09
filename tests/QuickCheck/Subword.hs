@@ -208,6 +208,14 @@ prop_I_ItNC ix@(Subword (i:.j)) = zs == ls where
 --  ls = [ () | i==0 && j==highest ]
 
 
+-- ** Two synvars next to each other
+
+prop_I_SynSyn ix@(Subword (i:.j))
+  | zs == ls  = True
+  | otherwise = error $ show (zs,ls)
+  where zs = ((,) <<< tsI % tsI ... stoList) (LtSubword highest) (ix∷Subword I)
+        ls = [ ((i,k),(k,j)) | k ← [i..j] ]
+
 -- ** Multi-tape cases
 
 prop_I_2dimIt ix@(Z:.Subword (i:.j):.Subword (k:.l)) = zs === ls where
@@ -236,6 +244,14 @@ prop_I_2dimcItc ix@(Z:.Subword(i:.j):.Subword(k:.l)) = (j<=highest && l<=highest
          , Z :. (csS VU.! (j-1)) :. (csS VU.! (l-1)) )
        | j<=highest && l<=highest
        , i+2<=j && k+2<=l ]
+
+-- ** Complex
+
+prop_I_ChrSynChrSynChr ix@(Subword (i:.j))
+  | zs == ls  = True
+  | otherwise = error $ show (ix,zs,ls)
+  where zs = ((,,,,) <<< chr csS % tsI % chr csS % tsI % chr csS ... stoList) (LtSubword highest) (ix∷Subword I)
+        ls = [ (csS VU.! i, (i+1,k), csS VU.! k, (k+1,j-1), csS VU.! (j-1)) | k ← [i+1..j-2] ]
 
 
 

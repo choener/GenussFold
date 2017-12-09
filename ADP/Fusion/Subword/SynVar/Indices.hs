@@ -25,6 +25,9 @@ import ADP.Fusion.Subword.Core
 type instance LeftPosTy (IStatic d) (TwITbl m arr EmptyOk (Subword I) x) (Subword I) = IVariable d
 type instance LeftPosTy (IStatic d) (TwITblBt arr EmptyOk (Subword I) x mB mF r) (Subword I) = IVariable d
 
+type instance LeftPosTy (IVariable d) (TwITbl m arr EmptyOk (Subword I) x) (Subword I) = IVariable d
+type instance LeftPosTy (IVariable d) (TwITblBt arr EmptyOk (Subword I) x mB mF r) (Subword I) = IVariable d
+
 
 
 -- |
