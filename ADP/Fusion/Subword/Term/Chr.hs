@@ -53,8 +53,7 @@ instance
   ( TstCtx m ps ts s x0 i0 is (Subword I)
   ) => TermStream m (ps:.IStatic d) (TermSymbol ts (Chr r x)) s (is:.Subword I) where
   termStream Proxy (ts:|Chr f xs) (us:..u) (is:.Subword (i:.j))
-    = id -- staticCheck (i>=0 && i < j && j <= VG.length xs)
-    . map (\(TState s ii ee) ->
+    = map (\(TState s ii ee) ->
               TState s (ii:.: RiSwI j) (ee:.f xs (j-1)) )
     . termStream (Proxy ∷ Proxy ps) ts us is
   {-# Inline termStream #-}

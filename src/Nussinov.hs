@@ -109,10 +109,12 @@ runNussinov k inp = (d, take k bs) where
 {-# NOINLINE runNussinov #-}
 
 runInsideForward :: VU.Vector Char -> Z:.TwITbl Id Unboxed EmptyOk (Subword I) Int
-runInsideForward i = mutateTablesDefault
-                   $ grammar bpmax
-                       (chr i)
-                       (ITbl 0 0 EmptyOk (PA.fromAssocs (subword 0 0) (subword 0 n) (-999999) []))
+runInsideForward i = runST $ do
+  arr ← newWithPA (LtSubword n) (-999999)
+  mutateTablesNew $
+    grammar bpmax
+      (chr i)
+      (ITbl 0 0 EmptyOk arr)
   where n = VU.length i
 {-# NoInline runInsideForward #-}
 
