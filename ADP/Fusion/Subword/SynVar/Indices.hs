@@ -7,10 +7,10 @@
 -- is different; check if @coerce@ yields improved performance or if the
 -- compiler optimizes this out!
 
-module ADP.Fusion.SynVar.Indices.Subword where
+module ADP.Fusion.Subword.SynVar.Indices where
 
 import Data.Proxy
-import Data.Vector.Fusion.Stream.Monadic (map,Stream,head,mapM,Step(..),filter)
+import Data.Vector.Fusion.Stream.Monadic (map,Stream,head,mapM,Step(..),filter,flatten)
 import Data.Vector.Fusion.Util (delay_inline)
 import Prelude hiding (map,head,mapM,filter)
 import Debug.Trace
@@ -18,7 +18,12 @@ import Debug.Trace
 import Data.PrimitiveArray hiding (map)
 
 import ADP.Fusion.Core
-import ADP.Fusion.Core.Subword
+import ADP.Fusion.Subword.Core
+
+
+
+type instance LeftPosTy (IStatic d) (TwITbl m arr EmptyOk (Subword I) x) (Subword I) = IVariable d
+type instance LeftPosTy (IStatic d) (TwITblBt arr EmptyOk (Subword I) x mB mF r) (Subword I) = IVariable d
 
 
 
@@ -33,18 +38,25 @@ import ADP.Fusion.Core.Subword
 -- @
 
 instance
-  ( IndexHdr s x0 i0 us (Subword I) cs c is (Subword I)
+  ( IndexHdr ps elm x0 i0 cs c us (Subword I) is (Subword I)
   , MinSize c
-  ) => AddIndexDense s (us:.Subword I) (cs:.c) (is:.Subword I) where
-  addIndexDenseGo (cs:._) (vs:.IStatic ()) (lbs:._) (ubs:._) (us:.Subword (_:.u)) (is:.Subword (i:.j))
-    = id -- staticCheck (j<=u)
-    . map (\(SvS s t y') -> let RiSwI l = getIndex (getIdx s) (Proxy :: PRI is (Subword I))
+  )
+  ⇒ AddIndexDense (ps:.IStatic d) elm (cs:.c) (us:.Subword I) (is:.Subword I) where
+  addIndexDenseGo Proxy (cs:._) (ubs:.._) (us:..LtSubword u) (is:.Subword (i:.j))
+    = map (\(SvS s t y') -> let RiSwI l = getIndex (getIdx s) (Proxy :: PRI is (Subword I))
                                 lj = subword l j
                             in  SvS s (t:.lj) (y' :.: RiSwI j) )
-    . addIndexDenseGo cs vs lbs ubs us is
-  addIndexDenseGo (cs:.c) (vs:.IVariable ()) (lbs:._) (ubs:._) (us:.Subword (_:.u)) (is:.Subword (i:.j))
-    = seq csize . id --  staticCheck (j<=u)
-    . flatten mk step . addIndexDenseGo cs vs lbs ubs us is
+    . addIndexDenseGo (Proxy ∷ Proxy ps) cs ubs us is
+  {-# Inline addIndexDenseGo #-}
+
+instance
+  ( IndexHdr ps elm x0 i0 cs c us (Subword I) is (Subword I)
+  , MinSize c
+  )
+  ⇒ AddIndexDense (ps:.IVariable d) elm (cs:.c) (us:.Subword I) (is:.Subword I) where
+  addIndexDenseGo Proxy (cs:.c) (ubs:.._) (us:..LtSubword u) (is:.Subword (i:.j))
+    = seq csize
+    . flatten mk step . addIndexDenseGo (Proxy ∷ Proxy ps) cs ubs us is
     where mk   svS = let RiSwI l = getIndex (getIdx $ sS svS) (Proxy :: PRI is (Subword I))
                      in  return $ svS :. (j - l - csize)
           step (svS@(SvS s t y') :. zz)
@@ -57,6 +69,7 @@ instance
           {-# Inline [0] step #-}
   {-# Inline addIndexDenseGo #-}
 
+{-
 -- |
 -- @
 -- Table: Outside
@@ -187,5 +200,5 @@ instance
                               in  SvS s (t:.subword ki kj) (y':.:k))
     . addIndexDenseGo cs vs lbs ubs us is
   {-# Inline addIndexDenseGo #-}
-
+-}
 

@@ -136,14 +136,11 @@ instance
     $ mkStream (Proxy ∷ Proxy ps) S (grd `andI#` (0# <=# i) `andI#` (i <=# j)) lus ixs
   {-# Inline mkStream #-}
 
-{-
-instance (MinSize c) => TableStaticVar u c (Subword I) where
-  tableStaticVar _ _ (IStatic   d) _ = IVariable d
-  tableStaticVar _ _ (IVariable d) _ = IVariable d
-  tableStreamIndex _ c _ (Subword (i:.j)) = subword i (j - minSize c)
-  {-# INLINE [0] tableStaticVar   #-}
+instance (MinSize minSize) => TableStaticVar pos minSize u (Subword I) where
+  tableStreamIndex Proxy minSz _ (Subword (i:.j)) = subword i (j - minSize minSz)
   {-# INLINE [0] tableStreamIndex #-}
 
+{-
 -- | This instance is chosen if we consider an outside table (i.e.
 -- a syntactic variable) in an outside index.
 --

@@ -61,13 +61,13 @@ library
   exposed-modules:
     ADP.Fusion.Subword
     ADP.Fusion.Subword.Core
---    ADP.Fusion.SynVar.Array.TermSymbol.Subword
---    ADP.Fusion.SynVar.Indices.Subword
---    ADP.Fusion.SynVar.Recursive.Subword
---    ADP.Fusion.SynVar.Split.Subword
+    ADP.Fusion.Subword.SynVar.Indices
     ADP.Fusion.Subword.Term.Chr
     ADP.Fusion.Subword.Term.Deletion
     ADP.Fusion.Subword.Term.Epsilon
+--    ADP.Fusion.SynVar.Array.TermSymbol.Subword
+--    ADP.Fusion.SynVar.Recursive.Subword
+--    ADP.Fusion.SynVar.Split.Subword
 --    ADP.Fusion.Term.PeekIndex.Subword
 --    ADP.Fusion.Term.Strng.Subword
 
@@ -375,6 +375,7 @@ test-suite properties
                     , TypeFamilies
                     , TypeOperators
                     , TypeSynonymInstances
+                    , UnicodeSyntax
   cpp-options:
     -DADPFUSION_TEST_SUITE_PROPERTIES
   build-depends: base

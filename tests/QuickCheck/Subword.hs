@@ -56,14 +56,28 @@ prop_Z1I_Deletion ix@(Z:.Subword (i:.j))
   where zs = (id <<< (M:|Deletion) ... stoList) (ZZ:..maxSWi) ix
         ls = [ Z:.() | i==j ]
 
+-- * @Chr@
 --
---prop_I_ItNC ix@(Subword (i:.j)) = zs == ls where
---  t = TW (ITbl 0 0 EmptyOk xsS) (\ (_::Subword I) (_::Subword I) -> Id (1::Int,1::Int))
---  zs = ((,,) <<< t % Deletion % chr csS ... stoList) maxSWi ix
---  ls = [ ( unsafeIndex xsS (subwordI i (j-1))
---         , ()
---         , csS VU.! (j-1)
---         ) | i >= 0, j >= 1, i<j, j <= highest ]
+-- Single @Chr@ terminals are active on subword sizes of exactly @1@.
+
+prop_I_Chr ix@(Subword (i:.j)) = zs == ls where
+  zs = (id <<< chr csS ... stoList) maxSWi ix
+  ls = [ (i,j) | i+1==j ]
+
+prop_Z1I_Chr ix@(Z:.Subword (i:.j))
+  | zs == ls  = True
+  | otherwise = error $ show (zs,ls)
+  where zs = (id <<< (M:|chr csS) ... stoList) (ZZ:..maxSWi) ix
+        ls = [ Z:.(i,j) | i+1==j ]
+
+-- * Mixed symbols
+
+prop_I_ItNC ix@(Subword (i:.j)) = zs == ls where
+  zs = ((,,) <<< tsI % Deletion % chr csS ... stoList) maxSWi ix
+  ls = [ ( unsafeIndex xsS (subwordI i (j-1))
+         , ()
+         , csS VU.! (j-1)
+         ) | i >= 0, j >= 1, i<j, j <= highest ]
 
 -- * Outside checks
 
@@ -192,39 +206,36 @@ prop_Z1I_Deletion ix@(Z:.Subword (i:.j))
 --prop_O_Epsilon ox@(Subword (i:.j)) = zs === ls where
 --  zs = (id <<< Epsilon ... stoList) (maxSWo) ox
 --  ls = [ () | i==0 && j==highest ]
---
---
----- ** Multi-tape cases
---
---prop_I_2dimIt ix@(Z:.Subword (i:.j):.Subword (k:.l)) = zs === ls where
---  t = ITbl 0 0 (Z:.EmptyOk:.EmptyOk) xsSS (\ _ _ -> Id ((1,1),(1,1)))
---  zs = (id <<< t ... stoList) (Z:.subword 0 highest:.subword 0 highest) ix
---  ls = [ ( unsafeIndex xsSS ix ) | j<=highest && l<=highest ]
---
---prop_I_2dimcIt ix@(Z:.Subword(i:.j):.Subword(k:.l)) = {- traceShow (zs,ls) $ -} zs === ls where
---  t = ITbl 0 0 (Z:.EmptyOk:.EmptyOk) xsSS (\ _ _ -> Id ((1,1),(1,1)))
---  zs = ((,) <<< (M:|chr csS:|chr csS) % t ... stoList) (Z:.subwordI 0 highest:.subwordI 0 highest) ix
---  ls = [ ( Z :. (csS VU.! i) :. (csS VU.! k)
---         , unsafeIndex xsSS (Z :. subword (i+1) j :. subword (k+1) l) )
---       | j<=highest && l<=highest
---       , i+1<=j && k+1<=l ]
---
---prop_I_2dimItc ix@(Z:.Subword(i:.j):.Subword(k:.l)) = (j<=highest && l<=highest) ==> zs === ls where
---  t = ITbl 0 0 (Z:.EmptyOk:.EmptyOk) xsSS (\ _ _ -> Id ((1,1),(1,1)))
---  zs = ((,) <<< t % (M:|chr csS:|chr csS)  ... stoList) (Z:.subwordI 0 highest:.subwordI 0 highest) ix
---  ls = [ ( unsafeIndex xsSS (Z :. subword i (j-1) :. subword k (l-1))
---         , Z :. (csS VU.! (j-1)) :. (csS VU.! (l-1)) )
---       | j<=highest && l<=highest
---       , i+1<=j && k+1<=l ]
---
---prop_I_2dimcItc ix@(Z:.Subword(i:.j):.Subword(k:.l)) = (j<=highest && l<=highest) ==> zs === ls where
---  t = ITbl 0 0 (Z:.EmptyOk:.EmptyOk) xsSS (\ _ _ -> Id ((1,1),(1,1)))
---  zs = ((,,) <<< (M:|chr csS:|chr csS) % t % (M:|chr csS:| chr csS) ... stoList) (Z:.subwordI 0 highest:.subwordI 0 highest) ix
---  ls = [ ( Z :. (csS VU.! i) :. (csS VU.! k)
---         , unsafeIndex xsSS (Z :. subword (i+1) (j-1) :. subword (k+1) (l-1))
---         , Z :. (csS VU.! (j-1)) :. (csS VU.! (l-1)) )
---       | j<=highest && l<=highest
---       , i+2<=j && k+2<=l ]
+
+
+-- ** Multi-tape cases
+
+prop_I_2dimIt ix@(Z:.Subword (i:.j):.Subword (k:.l)) = zs === ls where
+  zs = (id <<< tsZ2I ... stoList) (ZZ:..LtSubword highest:..LtSubword highest) ix
+  ls = [ ( unsafeIndex xsSS ix ) | j<=highest && l<=highest ]
+
+prop_I_2dimcIt ix@(Z:.Subword(i:.j):.Subword(k:.l)) = {- traceShow (zs,ls) $ -} zs === ls where
+  zs = ((,) <<< (M:|chr csS:|chr csS) % tsZ2I ... stoList) (ZZ:..LtSubword highest:..LtSubword highest) (ix∷Z:.Subword I:.Subword I)
+  ls = [ ( Z :. (csS VU.! i) :. (csS VU.! k)
+         , unsafeIndex xsSS (Z :. subword (i+1) j :. subword (k+1) l) )
+       | j<=highest && l<=highest
+       , i+1<=j && k+1<=l ]
+
+prop_I_2dimItc ix@(Z:.Subword(i:.j):.Subword(k:.l)) = (j<=highest && l<=highest) ==> zs === ls where
+  zs = ((,) <<< tsZ2I % (M:|chr csS:|chr csS)  ... stoList) (ZZ:..LtSubword highest:..LtSubword highest) (ix∷Z:.Subword I:.Subword I)
+  ls = [ ( unsafeIndex xsSS (Z :. subword i (j-1) :. subword k (l-1))
+         , Z :. (csS VU.! (j-1)) :. (csS VU.! (l-1)) )
+       | j<=highest && l<=highest
+       , i+1<=j && k+1<=l ]
+
+prop_I_2dimcItc ix@(Z:.Subword(i:.j):.Subword(k:.l)) = (j<=highest && l<=highest) ==> zs === ls where
+  zs = ((,,) <<< (M:|chr csS:|chr csS) % tsZ2I % (M:|chr csS:| chr csS) ... stoList) (ZZ:..LtSubword highest:..LtSubword highest)
+        (ix∷Z:.Subword I:.Subword I)
+  ls = [ ( Z :. (csS VU.! i) :. (csS VU.! k)
+         , unsafeIndex xsSS (Z :. subword (i+1) (j-1) :. subword (k+1) (l-1))
+         , Z :. (csS VU.! (j-1)) :. (csS VU.! (l-1)) )
+       | j<=highest && l<=highest
+       , i+2<=j && k+2<=l ]
 
 
 
@@ -237,19 +248,28 @@ maxSWi = LtSubword highest
 
 --maxSWo :: Subword O
 --maxSWo = subword 0 highest
---
---csS :: VU.Vector (Int,Int)
---csS = VU.fromList [ (i,i+1) | i <- [0 .. highest-1] ] -- this should be @highest -1@, we should die if we see @(highest,highest+1)@
---
---xsS :: Unboxed (Subword I) (Int,Int)
---xsS = fromList (subword 0 0) (subword 0 highest) [ (i,j) | i <- [ 0 .. highest ] , j <- [ i .. highest ] ]
---
+
+csS :: VU.Vector (Int,Int)
+csS = VU.fromList [ (i,i+1) | i <- [0 .. highest-1] ] -- this should be @highest -1@, we should die if we see @(highest,highest+1)@
+
+-- in case we want to test behaviour against stupid input.
+
+csShort :: VU.Vector (Int,Int)
+csShort = VU.fromList [ (i,i+1) | i <- [0 .. highest `div` 2] ]
+
+xsS :: Unboxed (Subword I) (Int,Int)
+xsS = fromList (LtSubword highest) [ (i,j) | i <- [ 0 .. highest ] , j <- [ i .. highest ] ]
+
 --xoS :: Unboxed (Subword O) (Int,Int)
 --xoS = fromList (subword 0 0) (subword 0 highest) [ (i,j) | i <- [ 0 .. highest ] , j <- [ i .. highest ] ]
---
---xsSS :: Unboxed (Z:.Subword I:.Subword I) ( (Int,Int) , (Int,Int) )
---xsSS = fromAssocs (Z:.subword 0 0:.subword 0 0) (Z:.subword 0 highest:.subword 0 highest) ((-1,-1),(-1,-1))
---        $ Prelude.map (\((i,j),(k,l)) -> (Z:.subword i j:.subword k l, ((i,j),(k,l)) )) [ ((i,j) , (k,l)) | i <- [0 .. highest], j <-[i .. highest], k <- [0 .. highest], l <- [0 .. highest] ]
+
+xsSS :: Unboxed (Z:.Subword I:.Subword I) ( (Int,Int) , (Int,Int) )
+xsSS = fromAssocs (ZZ:..LtSubword highest:..LtSubword highest) ((-1,-1),(-1,-1))
+        $ Prelude.map (\((i,j),(k,l)) -> (Z:.subword i j:.subword k l, ((i,j),(k,l)) )) [ ((i,j) , (k,l)) | i <- [0 .. highest], j <-[i .. highest], k <- [0 .. highest], l <- [0 .. highest] ]
+
+tsI   = TW (ITbl 0 0 EmptyOk xsS)                (\ (_∷LimitType (Subword I)) (_::Subword I) -> Id (1::Int,1::Int))
+tsZ2I = TW (ITbl 0 0 (Z:.EmptyOk:.EmptyOk) xsSS)
+           (\ (_∷LimitType (Z:.Subword I:.Subword I)) (_∷Z:.Subword I:.Subword I) -> Id ((1::Int,1::Int),(1::Int,1::Int)))
 
 -- * general quickcheck stuff
 
