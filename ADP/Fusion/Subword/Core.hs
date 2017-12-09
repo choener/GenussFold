@@ -67,7 +67,7 @@ instance
   )
   ⇒ MkStream m (IStatic d) S (Subword I) where
   mkStream Proxy S grd (LtSubword (I# h)) (Subword (I# i:.I# j))
-    = staticCheck# (grd `andI#` (0# <=# i) `andI#` (i <=# j))
+    = staticCheck# (grd `andI#` (0# <=# i) `andI#` (i ==# j))
     . singleton
     . ElmS $ RiSwI (I# i)
   {-# Inline mkStream #-}

@@ -42,14 +42,19 @@ prop_Z1I_Epsilon ix@(Z:.Subword (i:.j)) = zs == ls where
 --  ls = [ () | ix == maxSWo ]
 
 -- * Deletion
+--
+-- Pure deletions without other symbols behave like @Epsilon@ in that they
+-- require a subword of size 0.
 
 prop_I_Deletion ix@(Subword (i:.j)) = zs == ls where
-  zs = (id <<< deletion ... stoList) maxSWi ix
-  ls = [ () | i<=j ]
+  zs = (id <<< Deletion ... stoList) maxSWi ix
+  ls = [ () | i==j ]
 
-prop_Z1I_Deletion ix@(Z:.Subword (i:.j)) = zs == ls where
-  zs = (id <<< (M:|Deletion) ... stoList) (ZZ:..maxSWi) ix
-  ls = [ Z:.() | i<=j ]
+prop_Z1I_Deletion ix@(Z:.Subword (i:.j))
+  | zs == ls  = True
+  | otherwise = error $ show (zs,ls)
+  where zs = (id <<< (M:|Deletion) ... stoList) (ZZ:..maxSWi) ix
+        ls = [ Z:.() | i==j ]
 
 --
 --prop_I_ItNC ix@(Subword (i:.j)) = zs == ls where
