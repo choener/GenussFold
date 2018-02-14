@@ -38,7 +38,7 @@ instance
 
 
 instance
-  ( TstCtx m ps ts s x0 i0 is (Subword I)
+  ( TermStreamContext m ps ts s x0 i0 is (Subword I)
   )
   ⇒ TermStream m (ps:.IStatic d) (TermSymbol ts Deletion) s (is:.Subword I) where
   termStream Proxy (ts:|Deletion) (us:..LtSubword u) (is:.Subword (i:.j))
@@ -47,7 +47,7 @@ instance
   {-# Inline termStream #-}
 
 instance
-  ( TstCtx m ps ts s x0 i0 is (Subword I)
+  ( TermStreamContext m ps ts s x0 i0 is (Subword I)
   )
   ⇒ TermStream m (ps:.IVariable d) (TermSymbol ts Deletion) s (is:.Subword I) where
   termStream Proxy (ts:|Deletion) (us:..LtSubword u) (is:.Subword (i:.j))
@@ -59,7 +59,7 @@ instance
 
 {-
 instance
-  ( TstCtx m ts s x0 i0 is (Subword O)
+  ( TermStreamContext m ts s x0 i0 is (Subword O)
   ) => TermStream m (TermSymbol ts Deletion) s (is:.Subword O) where
   -- X_ij  -> Y_ik  Z_kj  d_jj        0   i Y k Z j-j   N
   -- Y^_ik -> X^_ij Z_kj  d_jj        0 x i   k Z j-j x N

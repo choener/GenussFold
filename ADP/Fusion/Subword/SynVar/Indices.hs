@@ -41,7 +41,7 @@ type instance LeftPosTy (IVariable d) (TwITblBt arr EmptyOk (Subword I) x mB mF 
 -- @
 
 instance
-  ( IndexHdr ps elm x0 i0 cs c us (Subword I) is (Subword I)
+  ( AddIndexDenseContext ps elm x0 i0 cs c us (Subword I) is (Subword I)
   , MinSize c
   )
   ⇒ AddIndexDense (ps:.IStatic d) elm (cs:.c) (us:.Subword I) (is:.Subword I) where
@@ -53,7 +53,7 @@ instance
   {-# Inline addIndexDenseGo #-}
 
 instance
-  ( IndexHdr ps elm x0 i0 cs c us (Subword I) is (Subword I)
+  ( AddIndexDenseContext ps elm x0 i0 cs c us (Subword I) is (Subword I)
   , MinSize c
   )
   ⇒ AddIndexDense (ps:.IVariable d) elm (cs:.c) (us:.Subword I) (is:.Subword I) where
@@ -83,7 +83,7 @@ instance
 -- and the like.
 
 instance
-  ( IndexHdr s x0 i0 us (Subword O) cs c is (Subword O)
+  ( AddIndexDenseContext s x0 i0 us (Subword O) cs c is (Subword O)
   ) => AddIndexDense s (us:.Subword O) (cs:.c) (is:.Subword O) where
   addIndexDenseGo (cs:.c) (vs:.OStatic (di:.dj)) (lbs:._) (ubs:._) (us:.u) (is:.Subword (i:.j))
     = map (\(SvS s t y') -> let RiSwO _ _ k _ = getIndex (getIdx s) (Proxy :: PRI is (Subword O))
@@ -114,7 +114,7 @@ instance
 -- TODO take care of @c@
 
 instance
-  ( IndexHdr s x0 i0 us (Subword I) cs c is (Subword O)
+  ( AddIndexDenseContext s x0 i0 us (Subword I) cs c is (Subword O)
   , MinSize c
   ) => AddIndexDense s (us:.Subword I) (cs:.c) (is:.Subword O) where
   addIndexDenseGo (cs:.c) (vs:.OStatic (di:.dj)) (lbs:._) (ubs:._) (us:.u) (is:.Subword (i:.j))
@@ -165,7 +165,7 @@ instance
 -- @
 
 instance
-  ( IndexHdr s x0 i0 us (Subword I) cs c is (Subword C)
+  ( AddIndexDenseContext s x0 i0 us (Subword I) cs c is (Subword C)
   ) => AddIndexDense s (us:.Subword I) (cs:.c) (is:.Subword C) where
   addIndexDenseGo (cs:.c) (vs:.Complemented) (lbs:._) (ubs:._) (us:.u) (is:.i)
     = map (\(SvS s t y') -> let kk@(RiSwC ki kj) = getIndex (getIdx s) (Proxy :: PRI is (Subword C))
@@ -180,7 +180,7 @@ instance
 -- @
 
 instance
-  ( IndexHdr s x0 i0 us (Subword O) cs c is (Subword C)
+  ( AddIndexDenseContext s x0 i0 us (Subword O) cs c is (Subword C)
   ) => AddIndexDense s (us:.Subword O) (cs:.c) (is:.Subword C) where
   addIndexDenseGo (cs:.c) (vs:.Complemented) (lbs:._) (ubs:._) (us:.u) (is:.i)
     = map (\(SvS s t y') -> let kk@(RiSwC ki kj) = getIndex (getIdx s) (Proxy :: PRI is (Subword C))
@@ -195,7 +195,7 @@ instance
 -- @
 
 instance
-  ( IndexHdr s x0 i0 us (Subword C) cs c is (Subword C)
+  ( AddIndexDenseContext s x0 i0 us (Subword C) cs c is (Subword C)
   ) => AddIndexDense s (us:.Subword C) (cs:.c) (is:.Subword C) where
   addIndexDenseGo (cs:.c) (vs:.Complemented) (lbs:._) (ubs:._) (us:.u) (is:.i)
     = map (\(SvS s t y') -> let k = getIndex (getIdx s) (Proxy :: PRI is (Subword C))

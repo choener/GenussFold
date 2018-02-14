@@ -37,7 +37,7 @@ instance
 
 
 instance
-  ( TstCtx m ps ts s x0 i0 is (Subword I)
+  ( TermStreamContext m ps ts s x0 i0 is (Subword I)
   )
   ⇒ TermStream m (ps:.IStatic d) (TermSymbol ts Epsilon) s (is:.Subword I) where
   termStream Proxy (ts:|Epsilon) (us:..u) (is:.Subword (i:.j))
@@ -50,7 +50,7 @@ instance
 
 {-
 instance
-  ( TstCtx m ts s xi0 i0 is (Subword O)
+  ( TermStreamContext m ts s xi0 i0 is (Subword O)
   ) => TermStream m (TermSymbol ts Epsilon) s (is:.Subword O) where
   termStream (ts:|Epsilon) (cs:.OStatic d) (us:.Subword (ui:.uj)) (is:.Subword (i:.j))
     = staticCheck (ui == i && uj == j) -- TODO correct ?

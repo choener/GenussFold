@@ -50,7 +50,7 @@ instance
 -- TODO lets see if this is still true with the new @grd@ system
 
 instance
-  ( TstCtx m ps ts s x0 i0 is (Subword I)
+  ( TermStreamContext m ps ts s x0 i0 is (Subword I)
   ) => TermStream m (ps:.IStatic d) (TermSymbol ts (Chr r x)) s (is:.Subword I) where
   termStream Proxy (ts:|Chr f xs) (us:..u) (is:.Subword (i:.j))
     = map (\(TState s ii ee) ->
@@ -59,7 +59,7 @@ instance
   {-# Inline termStream #-}
 
 instance
-  ( TstCtx m ps ts s x0 i0 is (Subword I)
+  ( TermStreamContext m ps ts s x0 i0 is (Subword I)
   ) => TermStream m (ps:.IVariable d) (TermSymbol ts (Chr r x)) s (is:.Subword I) where
   termStream Proxy (ts:|Chr f xs) (us:..u) (is:.Subword (i:.j))
     = map (\(TState s ii ee) ->
@@ -70,7 +70,7 @@ instance
 
 {-
 instance
-  ( TstCtx m ts s x0 i0 is (Subword O)
+  ( TermStreamContext m ts s x0 i0 is (Subword O)
   ) => TermStream m (TermSymbol ts (Chr r x)) s (is:.Subword O) where
   termStream (ts:|Chr f xs) (cs:.OStatic (di:.dj)) (us:.u) (is:.Subword (i:.j))
     = map (\(TState s ii ee) ->
