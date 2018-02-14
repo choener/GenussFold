@@ -70,6 +70,7 @@ library
     ADP.Fusion.Subword.Term.Chr
     ADP.Fusion.Subword.Term.Deletion
     ADP.Fusion.Subword.Term.Epsilon
+    ADP.Fusion.Subword.Term.Str
 --    ADP.Fusion.SynVar.Array.TermSymbol.Subword
 --    ADP.Fusion.SynVar.Recursive.Subword
 --    ADP.Fusion.SynVar.Split.Subword
@@ -94,6 +95,7 @@ library
                     , StandaloneDeriving
                     , TemplateHaskell
                     , TupleSections
+                    , TypeApplications
                     , TypeFamilies
                     , TypeOperators
                     , TypeSynonymInstances
@@ -387,6 +389,7 @@ test-suite properties
                     , MultiParamTypeClasses
                     , ScopedTypeVariables
                     , TemplateHaskell
+                    , TypeApplications
                     , TypeFamilies
                     , TypeOperators
                     , TypeSynonymInstances
