@@ -11,6 +11,7 @@ module ADP.Fusion.Subword
   , module ADP.Fusion.Subword.Term.Chr
   , module ADP.Fusion.Subword.Term.Deletion
   , module ADP.Fusion.Subword.Term.Epsilon
+  , module ADP.Fusion.Subword.Term.Str
   ) where
 
 import ADP.Fusion.Core
@@ -23,5 +24,5 @@ import ADP.Fusion.Subword.SynVar.Indices
 import ADP.Fusion.Subword.Term.Chr
 import ADP.Fusion.Subword.Term.Deletion
 --import ADP.Fusion.Subword.Term.PeekIndex
---import ADP.Fusion.Subword.Term.Strng
+import ADP.Fusion.Subword.Term.Str
 

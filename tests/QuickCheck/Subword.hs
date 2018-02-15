@@ -23,6 +23,7 @@ import           Test.Tasty.TH
 
 import           Data.PrimitiveArray
 
+import           ADP.Fusion.Core
 import           ADP.Fusion.Subword
 
 
@@ -69,6 +70,48 @@ prop_Z1I_Chr ix@(Z:.Subword (i:.j))
   | otherwise = error $ show (zs,ls)
   where zs = (id <<< (M:|chr csS) ... stoList) (ZZ:..maxSWi) ix
         ls = [ Z:.(i,j) | i+1==j ]
+
+-- * Str
+
+prop_I_ManyV ix@(Subword (i:.j))
+  | zs == ls  = True
+  | otherwise = traceShow (ix,zs,ls) False
+  where
+    zs = (id <<< manyV csS ... stoList) maxSWi ix
+    ls = [ (VU.slice i (j-i) csS) ]
+
+prop_I_SomeV ix@(Subword (i:.j))
+  | zs == ls  = True
+  | otherwise = traceShow (ix,zs,ls) False
+  where
+    zs = (id <<< someV csS ... stoList) maxSWi ix
+    ls = [ (VU.slice i (j-i) csS) | i<j ]
+
+prop_I_Itbl_ManyV ix@(Subword (i:.j))
+  | zs == ls  = True
+  | otherwise = traceShow (ix,zs,ls) False
+  where
+    zs = ((,) <<< tsI % manyV csS ... stoList) maxSWi ix
+    ls = [ (unsafeIndex xsS (subwordI i k), VU.slice k (j-k) csS)
+         | k <- [i..j] ]
+
+prop_I_Itbl_SomeV ix@(Subword (i:.j))
+  | zs == ls  = True
+  | otherwise = traceShow (ix,zs,ls) False
+  where
+    zs = ((,) <<< tsI % someV csS ... stoList) maxSWi ix
+    ls = [ (unsafeIndex xsS (subwordI i k), VU.slice (k) (j-k) csS)
+         | k <- [i..j-1] ]
+
+prop_I_SomeV_Itbl ix@(Subword (i:.j))
+  | zs == ls  = True
+  | otherwise = traceShow (ix,zs,ls) False
+  where
+    zs = ((,) <<< someV csS % tsI ... stoList) maxSWi ix
+    ls = [ (VU.slice i (k-i) csS, unsafeIndex xsS (subwordI k j))
+         | k <- [i+1..j] ]
+
+
 
 -- * Mixed symbols
 
