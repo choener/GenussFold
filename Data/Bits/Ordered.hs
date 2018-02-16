@@ -11,7 +11,7 @@
 -- A memo-table is available, since @popCntSorted@ is still waiting for an
 -- efficient @popCntEnumerated@ that does not require sorting.
 
-module Data.Bits.Ordered 
+module Data.Bits.Ordered
   -- bitset operations
   ( lsbZ
   , nextActiveZ
@@ -36,17 +36,15 @@ import           Control.Arrow
 import           Data.Bits
 import           Data.Bits.Extras
 import           Data.Ord (comparing)
+import           Data.Vector.Fusion.Bundle.Size
 import           Data.Vector.Fusion.Util
 import           Data.Vector.Unboxed (Unbox)
 import           Data.Word(Word(..))
 import qualified Data.Vector.Algorithms.Intro as AI
+import qualified Data.Vector.Fusion.Bundle.Monadic as BM
 import qualified Data.Vector.Fusion.Stream.Monadic as SM
 import qualified Data.Vector.Generic as VG
 import qualified Data.Vector.Unboxed as VU
-#if MIN_VERSION_vector(0,11,0)
-import           Data.Vector.Fusion.Bundle.Size
-import qualified Data.Vector.Fusion.Bundle.Monadic as BM
-#endif
 
 
 
@@ -94,11 +92,7 @@ activeBitsL = unId . SM.toList . activeBitsS
 -- lowest to highest.
 
 activeBitsV :: (Ranked t, VG.Vector v Int) => t -> v Int
-#if MIN_VERSION_vector(0,11,0)
 activeBitsV = VG.unstream . flip BM.fromStream Unknown . activeBitsS
-#else
-activeBitsV = VG.unstream . activeBitsS
-#endif
 {-# Inline activeBitsV #-}
 
 -- | A stream with the currently active bits, lowest to highest.

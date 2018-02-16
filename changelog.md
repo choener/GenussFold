@@ -1,7 +1,12 @@
+0.0.1.4
+-------
+
+- added bitmasks
+
 0.0.1.3
 -------
 
--  tests with ghc 8.2.x
+- tests with ghc 8.2.x
 
 0.0.1.2
 -------
