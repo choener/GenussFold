@@ -326,8 +326,8 @@ xsSS :: Unboxed (Z:.Subword I:.Subword I) ( (Int,Int) , (Int,Int) )
 xsSS = fromAssocs (ZZ:..LtSubword highest:..LtSubword highest) ((-1,-1),(-1,-1))
         $ Prelude.map (\((i,j),(k,l)) -> (Z:.subword i j:.subword k l, ((i,j),(k,l)) )) [ ((i,j) , (k,l)) | i <- [0 .. highest], j <-[i .. highest], k <- [0 .. highest], l <- [0 .. highest] ]
 
-tsI   = TW (ITbl 0 0 EmptyOk xsS)                (\ (_∷LimitType (Subword I)) (_::Subword I) -> Id (1::Int,1::Int))
-tsZ2I = TW (ITbl 0 0 (Z:.EmptyOk:.EmptyOk) xsSS)
+tsI   = TW (ITbl @0 @0 EmptyOk xsS)                (\ (_∷LimitType (Subword I)) (_::Subword I) -> Id (1::Int,1::Int))
+tsZ2I = TW (ITbl @0 @0 (Z:.EmptyOk:.EmptyOk) xsSS)
            (\ (_∷LimitType (Z:.Subword I:.Subword I)) (_∷Z:.Subword I:.Subword I) -> Id ((1::Int,1::Int),(1::Int,1::Int)))
 
 -- * general quickcheck stuff

@@ -384,6 +384,7 @@ test-suite properties
     Haskell2010
   default-extensions: BangPatterns
                     , CPP
+                    , DataKinds
                     , FlexibleContexts
                     , FlexibleInstances
                     , MultiParamTypeClasses
