@@ -6,6 +6,7 @@
 module Data.ByteString.Streaming.Split where
 
 import Data.ByteString.Streaming.Char8 as S8
+import Data.ByteString.Streaming.Internal as SI
 import Streaming.Internal (Stream(..))
 
 
@@ -13,9 +14,13 @@ import Streaming.Internal (Stream(..))
 -- | Split a @ByteString m r@ after every @k@ characters.
 --
 -- Streams in constant memory.
+--
+-- BUG: Once the stream is exhausted, it will still call @splitAt@, forever
+-- creating empty @ByteString@s.
 
 splitsByteStringAt ∷ Monad m ⇒ Int → ByteString m r → Stream (ByteString m) m r
 splitsByteStringAt !k = loop where
+  loop (Empty r) = return r
   loop p = Step $ fmap loop $ S8.splitAt (fromIntegral k) p
 {- -- this version would consume all memory
   loop p = SI.Effect $ do

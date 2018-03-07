@@ -207,6 +207,11 @@ ske' pat str =
 skeMult :: Int
 skeMult = 1000
 
+
+
+-- * Streaming tests.
+
+
 main :: IO ()
 main = $(defaultMainGenerator)
 
