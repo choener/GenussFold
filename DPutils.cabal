@@ -81,15 +81,14 @@ test-suite properties
   build-depends: base
                , bytestring
                , containers
-               , kan-extensions
+--               , kan-extensions
                , lens                 >= 4.0
                , mtl
-               , parallel
+--               , parallel
                , pipes
                , pipes-bytestring     >= 2.0
                , pipes-parse          >= 3.0
                , QuickCheck
-               , quickcheck-instances >= 0.3
                , tasty                >= 0.11
                , tasty-quickcheck     >= 0.8
                , tasty-th             >= 0.1
