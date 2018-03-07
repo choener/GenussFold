@@ -47,6 +47,7 @@ separatesByteString
   → ByteString m r
   → Stream (ByteString m) m r
 separatesByteString f = loop where
+  loop (Empty r) = return r
   loop p = Step $ fmap loop $ f p
 {-
   loop p = SI.Effect $ do
