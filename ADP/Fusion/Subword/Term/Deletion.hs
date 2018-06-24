@@ -30,7 +30,7 @@ instance
     . addTermStream1 (Proxy ∷ Proxy pos) Deletion us is
     $ mkStream (Proxy ∷ Proxy posLeft)
                ls
-               (grd `andI#` termStaticCheck (Proxy ∷ Proxy pos) Deletion is)
+               (termStaticCheck (Proxy ∷ Proxy pos) Deletion is grd)
                us
                (termStreamIndex (Proxy ∷ Proxy pos) Deletion is)
   {-# Inline mkStream #-}
@@ -100,7 +100,7 @@ instance
 
 instance TermStaticVar (IStatic 0) Deletion (Subword I) where
   termStreamIndex Proxy Deletion ij = ij
-  termStaticCheck Proxy Deletion ij = 1#
+  termStaticCheck Proxy Deletion ij grd = grd
   {-# Inline [0] termStreamIndex #-}
   {-# Inline [0] termStaticCheck #-}
 

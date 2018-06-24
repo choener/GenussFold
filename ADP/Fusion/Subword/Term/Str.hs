@@ -40,7 +40,7 @@ instance
     = S.map (\(ss,ee,ii) -> ElmStr ee ii ss) -- recover ElmChr
     . addTermStream1 pos (Str @linked @minSz @maxSz xs) us is
     $ mkStream (Proxy ∷ Proxy posLeft) ls
-               (grd `andI#` termStaticCheck pos (Str @linked @minSz @maxSz xs) is)
+               (termStaticCheck pos (Str @linked @minSz @maxSz xs) is grd)
                us (termStreamIndex pos (Str @linked @minSz @maxSz xs) is)
   {-# Inline mkStream #-}
 
@@ -86,14 +86,14 @@ instance
 instance (KnownNat minSz)
   ⇒ TermStaticVar (IStatic d) (Str Nothing minSz Nothing v x) (Subword I) where
   termStreamIndex Proxy (Str xs) (Subword (i:.j)) = subword i $ j - fromIntegral (natVal (Proxy ∷ Proxy minSz))
-  termStaticCheck Proxy (Str xs) (Subword (i:.j)) = 1#
+  termStaticCheck Proxy (Str xs) (Subword (i:.j)) grd = grd
   {-# Inline [0] termStreamIndex #-}
   {-# Inline [0] termStaticCheck #-}
 
 instance (KnownNat minSz)
   ⇒ TermStaticVar (IVariable d) (Str Nothing minSz Nothing v x) (Subword I) where
   termStreamIndex Proxy (Str xs) (Subword (i:.j)) = subword i $ j - fromIntegral (natVal (Proxy ∷ Proxy minSz))
-  termStaticCheck Proxy (Str xs) (Subword (i:.j)) = 1#
+  termStaticCheck Proxy (Str xs) (Subword (i:.j)) grd = grd
   {-# Inline [0] termStreamIndex #-}
   {-# Inline [0] termStaticCheck #-}
 

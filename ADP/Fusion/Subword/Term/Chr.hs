@@ -34,7 +34,7 @@ instance
     . addTermStream1 (Proxy ∷ Proxy pos) (Chr f xs) us is
     $ mkStream (Proxy ∷ Proxy posLeft)
                ls
-               (grd `andI#` termStaticCheck (Proxy ∷ Proxy pos) (Chr f xs) is)
+               (termStaticCheck (Proxy ∷ Proxy pos) (Chr f xs) is grd)
                us
                (termStreamIndex (Proxy ∷ Proxy pos) (Chr f xs) is)
   {-# Inline mkStream #-}
@@ -103,13 +103,13 @@ instance
 
 instance TermStaticVar (IStatic d) (Chr r x) (Subword I) where
   termStreamIndex Proxy (Chr f x) (Subword (i:.j)) = subword i (j-1)
-  termStaticCheck Proxy (Chr f x) (Subword (i:.j)) = 1#
+  termStaticCheck Proxy (Chr f x) (Subword (i:.j)) grd = grd
   {-# Inline [0] termStreamIndex #-}
   {-# Inline [0] termStaticCheck #-}
 
 instance TermStaticVar (IVariable d) (Chr r x) (Subword I) where
   termStreamIndex Proxy (Chr f x) (Subword (i:.j)) = subword i (j-1)
-  termStaticCheck Proxy (Chr f x) (Subword (i:.j)) = 1#
+  termStaticCheck Proxy (Chr f x) (Subword (i:.j)) grd = grd
   {-# Inline [0] termStreamIndex #-}
   {-# Inline [0] termStaticCheck #-}
 

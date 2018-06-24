@@ -30,7 +30,7 @@ instance
     . addTermStream1 (Proxy ∷ Proxy pos) Epsilon us is
     $ mkStream (Proxy ∷ Proxy posLeft)
                ls
-               (grd `andI#` termStaticCheck (Proxy ∷ Proxy pos) Epsilon is)
+               (termStaticCheck (Proxy ∷ Proxy pos) Epsilon is grd)
                us
                (termStreamIndex (Proxy ∷ Proxy pos) Epsilon is)
   {-# Inline mkStream #-}
@@ -64,7 +64,7 @@ instance
 
 instance TermStaticVar (IStatic 0) Epsilon (Subword I) where
   termStreamIndex Proxy Epsilon ij = ij
-  termStaticCheck Proxy Epsilon ij = 1#
+  termStaticCheck Proxy Epsilon ij grd = grd
   {-# Inline [0] termStreamIndex #-}
   {-# Inline [0] termStaticCheck #-}
 
