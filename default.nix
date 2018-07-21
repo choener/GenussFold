@@ -13,7 +13,7 @@ rec {
     packages = p: [ p.ADPfusionSubword ];
     withHoogle = true;
     buildInputs = [
-      cabal-install ghc
+      cabal-install ghc llvm_39
       ADPfusion
       DPutils
       OrderedBits
