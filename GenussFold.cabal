@@ -57,10 +57,10 @@ library
                , unordered-containers   >= 0.2
                , vector                 >= 0.10
                --
-               , ADPfusion              == 0.5.2.*
+               , ADPfusion              == 0.6.0.*
                , ADPfusionSubword       == 0.0.0.*
                , FormalGrammars         == 0.3.1.*
-               , PrimitiveArray         == 0.8.0.*
+               , PrimitiveArray         == 0.9.0.*
   exposed-modules:
     BioInf.GenussFold
     BioInf.GenussFold.PKN
@@ -72,10 +72,12 @@ library
                     , FlexibleContexts
                     , KindSignatures
                     , MultiParamTypeClasses
+                    , PolyKinds
                     , QuasiQuotes
                     , TemplateHaskell
                     , TypeFamilies
                     , TypeOperators
+                    , UnicodeSyntax
   ghc-options:
     -O2
     -funbox-strict-fields
