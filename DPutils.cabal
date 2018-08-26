@@ -3,15 +3,15 @@ Version:        0.0.2.0
 License:        BSD3
 License-file:   LICENSE
 Maintainer:     choener@bioinf.uni-leipzig.de
-author:         Christian Hoener zu Siederdissen, 2016-2017
-copyright:      Christian Hoener zu Siederdissen, 2016-2017
+author:         Christian Hoener zu Siederdissen, 2016-2018
+copyright:      Christian Hoener zu Siederdissen, 2016-2018
 homepage:       https://github.com/choener/DPutils
 bug-reports:    https://github.com/choener/DPutils/issues
 Stability:      Experimental
 Category:       Data
 Build-type:     Simple
 Cabal-version:  >=1.10.0
-tested-with:    GHC == 8.0.2, GHC == 8.2.1
+tested-with:    GHC == 8.0.2, GHC == 8.2.2, GHC == 8.4.3
 Synopsis:       utilities for DP
 Description:
                 Small set of utility functions
@@ -81,10 +81,8 @@ test-suite properties
   build-depends: base
                , bytestring
                , containers
---               , kan-extensions
                , lens                 >= 4.0
                , mtl
---               , parallel
                , pipes
                , pipes-bytestring     >= 2.0
                , pipes-parse          >= 3.0
