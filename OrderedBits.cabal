@@ -11,7 +11,7 @@ license-file:   LICENSE
 build-type:     Simple
 stability:      experimental
 cabal-version:  >= 1.10.0
-tested-with:    GHC == 8.0.2, GHC == 8.2.2
+tested-with:    GHC == 8.0.2, GHC == 8.2.2, GHC == 8.4.3
 synopsis:       Efficient ordered (by popcount) enumeration of bits
 description:
                 This library provides efficient methods to enumerate all
