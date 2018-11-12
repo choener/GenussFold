@@ -27,6 +27,7 @@ extra-source-files:
 
 Library
   Exposed-modules:
+    Data.Attoparsec.ByteString.Streaming
     Data.ByteString.Streaming.Split
     Data.Char.Util
     Data.Paired.Common
@@ -37,6 +38,7 @@ Library
     Pipes.Parallel
     Pipes.Split.ByteString
   build-depends: base                 >= 4.7    &&  < 5.0
+               , attoparsec           >= 0.13
                , bytestring
                , containers
                , kan-extensions       >= 4.0
