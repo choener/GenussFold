@@ -6,7 +6,8 @@ pipeline:
     mount:
       - ./.cabal
     volumes:
-      - /home/choener/drone:/cache
+      #      - /home/choener/drone:/cache
+      - /cache:/home/choener/drone
 
   build:
     image: haskell
