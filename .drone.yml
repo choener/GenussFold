@@ -9,6 +9,7 @@ steps:
       - which cabal
       - cabal update
       - cabal new-test
+      - ls -alh /root/.cabal
 
 #pipeline:
 #  build:
