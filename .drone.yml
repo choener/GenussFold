@@ -11,6 +11,7 @@ steps:
   - mkdir -p /tmp/cache/.cabal
   - ln -s /tmp/cache/.cabal /root/.cabal
   - cabal update
+  - cabal new-build
 
 volumes:
 - name: cache
