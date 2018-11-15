@@ -12,6 +12,8 @@ steps:
   - ln -s /tmp/cache/.cabal /root/.cabal
   - cabal update
   - cabal new-build
+  - cabal new-test
+  - cabal new-haddock
 
 volumes:
 - name: cache
