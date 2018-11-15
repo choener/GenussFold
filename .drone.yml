@@ -21,6 +21,7 @@ pipeline:
         #      - ls -alh /root/.cabal/packages
       - pwd
       - mount
+      - ls -alh /cache
 
   rebuild-cache:
     image: drillster/drone-volume-cache
@@ -28,5 +29,6 @@ pipeline:
     mount:
       - ./.cabal
     volumes:
-      - /home/choener/cache:/cache
+      #      - /home/choener/cache:/cache
+      - /cache:/home/choener/drone
 
