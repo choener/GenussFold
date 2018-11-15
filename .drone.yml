@@ -23,7 +23,7 @@ steps:
   - ln -s /tmp/cache/.cabal /root/.cabal
   - cabal new-test
 
-- name: test
+- name: haddock
   image: haskell
   volumes:
   - name: cache
