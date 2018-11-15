@@ -1,22 +1,31 @@
-kind: pipeline
-name: DPutils test
+pipeline:
 
-steps:
-  - name: stepOne
+  restore-cache:
+    image: drillster/drone-volume-cache
+    restore: true
+    mount:
+      - ./.cabal
+    volumes:
+      - /home/choener/drone:/cache
+
+  build:
     image: haskell
     commands:
       - ls
       - which cabal
-        #      - cabal update
+      - cabal update
         #      - cabal new-test
-        #      - ls -alh /root/.cabal
+      - ls -alh /root/.cabal
         #      - ls -alh /root/.cabal/store
         #      - ls -alh /root/.cabal/packages
       - pwd
       - mount
 
-#pipeline:
-#  build:
-#    image: plugins/git
-#  commands:
-#    - which cabal
+  rebuild-cache:
+    image: drillster/drone-volume-cache
+    rebuild: true
+    mount:
+      - ./.cabal
+    volumes:
+      - /home/choener/cache:/cache
+
