@@ -12,7 +12,25 @@ steps:
   - ln -s /tmp/cache/.cabal /root/.cabal
   - cabal update
   - cabal new-build
+
+- name: test
+  image: haskell
+  volumes:
+  - name: cache
+    path: /tmp/cache
+  commands:
+  - mkdir -p /tmp/cache/.cabal
+  - ln -s /tmp/cache/.cabal /root/.cabal
   - cabal new-test
+
+- name: test
+  image: haskell
+  volumes:
+  - name: cache
+    path: /tmp/cache
+  commands:
+  - mkdir -p /tmp/cache/.cabal
+  - ln -s /tmp/cache/.cabal /root/.cabal
   - cabal new-haddock
 
 volumes:
@@ -20,39 +38,3 @@ volumes:
   host:
     path: /home/choener/drone
 
-#pipeline:
-#
-#  restore-cache:
-#    image: drillster/drone-volume-cache
-#    restore: true
-#    mount:
-#      - ./.cabal
-#      - /root/.cabal
-#    volumes:
-#      #      - /home/choener/drone:/cache
-#      - /cache:/home/choener/drone
-#
-#  build:
-#    image: haskell
-#    commands:
-#      - ls
-#      - which cabal
-#      - cabal update
-#        #      - cabal new-test
-#      - ls -alh /root/.cabal
-#        #      - ls -alh /root/.cabal/store
-#        #      - ls -alh /root/.cabal/packages
-#      - pwd
-#      - mount
-#        #      - ls -alh /cache
-#
-#  rebuild-cache:
-#    image: drillster/drone-volume-cache
-#    rebuild: true
-#    mount:
-#      - ./.cabal
-#      - /root/.cabal
-#    volumes:
-#      #      - /home/choener/cache:/cache
-#      - /cache:/home/choener/drone
-#
