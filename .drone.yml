@@ -1,5 +1,15 @@
-pipeline:
-  build:
-    image: plugins/git
-  commands:
-    - which cabal
+kind: pipeline
+name: DPutils test
+
+steps:
+  - name: stepOne
+    image: node
+    commands:
+      - ls
+      - which cabal
+
+#pipeline:
+#  build:
+#    image: plugins/git
+#  commands:
+#    - which cabal
