@@ -12,6 +12,8 @@ steps:
       - ls -alh /root/.cabal
       - ls -alh /root/.cabal/store
       - ls -alh /root/.cabal/packages
+      - pwd
+      - mount
 
 #pipeline:
 #  build:
