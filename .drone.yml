@@ -8,7 +8,7 @@ steps:
       - ls
       - which cabal
       - cabal update
-      - cabal new-test
+        #      - cabal new-test
       - ls -alh /root/.cabal
       - ls -alh /root/.cabal/store
       - ls -alh /root/.cabal/packages
