@@ -3,10 +3,12 @@ name: DPutils test
 
 steps:
   - name: stepOne
-    image: node
+    image: haskell
     commands:
       - ls
       - which cabal
+      - cabal update
+      - cabal new-test
 
 #pipeline:
 #  build:
