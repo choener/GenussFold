@@ -17,6 +17,8 @@ import ADP.Fusion.Core
 
 type instance InitialContext (Subword I) = IStatic 0
 
+type instance InitialContext (Subword O) = OStatic 0
+
 {-
 
 instance RuleContext (Subword I) where
