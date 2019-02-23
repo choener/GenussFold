@@ -37,6 +37,7 @@ Library
     Math.TriangularNumbers
     Pipes.Parallel
     Pipes.Split.ByteString
+    Streaming.Primitive
   build-depends: base                 >= 4.7    &&  < 5.0
                , attoparsec           >= 0.13
                , bytestring
@@ -44,6 +45,7 @@ Library
                , kan-extensions       >= 4.0
                , parallel             >= 3.0
                , pipes                >= 4.0
+               , primitive            >= 0.6
                , QuickCheck           >= 2.7
                , streaming            >= 0.1
                , streaming-bytestring >= 0.1
