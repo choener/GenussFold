@@ -1,6 +1,7 @@
+Cabal-version:  2.2
 Name:           DPutils
 Version:        0.0.2.0
-License:        BSD3
+License:        BSD-3-Clause
 License-file:   LICENSE
 Maintainer:     choener@bioinf.uni-leipzig.de
 author:         Christian Hoener zu Siederdissen, 2016-2018
@@ -10,11 +11,11 @@ bug-reports:    https://github.com/choener/DPutils/issues
 Stability:      Experimental
 Category:       Data
 Build-type:     Simple
-Cabal-version:  >=1.10.0
 tested-with:    GHC == 8.4.4
 Synopsis:       utilities for DP
 Description:
-                Small set of utility functions
+                Small set of utility functions, as well as the base types for
+                generic backtracing.
                 .
 
 
@@ -25,39 +26,46 @@ extra-source-files:
 
 
 
-Library
-  Exposed-modules:
-    Data.Attoparsec.ByteString.Streaming
-    Data.ByteString.Streaming.Split
-    Data.Char.Util
-    Data.Paired.Common
-    Data.Paired.Foldable
-    Data.Paired.Vector
-    Data.Vector.Generic.Unstream
-    Math.TriangularNumbers
-    Pipes.Parallel
-    Pipes.Split.ByteString
-    Streaming.Primitive
+common deps
   build-depends: base                 >= 4.7    &&  < 5.0
                , attoparsec           >= 0.13
                , bytestring
                , containers
+               , criterion            >= 1.1
                , kan-extensions       >= 4.0
+               , lens                 >= 4.0
+               , mtl
                , parallel             >= 3.0
                , pipes                >= 4.0
+               , pipes-bytestring     >= 2.0
+               , pipes-parse          >= 3.0
                , primitive            >= 0.6
                , QuickCheck           >= 2.7
                , streaming            >= 0.1
                , streaming-bytestring >= 0.1
                , stringsearch         >= 0.3
+               , tasty                >= 0.11
+               , tasty-quickcheck     >= 0.8
+               , tasty-th             >= 0.1
                , transformers         >= 0.5
                , vector               >= 0.10
   default-extensions: BangPatterns
                     , CPP
+                    , DeriveGeneric
+                    , DeriveFunctor
+                    , DeriveFoldable
+                    , DeriveTraversable
                     , FlexibleContexts
+                    , FlexibleInstances
+                    , GADTs
+                    , LambdaCase
+                    , MultiParamTypeClasses
                     , RankNTypes
                     , ScopedTypeVariables
+                    , TemplateHaskell
+                    , TypeApplications
                     , TypeFamilies
+                    , UndecidableInstances
                     , UnicodeSyntax
   default-language:
     Haskell2010
@@ -66,81 +74,55 @@ Library
     -funbox-strict-fields
 
 
+Library
+  import: deps
+  Exposed-modules:
+    Data.Attoparsec.ByteString.Streaming
+    Data.ByteString.Streaming.Split
+    Data.Char.Util
+    Data.Paired.Common
+    Data.Paired.Foldable
+    Data.Paired.Vector
+    Data.Vector.Generic.Unstream
+    DP.Backtraced.Core
+    Math.TriangularNumbers
+    Pipes.Parallel
+    Pipes.Split.ByteString
+    Streaming.Primitive
+
+
 
 test-suite properties
+  import: deps
   type:
     exitcode-stdio-1.0
   main-is:
     properties.hs
   ghc-options:
-    -O2 -threaded -rtsopts -with-rtsopts=-N
+    -threaded -rtsopts -with-rtsopts=-N
   hs-source-dirs:
     tests
-  default-language:
-    Haskell2010
-  default-extensions: CPP
-                    , RankNTypes
-                    , ScopedTypeVariables
-                    , TemplateHaskell
-  build-depends: base
-               , bytestring
-               , containers
-               , lens                 >= 4.0
-               , mtl
-               , pipes
-               , pipes-bytestring     >= 2.0
-               , pipes-parse          >= 3.0
-               , QuickCheck
-               , streaming
-               , streaming-bytestring
-               , tasty                >= 0.11
-               , tasty-quickcheck     >= 0.8
-               , tasty-th             >= 0.1
-               , vector
-               --
-               , DPutils
 
 
 
 benchmark benchmark
+  import: deps
   type:
     exitcode-stdio-1.0
-  build-depends: base
-               , criterion            >= 1.1
-               , streaming
-               , streaming-bytestring
-               , vector
-               --
-               , DPutils
   hs-source-dirs:
     tests
   main-is:
     benchmark.hs
-  default-language:
-    Haskell2010
-  ghc-options:
-    -O2
 
 
 
 benchmark streaming
+  import: deps
   type:
     exitcode-stdio-1.0
-  build-depends: base
-               , streaming
-               , streaming-bytestring
-               , bytestring
-               , timeit               >= 2.0
-               --
-               , DPutils
+  build-depends: timeit               >= 2.0
   hs-source-dirs:
     tests
-  default-extensions: BangPatterns
-                    , CPP
-                    , RankNTypes
-                    , ScopedTypeVariables
-                    , TemplateHaskell
-                    , UnicodeSyntax
   main-is:
     streaming.hs
   default-language:
