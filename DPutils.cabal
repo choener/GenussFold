@@ -44,8 +44,10 @@ common deps
                , streaming            >= 0.1
                , streaming-bytestring >= 0.1
                , stringsearch         >= 0.3
+               , smallcheck           >= 1.1
                , tasty                >= 0.11
                , tasty-quickcheck     >= 0.8
+               , tasty-smallcheck     >= 0.8
                , tasty-th             >= 0.1
                , transformers         >= 0.5
                , vector               >= 0.10
@@ -93,11 +95,17 @@ Library
 
 
 test-suite properties
-  import: deps
+  import:
+    deps
+  build-depends:
+    DPutils
   type:
     exitcode-stdio-1.0
   main-is:
     properties.hs
+  other-modules:
+    QuickCheck
+    SmallCheck
   ghc-options:
     -threaded -rtsopts -with-rtsopts=-N
   hs-source-dirs:

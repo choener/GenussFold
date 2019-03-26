@@ -1,3 +1,9 @@
+0.1.0.0
+-------
+
+- DP.Backtraced.Core provide a "core" system for backtraces in DP algorithms,
+  splitting out individual tapes
+
 0.0.2.0
 -------
 

@@ -10,6 +10,8 @@ import           Control.Lens
 import           Data.Foldable
 import           GHC.Generics (Generic)
 import qualified Data.Sequence as Seq
+import qualified Test.QuickCheck as QC
+import qualified Test.SmallCheck.Series as SC
 
 -- | This is a bit like a lazy "Data.Sequence" in terms of constructors. We can
 -- not be spine-strict, otherwise we'd use @Data.Sequence@ and enjoy the better
@@ -41,7 +43,7 @@ instance Cons (Backtraced ty) (Backtraced ty') ty ty' where
         go2 Epsilon        (Right ys) = go1 ys
         go2 (Cons x xs)    (Left y)   = Right (x,Snoc xs y)
         go2 (Cons x xs)    (Right ys) = Right (x, Append xs ys)
-        go2 (Snoc xs x)    (Left y)   = go2 xs (Right $ Epsilon `Snoc` x `Snoc` y)
+        go2 (Snoc xs x)    (Left y)   = go2 xs (Right $ x `Cons` Epsilon `Snoc` y)
         go2 (Snoc xs x)    (Right ys) = go2 xs (Right $ x `Cons` ys)
         go2 (Append xs ys) (Left z)   = go2 xs (Right $ ys `Snoc` z)
         go2 (Append xs ys) (Right zs) = go2 xs (Right $ ys `Append` zs)
@@ -71,4 +73,6 @@ instance Snoc (Backtraced ty) (Backtraced ty') ty ty' where
 infixr 5 <|
 infixr 5 ><
 infixl 5 |>
+
+instance SC.Serial m a ⇒ SC.Serial m (Backtraced a)
 
