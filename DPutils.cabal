@@ -1,11 +1,11 @@
 Cabal-version:  2.2
 Name:           DPutils
-Version:        0.0.2.0
+Version:        0.1.0.0
 License:        BSD-3-Clause
 License-file:   LICENSE
 Maintainer:     choener@bioinf.uni-leipzig.de
-author:         Christian Hoener zu Siederdissen, 2016-2018
-copyright:      Christian Hoener zu Siederdissen, 2016-2018
+author:         Christian Hoener zu Siederdissen, 2016-2019
+copyright:      Christian Hoener zu Siederdissen, 2016-2019
 homepage:       https://github.com/choener/DPutils
 bug-reports:    https://github.com/choener/DPutils/issues
 Stability:      Experimental
