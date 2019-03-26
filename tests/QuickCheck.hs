@@ -199,5 +199,5 @@ skeMult = 1000
 -- * Streaming tests.
 
 
-testQuickCheck = $(defaultMainGenerator)
+testQuickCheck = $(testGroupGenerator)
 

@@ -10,7 +10,7 @@ module Main where
 --import qualified Pipes.ByteString as PB
 --import qualified Pipes.Parse as PP
 --import qualified Pipes.Prelude as P
---import           Test.Tasty
+import           Test.Tasty
 --import           Test.Tasty.SmallCheck as SC
 --
 --import           Pipes.Split.ByteString
@@ -22,5 +22,5 @@ import SmallCheck
 
 main :: IO ()
 main = do
-  --testQuickCheck
-  testSmallCheck
+  defaultMain $ testGroup "all tests" [testQuickCheck, testSmallCheck]
+

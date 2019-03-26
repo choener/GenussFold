@@ -28,4 +28,4 @@ prop_Backtraced_Cons = changeDepth (const 4) $
 --    in  traceShow (bt) $ traceShow (bt^?_Cons,lst^?_Cons) (btC == lst^?_Cons) -- bt^._Cons == lst^._Cons
     in  btC == lst^?_Cons
 
-testSmallCheck = $(defaultMainGenerator)
+testSmallCheck = $(testGroupGenerator)
