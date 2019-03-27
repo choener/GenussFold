@@ -117,6 +117,8 @@ benchmark benchmark
   import: deps
   type:
     exitcode-stdio-1.0
+  build-depends:
+    DPutils
   hs-source-dirs:
     tests
   main-is:
@@ -128,7 +130,8 @@ benchmark streaming
   import: deps
   type:
     exitcode-stdio-1.0
-  build-depends: timeit               >= 2.0
+  build-depends: DPutils
+               , timeit               >= 2.0
   hs-source-dirs:
     tests
   main-is:
