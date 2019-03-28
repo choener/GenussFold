@@ -1,3 +1,8 @@
+0.0.2.0
+-------
+
+- subsequences of a given mask
+
 0.0.1.4
 -------
 

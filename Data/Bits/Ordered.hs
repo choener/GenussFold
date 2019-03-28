@@ -30,11 +30,15 @@ module Data.Bits.Ordered
   , activeBitsL
   , activeBitsS
   , activeBitsV
+  -- subsequences of populations
+  , subsequencesBitsL
+  , subsequencesBitsLslow
   ) where
 
 import           Control.Arrow
 import           Data.Bits
 import           Data.Bits.Extras
+import           Data.List (subsequences,foldl',unfoldr)
 import           Data.Ord (comparing)
 import           Data.Vector.Fusion.Bundle.Size
 import           Data.Vector.Fusion.Util
@@ -266,6 +270,40 @@ popShiftR mask lsp = go 0 0 mask lsp where
     | otherwise    = go acc             k     (m `unsafeShiftR` 1) (l `unsafeShiftR` 1)
 {-# Inline popShiftR #-}
 
+-- | Given a mask, and a packed bit vector, produce the unpacked bit vector,
+-- and the next element in order. This is a generator for all possible
+-- subsequences given the mask.
+
+subseqBit
+  ∷ (Ord t, Ranked t)
+  ⇒ t
+  -- ^ mask
+  → t
+  -- ^ packed bit vector
+  → Maybe (t,t)
+  -- ^ Maybe (unpacked, next packed vector)
+subseqBit mask cur
+  | cur > limit = Nothing
+  | otherwise   = Just (popShiftL mask cur,cur+1)
+  where !limit = 2 ^ popCount mask - 1
+
+-- | A list of all bitsets given a mask. Like @subsequences@
+
+subsequencesBitsL ∷ (Ord t, Ranked t) ⇒ t → [t]
+{-# Inline subsequencesBitsL #-}
+subsequencesBitsL t =
+  let
+  in  unfoldr (subseqBit t) 0
+
+-- | A presumably slower version of 'subsequencesBitsL'
+
+subsequencesBitsLslow ∷ (Ord t, Ranked t) ⇒ t → [t]
+{-# Inline subsequencesBitsLslow #-}
+subsequencesBitsLslow t =
+  let as = activeBitsL t
+      xs = subsequences as
+      setBits = foldl' setBit zeroBits
+  in  map setBits xs
 
 
 -- WARNING: Conditional compilation based on architecture!

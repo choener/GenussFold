@@ -68,6 +68,11 @@ prop_popShiftL_popShiftR (a::Word,b::Word) = s == l
         l = popShiftL m r
         r = popShiftR m s
 
+prop_subsequences (a'::Word) = fast == slow
+  where fast = sort (subsequencesBitsL a)
+        slow = sort (subsequencesBitsLslow a)
+        a = a' .&. (2^15 -1)
+
 
 
 main :: IO ()
