@@ -31,6 +31,7 @@ module Data.Bits.Ordered
   , activeBitsS
   , activeBitsV
   -- subsequences of populations
+  , subseqBit
   , subsequencesBitsL
   , subsequencesBitsLslow
   ) where
@@ -68,6 +69,8 @@ lsbZ t = captureNull t lsb
 
 -- | Given the currently active bit @k@ and the set @t@, get the next
 -- active bit. Return @-1@ if there is no next active bit.
+--
+-- TODO compare performance of the part right of @$@ with 'clearBit'
 
 nextActiveZ :: Ranked t => Int -> t -> Int
 nextActiveZ k t = lsbZ $ (t `shiftR` (k+1)) `shiftL` (k+1)
@@ -282,6 +285,7 @@ subseqBit
   -- ^ packed bit vector
   → Maybe (t,t)
   -- ^ Maybe (unpacked, next packed vector)
+{-# Inline subseqBit #-}
 subseqBit mask cur
   | cur > limit = Nothing
   | otherwise   = Just (popShiftL mask cur,cur+1)
@@ -293,7 +297,7 @@ subsequencesBitsL ∷ (Ord t, Ranked t) ⇒ t → [t]
 {-# Inline subsequencesBitsL #-}
 subsequencesBitsL t =
   let
-  in  unfoldr (subseqBit t) 0
+  in  unfoldr (subseqBit t) zeroBits
 
 -- | A presumably slower version of 'subsequencesBitsL'
 
