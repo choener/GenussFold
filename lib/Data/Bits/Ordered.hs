@@ -57,15 +57,15 @@ import qualified Data.Vector.Unboxed as VU
 
 -- | Capture the no-bit-set case
 
-captureNull :: Ranked t => t -> (t -> Int) -> Int
-captureNull t f = if t==0 then -1 else f t
+captureNull ∷ Ranked t ⇒ t → (t → Int) → Int
 {-# Inline captureNull #-}
+captureNull t f = if t==0 then -1 else f t
 
 -- | Get the lowest active bit. Returns @-1@ if no bit is set.
 
-lsbZ :: Ranked t => t -> Int
-lsbZ t = captureNull t lsb
+lsbZ ∷ Ranked t ⇒ t → Int
 {-# Inline lsbZ #-}
+lsbZ t = captureNull t lsb
 
 -- | Given the currently active bit @k@ and the set @t@, get the next
 -- active bit. Return @-1@ if there is no next active bit.
