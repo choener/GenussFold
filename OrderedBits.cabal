@@ -30,12 +30,7 @@ Extra-Source-Files:
 
 
 
-library
-  build-depends: base               >= 4.7      &&  < 5.0
-               , bits               >= 0.4
-               , primitive          >= 0.5
-               , vector             >= 0.11
-               , vector-algorithms  >= 0.6
+common deps
   default-language:
     Haskell2010
   default-extensions: BangPatterns
@@ -43,35 +38,47 @@ library
                     , FlexibleContexts
                     , PatternGuards
                     , ScopedTypeVariables
+                    , TemplateHaskell
                     , UnicodeSyntax
-  exposed-modules:
-    Data.Bits.Ordered
   ghc-options:
     -O2 -funbox-strict-fields
 
 
 
+library
+  import:
+    deps
+  build-depends: base               >= 4.7      &&  < 5.0
+               , bits               >= 0.4
+               , primitive          >= 0.5
+               , vector             >= 0.11
+               , vector-algorithms  >= 0.6
+  hs-source-dirs:
+    lib
+  exposed-modules:
+    Data.Bits.Ordered
+
+
+
 benchmark benchmark
+  import:
+    deps
   build-depends: base
                , criterion    >=  1.0.2
-               , vector
                --
                , OrderedBits
-  default-language:
-    Haskell2010
   hs-source-dirs:
     tests
   main-is:
     benchmark.hs
   type:
     exitcode-stdio-1.0
-  ghc-options:
-    -O2
-    -funbox-strict-fields
 
 
 
 test-suite properties
+  import:
+    deps
   type:
     exitcode-stdio-1.0
   main-is:
@@ -80,10 +87,6 @@ test-suite properties
     -threaded -rtsopts -with-rtsopts=-N
   hs-source-dirs:
     tests
-  default-language:
-    Haskell2010
-  default-extensions: TemplateHaskell
-                    , ScopedTypeVariables
   build-depends: base
                , QuickCheck         >= 2.7
                , tasty              >= 0.11
