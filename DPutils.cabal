@@ -92,15 +92,15 @@ Library
     Pipes.Split.ByteString
     Streaming.Primitive
   hs-source-dirs:
-    tests
+    lib
 
 
 
 test-suite properties
   import:
     deps
-  build-depends:
-    DPutils
+  build-depends: base
+               , DPutils
   type:
     exitcode-stdio-1.0
   main-is:
