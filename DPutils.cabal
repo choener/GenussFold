@@ -91,6 +91,8 @@ Library
     Pipes.Parallel
     Pipes.Split.ByteString
     Streaming.Primitive
+  hs-source-dirs:
+    tests
 
 
 
