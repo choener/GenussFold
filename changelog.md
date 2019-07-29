@@ -1,3 +1,8 @@
+0.1.1.0
+-------
+
+- Data.Ord.Fast provides fast versions of min/max (until GHC catches up)
+
 0.1.0.0
 -------
 
