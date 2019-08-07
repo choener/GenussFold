@@ -1,26 +1,31 @@
 { mkDerivation, attoparsec, base, bytestring, containers, criterion
 , kan-extensions, lens, mtl, parallel, pipes, pipes-bytestring
-, pipes-parse, QuickCheck, stdenv, streaming, streaming-bytestring
-, stringsearch, tasty, tasty-quickcheck, tasty-th, timeit
-, transformers, vector
+, pipes-parse, primitive, QuickCheck, smallcheck, stdenv, streaming
+, streaming-bytestring, stringsearch, tasty, tasty-quickcheck
+, tasty-smallcheck, tasty-th, timeit, transformers, vector
 }:
 mkDerivation {
   pname = "DPutils";
-  version = "0.0.2.0";
+  version = "0.1.0.0";
   src = ./.;
   libraryHaskellDepends = [
-    attoparsec base bytestring containers kan-extensions parallel pipes
-    QuickCheck streaming streaming-bytestring stringsearch transformers
-    vector
+    attoparsec base bytestring containers kan-extensions lens mtl
+    parallel pipes pipes-bytestring pipes-parse primitive QuickCheck
+    smallcheck streaming streaming-bytestring stringsearch tasty
+    tasty-quickcheck tasty-smallcheck tasty-th transformers vector
   ];
   testHaskellDepends = [
-    base bytestring containers lens mtl pipes pipes-bytestring
-    pipes-parse QuickCheck streaming streaming-bytestring tasty
-    tasty-quickcheck tasty-th vector
+    attoparsec base bytestring containers kan-extensions lens mtl
+    parallel pipes pipes-bytestring pipes-parse primitive QuickCheck
+    smallcheck streaming streaming-bytestring stringsearch tasty
+    tasty-quickcheck tasty-smallcheck tasty-th transformers vector
   ];
   benchmarkHaskellDepends = [
-    base bytestring criterion streaming streaming-bytestring timeit
-    vector
+    attoparsec base bytestring containers criterion kan-extensions lens
+    mtl parallel pipes pipes-bytestring pipes-parse primitive
+    QuickCheck smallcheck streaming streaming-bytestring stringsearch
+    tasty tasty-quickcheck tasty-smallcheck tasty-th timeit
+    transformers vector
   ];
   homepage = "https://github.com/choener/DPutils";
   description = "utilities for DP";

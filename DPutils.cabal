@@ -31,7 +31,6 @@ common deps
                , attoparsec           >= 0.13
                , bytestring
                , containers
-               , criterion            >= 1.1
                , kan-extensions       >= 4.0
                , lens                 >= 4.0
                , mtl
@@ -41,14 +40,10 @@ common deps
                , pipes-parse          >= 3.0
                , primitive            >= 0.6
                , QuickCheck           >= 2.7
+               , smallcheck           >= 1.1
                , streaming            >= 0.1
                , streaming-bytestring >= 0.1
                , stringsearch         >= 0.3
-               , smallcheck           >= 1.1
-               , tasty                >= 0.11
-               , tasty-quickcheck     >= 0.8
-               , tasty-smallcheck     >= 0.8
-               , tasty-th             >= 0.1
                , transformers         >= 0.5
                , vector               >= 0.10
   default-extensions: BangPatterns
@@ -101,6 +96,11 @@ test-suite properties
   import:
     deps
   build-depends: base
+               , tasty                >= 0.11
+               , tasty-quickcheck     >= 0.8
+               , tasty-smallcheck     >= 0.8
+               , tasty-th             >= 0.1
+               --
                , DPutils
   type:
     exitcode-stdio-1.0
@@ -118,6 +118,8 @@ test-suite properties
 
 benchmark benchmark
   import: deps
+  build-depends: base
+               , criterion            >= 1.1
   type:
     exitcode-stdio-1.0
   build-depends:
