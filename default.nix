@@ -4,7 +4,7 @@
 }:
 mkDerivation {
   pname = "OrderedBits";
-  version = "0.0.1.4";
+  version = "0.0.2.0";
   src = ./.;
   libraryHaskellDepends = [
     base bits primitive vector vector-algorithms
@@ -12,7 +12,7 @@ mkDerivation {
   testHaskellDepends = [
     base QuickCheck tasty tasty-quickcheck tasty-th vector
   ];
-  benchmarkHaskellDepends = [ base criterion vector ];
+  benchmarkHaskellDepends = [ base criterion ];
   homepage = "https://github.com/choener/OrderedBits";
   description = "Efficient ordered (by popcount) enumeration of bits";
   license = stdenv.lib.licenses.bsd3;
