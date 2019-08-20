@@ -1,7 +1,7 @@
 name:           ForestStructures
 version:        0.0.1.0
-author:         Christian Hoener zu Siederdissen 2015-2018, Sarah Berkemer, 2015-2017
-copyright:      Christian Hoener zu Siederdissen, 2015-2018
+author:         Christian Hoener zu Siederdissen 2015-2019, Sarah Berkemer, 2015-2017
+copyright:      Christian Hoener zu Siederdissen, 2015-2019
 homepage:       https://github.com/choener/ForestStructures
 bug-reports:    https://github.com/choener/ForestStructures/issues
 maintainer:     choener@bioinf.uni-leipzig.de
@@ -11,7 +11,7 @@ license-file:   LICENSE
 build-type:     Simple
 stability:      experimental
 cabal-version:  >= 1.10.0
-tested-with:    GHC == 8.4.4
+tested-with:    GHC == 8.6.4
 synopsis:       Tree- and forest structures
 description:
                 This library provides both static and dynamic tree and forest
@@ -31,8 +31,10 @@ Extra-Source-Files:
 
 library
   build-depends: base                   >= 4.7      &&  < 5.0
+               , aeson                  >= 1.0
                , bifunctors             >= 5.0
                , containers             >= 0.5
+               , deepseq                >= 1.0
                , fgl                    >= 5.5
                , lens                   >= 4.0
                , QuickCheck             >= 2.0

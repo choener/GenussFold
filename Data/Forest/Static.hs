@@ -3,6 +3,7 @@
 
 module Data.Forest.Static where
 
+import           Control.DeepSeq (NFData(..))
 import           Control.Applicative ((<$>),(<*>))
 import           Control.Monad (replicateM)
 import           Data.Foldable (toList)
@@ -19,6 +20,8 @@ import qualified Data.Vector as V
 import qualified Data.Vector.Generic as VG
 import qualified Data.Vector.Unboxed as VU
 import           Test.QuickCheck
+import           GHC.Generics(Generic)
+import           Data.Aeson (ToJSON(..),FromJSON(..))
 
 
 
@@ -39,27 +42,32 @@ data TreeOrder = Pre | Post | Unordered
 -- construction with helper functions. The labels of type @a@ (in @label@)
 -- require a vector structure @v@ for @O(1)@ access.
 
-data Forest (p :: TreeOrder) v a where
-  Forest :: (VG.Vector v a) =>
-    { label     :: v a
-      -- ^ Each node @k@ in @[0..n-1]@ has a label at @label ! k@.
-    , parent    :: VU.Vector Int
-      -- ^ Each node @k@ has a parent node, or @-1@ if there is no such
-      -- parent.
-    , children  :: V.Vector (VU.Vector Int)
-      -- ^ Each node @k@ has a vector of indices for its children. For leaf
-      -- nodes, the vector is empty.
-    , lsib      :: VU.Vector Int
-      -- ^ The left sibling for a node @k@. Will *not* cross subtrees. I.e.
-      -- if @k@ is @lsib@ of @l@, then @k@ and @l@ have the same parent.
-    , rsib      :: VU.Vector Int
-      -- ^ The right sibling for a node @k@.
-    , roots     :: VU.Vector Int
-      -- ^ The roots of the individual trees, the forest was constructed
-      -- from.
-    } -> Forest p v a
+data Forest (p ∷ TreeOrder) v a = Forest
+  { label     ∷ !(v a)
+    -- ^ Each node @k@ in @[0..n-1]@ has a label at @label ! k@.
+  , parent    ∷ !(VU.Vector Int)
+    -- ^ Each node @k@ has a parent node, or @-1@ if there is no such
+    -- parent.
+  , children  ∷ !(V.Vector (VU.Vector Int))
+    -- ^ Each node @k@ has a vector of indices for its children. For leaf
+    -- nodes, the vector is empty.
+  , lsib      ∷ !(VU.Vector Int)
+    -- ^ The left sibling for a node @k@. Will *not* cross subtrees. I.e.
+    -- if @k@ is @lsib@ of @l@, then @k@ and @l@ have the same parent.
+  , rsib      ∷ !(VU.Vector Int)
+    -- ^ The right sibling for a node @k@.
+  , roots     ∷ !(VU.Vector Int)
+    -- ^ The roots of the individual trees, the forest was constructed
+    -- from.
+  }
+  deriving (Eq,Ord,Read,Show,Generic)
 
-deriving instance (Show a, Show (v a)) => Show (Forest p v a)
+instance (NFData (v a)) ⇒ NFData (Forest p v a)
+
+instance ToJSON (v a) ⇒ ToJSON (Forest p v a)
+
+instance FromJSON (v a) ⇒ FromJSON (Forest p v a)
+
 
 
 
@@ -69,7 +77,7 @@ deriving instance (Show a, Show (v a)) => Show (Forest p v a)
 --
 -- Siblings span trees in the forest!
 
-forestWith :: (VG.Vector v a) => (forall a . [T.Tree a] -> [a]) -> [T.Tree a] -> Forest (p::TreeOrder) v a
+forestWith ∷ (VG.Vector v a) ⇒ (forall a . [T.Tree a] → [a]) → [T.Tree a] → Forest (p∷TreeOrder) v a
 forestWith f ts
   = Forest { label    = VG.fromList $ f ts
            , parent   = VU.fromList $ map (\(_,k,_ ,_) -> k             ) $ f pcs
@@ -98,47 +106,47 @@ forestWith f ts
 
 -- | Construct a pre-ordered forest.
 
-forestPre :: (VG.Vector v a) => [T.Tree a] -> Forest Pre v a
+forestPre ∷ (VG.Vector v a) ⇒ [T.Tree a] → Forest Pre v a
 forestPre = forestWith preorderF
 
 -- | Construct a post-ordered forest.
 
-forestPost :: (VG.Vector v a) => [T.Tree a] -> Forest Post v a
+forestPost ∷ (VG.Vector v a) ⇒ [T.Tree a] → Forest Post v a
 forestPost = forestWith postorderF
 
 -- | Add @pre-ordered@ @(!)@ indices. First argument is the starting index.
 
-addIndices :: Int -> T.Tree a -> T.Tree (Int,a)
+addIndices ∷ Int → T.Tree a → T.Tree (Int,a)
 addIndices k = snd . mapAccumL (\i e -> (i+1, (i,e))) k
 
 -- | Add @pre-ordered@ @(!)@ indices, but to a forest.
 
-addIndicesF :: Int -> [T.Tree a] -> [T.Tree (Int,a)]
+addIndicesF ∷ Int → [T.Tree a] → [T.Tree (Int,a)]
 addIndicesF k = snd . mapAccumL go k
   where go = mapAccumL (\i e -> (i+1, (i,e)))
 
 -- | Add @pre-ordered@ @(!)@ indices to a forest, but throw the label away as
 -- well.
 
-addIndicesF' :: Int -> [T.Tree a] -> [T.Tree Int]
+addIndicesF' ∷ Int → [T.Tree a] → [T.Tree Int]
 addIndicesF' k = snd . mapAccumL go k
   where go = mapAccumL (\i e -> (i+1, i))
 
 -- | Add parent + children information. Yields
 -- @(Index,Parent,[Child],Label)@. Parent is @-1@ if root node.
 
-parentChildrenF :: Int -> [T.Tree (Int,a)] -> [T.Tree (Int,Int,[Int],a)]
+parentChildrenF ∷ Int → [T.Tree (Int,a)] → [T.Tree (Int,Int,[Int],a)]
 parentChildrenF k ts = [ T.Node (i,k,children sf,l) (parentChildrenF i sf)  | T.Node (i,l) sf <- ts ]
   where children sf = map (fst . T.rootLabel) sf
 
 -- | Return a map with all the nearest siblings for each node, for a forest.
 
-lrSiblingF :: [T.Tree (Int,a)] -> S.Map Int (Int,Int)
+lrSiblingF ∷ [T.Tree (Int,a)] → S.Map Int (Int,Int)
 lrSiblingF = S.delete (-1) . lrSibling . T.Node (-1,error "laziness in lrSiblingF broken")
 
 -- | Return a map with all the nearest siblings for each node, for a tree.
 
-lrSibling :: T.Tree (Int,a) -> S.Map Int (Int,Int)
+lrSibling ∷ T.Tree (Int,a) → S.Map Int (Int,Int)
 lrSibling = S.fromList . map splt . T.flatten . go ([]::[Int])
   where go sib (T.Node (k,lbl) frst) = let cs = [l | T.Node (l,_) _ <- frst] in T.Node (k,lbl,sib) [ go cs t | t <- frst]
         splt (k,_,[])  = (k,(-1,-1))
@@ -146,25 +154,25 @@ lrSibling = S.fromList . map splt . T.flatten . go ([]::[Int])
 
 -- | Return the left-most leaf for each node.
 
-leftMostLeaves :: Forest p v a -> VU.Vector Int
+leftMostLeaves ∷ Forest p v a → VU.Vector Int
 leftMostLeaves f = VG.map (leftMostLeaf f) $ VG.enumFromN 0 $ VG.length $ parent f
 
 -- | Just the leaf-most leaf for a certain node.
 
-leftMostLeaf :: Forest p v a -> Int -> Int
+leftMostLeaf ∷ Forest p v a → Int → Int
 leftMostLeaf f = go
   where go k = let cs = children f VG.! k
                in if VG.null cs then k else go (VG.head cs)
 
 -- | Return the right-most leaf for each node.
 
-rightMostLeaves :: Forest p v a -> VU.Vector Int
+rightMostLeaves ∷ Forest p v a → VU.Vector Int
 rightMostLeaves f = VG.map (rightMostLeaf f) $ VG.enumFromN 0 $ VG.length $ parent f
 
 -- | Given a tree, and a node index, return the right-most leaf for the
 -- node.
 
-rightMostLeaf :: Forest p v a -> Int -> Int
+rightMostLeaf ∷ Forest p v a → Int → Int
 rightMostLeaf f = go
   where go k = let cs = children f VG.! k
                in  if VG.null cs then k else go (VG.last cs)
@@ -176,7 +184,7 @@ rightMostLeaf f = go
 --
 -- TODO group by
 
-leftKeyRoots :: Forest Post v a -> VU.Vector Int
+leftKeyRoots ∷ Forest Post v a → VU.Vector Int
 leftKeyRoots f = VU.fromList . sort . S.elems $ VU.foldl' go S.empty (VU.enumFromN (0::Int) $ VG.length $ parent f)
         -- Build a map from left-most leaf to most root-near node.
   where go s k = S.insertWith max (lml VU.! k) k s
@@ -188,7 +196,7 @@ leftKeyRoots f = VU.fromList . sort . S.elems $ VU.foldl' go S.empty (VU.enumFro
 --
 -- TODO turn this into @newtype vectors@ that enforce @size >= 1@.
 
-sortedSubForests :: Forest p v a -> [VU.Vector Int]
+sortedSubForests ∷ Forest p v a → [VU.Vector Int]
 sortedSubForests f =
   -- cleanup
   map VU.fromList
@@ -207,7 +215,7 @@ sortedSubForests f =
   -- make sure that the roots are there, but come last
   $ VG.snoc (VG.reverse (children f)) (roots f)
 
-newtype Srt = Srt { unSrt :: [Int] }
+newtype Srt = Srt { unSrt ∷ [Int] }
   deriving (Eq,Show)
 
 instance Ord Srt where
@@ -215,7 +223,7 @@ instance Ord Srt where
 
 -- | Given a forest, return the list of trees that constitue the forest.
 
-forestToTrees :: Forest p v a -> T.Forest a
+forestToTrees ∷ (VG.Vector v a) ⇒ Forest p v a → T.Forest a
 forestToTrees Forest{..} = map getTree . VG.toList $ roots
   where getTree k = T.Node (label VG.! k) (map getTree . VG.toList $ children VG.! k)
 
@@ -225,16 +233,16 @@ forestToTrees Forest{..} = map getTree . VG.toList $ roots
 
 -- | Wrapped quickcheck instance for 'T.Tree'.
 
-newtype QCTree a = QCTree { getTree :: T.Tree a }
+newtype QCTree a = QCTree { getTree ∷ T.Tree a }
   deriving (Show)
 
-instance (Arbitrary a) => Arbitrary (QCTree a) where
+instance (Arbitrary a) ⇒ Arbitrary (QCTree a) where
   arbitrary =
-    let go = sized $ \n ->
-               do val <- arbitrary
+    let go = sized $ \n →
+               do val ← arbitrary
                   let n' = n `div` 2
-                  nodes <- if n' > 0
-                    then do k <- choose (0,n')
+                  nodes ← if n' > 0
+                    then do k ← choose (0,n')
                             resize n' $ replicateM k (getTree <$> arbitrary)
                     else return []
                   return $ T.Node val nodes
@@ -242,18 +250,18 @@ instance (Arbitrary a) => Arbitrary (QCTree a) where
   shrink (QCTree (T.Node val forest)) =
     [] -- [ QCTree $ T.Node v f | v <- shrink val, f <- map (map getTree) $ shrink $ map QCTree forest ]
 
--- * Test functions
-
-test1 :: [T.Tree Char]
-test1 = [T.Node 'R' [T.Node 'a' [], T.Node 'b' []], T.Node 'S' [T.Node 'x' [], T.Node 'y' []]]
-
-test2 :: [T.Tree Char]
-test2 = [T.Node 'R' [T.Node 'a' [], T.Node 'b' [], T.Node 'c' []]]
-
-runtest t = do
-  print (forestPre t :: Forest Pre V.Vector Char)
-  print (forestPost t :: Forest Post V.Vector Char)
-  print (forestPost [T.Node 'R' [T.Node 'a' []]] :: Forest Post V.Vector Char)
-  print (forestPost [T.Node 'R' [T.Node 'a' [], T.Node 'b' []]] :: Forest Post V.Vector Char)
-  print (sortedSubForests (forestPre t :: Forest Pre V.Vector Char))
-
+--  -- * Test functions
+--  
+--  test1 :: [T.Tree Char]
+--  test1 = [T.Node 'R' [T.Node 'a' [], T.Node 'b' []], T.Node 'S' [T.Node 'x' [], T.Node 'y' []]]
+--  
+--  test2 :: [T.Tree Char]
+--  test2 = [T.Node 'R' [T.Node 'a' [], T.Node 'b' [], T.Node 'c' []]]
+--  
+--  runtest t = do
+--    print (forestPre t :: Forest Pre V.Vector Char)
+--    print (forestPost t :: Forest Post V.Vector Char)
+--    print (forestPost [T.Node 'R' [T.Node 'a' []]] :: Forest Post V.Vector Char)
+--    print (forestPost [T.Node 'R' [T.Node 'a' [], T.Node 'b' []]] :: Forest Post V.Vector Char)
+--    print (sortedSubForests (forestPre t :: Forest Pre V.Vector Char))
+--  
