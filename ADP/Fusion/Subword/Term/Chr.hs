@@ -21,6 +21,7 @@ type instance LeftPosTy (IStatic d)   (Chr r x) (Subword I) = IStatic   d
 type instance LeftPosTy (IVariable d) (Chr r x) (Subword I) = IVariable d
 
 
+
 instance
   forall pos posLeft m ls i r x
   . ( TermStream m (Z:.pos) (TermSymbol M (Chr r x)) (Elm (Term1 (Elm ls (Subword i))) (Z:.Subword i)) (Z:.Subword i)
@@ -34,7 +35,7 @@ instance
     . addTermStream1 (Proxy ∷ Proxy pos) (Chr f xs) us is
     $ mkStream (Proxy ∷ Proxy posLeft)
                ls
-               (termStaticCheck (Proxy ∷ Proxy pos) (Chr f xs) is grd)
+               (termStaticCheck (Proxy ∷ Proxy pos) (Chr f xs) us is grd)
                us
                (termStreamIndex (Proxy ∷ Proxy pos) (Chr f xs) is)
   {-# Inline mkStream #-}
@@ -100,16 +101,15 @@ instance
   {-# Inline termStream #-}
 -}
 
-
 instance TermStaticVar (IStatic d) (Chr r x) (Subword I) where
-  termStreamIndex Proxy (Chr f x) (Subword (i:.j)) = subword i (j-1)
-  termStaticCheck Proxy (Chr f x) (Subword (i:.j)) grd = grd
+  termStreamIndex Proxy _ (Subword (i:.j)) = subword i (j-1)
+  termStaticCheck Proxy _ _ _ grd = grd
   {-# Inline [0] termStreamIndex #-}
   {-# Inline [0] termStaticCheck #-}
 
 instance TermStaticVar (IVariable d) (Chr r x) (Subword I) where
-  termStreamIndex Proxy (Chr f x) (Subword (i:.j)) = subword i (j-1)
-  termStaticCheck Proxy (Chr f x) (Subword (i:.j)) grd = grd
+  termStreamIndex Proxy _ (Subword (i:.j)) = subword i (j-1)
+  termStaticCheck Proxy _ _ _ grd = grd
   {-# Inline [0] termStreamIndex #-}
   {-# Inline [0] termStaticCheck #-}
 

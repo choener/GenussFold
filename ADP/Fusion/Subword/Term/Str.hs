@@ -38,10 +38,10 @@ instance
   ⇒ MkStream m pos (ls :!: Str linked minSz maxSz v x) (Subword i) where
   mkStream pos (ls :!: Str xs) grd us is
     = S.map (\(ss,ee,ii) -> ElmStr ee ii ss) -- recover ElmChr
-    . addTermStream1 pos (Str @linked @minSz @maxSz xs) us is
+    . addTermStream1 pos (Str @v @x @linked @minSz @maxSz xs) us is
     $ mkStream (Proxy ∷ Proxy posLeft) ls
-               (termStaticCheck pos (Str @linked @minSz @maxSz xs) is grd)
-               us (termStreamIndex pos (Str @linked @minSz @maxSz xs) is)
+               (termStaticCheck pos (Str @v @x @linked @minSz @maxSz xs) us is grd)
+               us (termStreamIndex pos (Str @v @x @linked @minSz @maxSz xs) is)
   {-# Inline mkStream #-}
 
 -- | Note that the @minSz@ should automatically work out due to the encoding in
@@ -86,14 +86,14 @@ instance
 instance (KnownNat minSz)
   ⇒ TermStaticVar (IStatic d) (Str Nothing minSz Nothing v x) (Subword I) where
   termStreamIndex Proxy (Str xs) (Subword (i:.j)) = subword i $ j - fromIntegral (natVal (Proxy ∷ Proxy minSz))
-  termStaticCheck Proxy (Str xs) (Subword (i:.j)) grd = grd
+  termStaticCheck Proxy (Str xs) _ _ grd = grd
   {-# Inline [0] termStreamIndex #-}
   {-# Inline [0] termStaticCheck #-}
 
 instance (KnownNat minSz)
   ⇒ TermStaticVar (IVariable d) (Str Nothing minSz Nothing v x) (Subword I) where
   termStreamIndex Proxy (Str xs) (Subword (i:.j)) = subword i $ j - fromIntegral (natVal (Proxy ∷ Proxy minSz))
-  termStaticCheck Proxy (Str xs) (Subword (i:.j)) grd = grd
+  termStaticCheck Proxy (Str xs) _ _ grd = grd
   {-# Inline [0] termStreamIndex #-}
   {-# Inline [0] termStaticCheck #-}
 

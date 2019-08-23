@@ -15,36 +15,35 @@ import ADP.Fusion.Subword.Core
 
 
 
-type instance LeftPosTy (IStatic d) Epsilon (Subword I) = IStatic d
+type instance LeftPosTy (IStatic d) (Epsilon lg) (Subword I) = IStatic d
 
 instance
-  forall pos posLeft m ls i
-  . ( TermStream m (Z:.pos) (TermSymbol M Epsilon) (Elm (Term1 (Elm ls (Subword i))) (Z:.Subword i)) (Z:.Subword i)
-    , posLeft ~ LeftPosTy pos Epsilon (Subword i)
-    , TermStaticVar pos Epsilon (Subword i)
+  forall pos posLeft m ls i lg
+  . ( TermStream m (Z:.pos) (TermSymbol M (Epsilon lg)) (Elm (Term1 (Elm ls (Subword i))) (Z:.Subword i)) (Z:.Subword i)
+    , posLeft ~ LeftPosTy pos (Epsilon lg) (Subword i)
+    , TermStaticVar pos (Epsilon lg) (Subword i)
     , MkStream m posLeft ls (Subword i)
   )
-  ⇒ MkStream m pos (ls :!: Epsilon) (Subword i) where
+  ⇒ MkStream m pos (ls :!: (Epsilon lg)) (Subword i) where
   mkStream Proxy (ls :!: Epsilon) grd us is
     = map (\(ss,ee,ii) -> ElmEpsilon ii ss)
-    . addTermStream1 (Proxy ∷ Proxy pos) Epsilon us is
+    . addTermStream1 (Proxy ∷ Proxy pos) (Epsilon @lg) us is
     $ mkStream (Proxy ∷ Proxy posLeft)
                ls
-               (termStaticCheck (Proxy ∷ Proxy pos) Epsilon is grd)
+               (termStaticCheck (Proxy ∷ Proxy pos) (Epsilon @lg) us is grd)
                us
-               (termStreamIndex (Proxy ∷ Proxy pos) Epsilon is)
+               (termStreamIndex (Proxy ∷ Proxy pos) (Epsilon @lg) is)
   {-# Inline mkStream #-}
 
 
 instance
   ( TermStreamContext m ps ts s x0 i0 is (Subword I)
   )
-  ⇒ TermStream m (ps:.IStatic d) (TermSymbol ts Epsilon) s (is:.Subword I) where
+  ⇒ TermStream m (ps:.IStatic d) (TermSymbol ts (Epsilon lg)) s (is:.Subword I) where
   termStream Proxy (ts:|Epsilon) (us:..u) (is:.Subword (i:.j))
     = map (\(TState s ii ee) ->
               TState s (ii:.:RiSwI j) (ee:.()) )
     . termStream (Proxy ∷ Proxy ps) ts us is
-    . staticCheck (i==j)
   {-# Inline termStream #-}
 
 
@@ -62,9 +61,16 @@ instance
 -}
 
 
-instance TermStaticVar (IStatic 0) Epsilon (Subword I) where
+instance TermStaticVar  (IStatic 0) (Epsilon Global) (Subword I) where
   termStreamIndex Proxy Epsilon ij = ij
-  termStaticCheck Proxy Epsilon ij grd = grd
+  termStaticCheck Proxy Epsilon _ (Subword (I# i:. I# j)) grd = (i ==# j) `andI#` grd
+  {-# Inline [0] termStreamIndex #-}
+  {-# Inline [0] termStaticCheck #-}
+
+
+instance TermStaticVar (IStatic 0) (Epsilon Local) (Subword I) where
+  termStreamIndex Proxy Epsilon ij = ij
+  termStaticCheck Proxy Epsilon _ _ grd = grd
   {-# Inline [0] termStreamIndex #-}
   {-# Inline [0] termStaticCheck #-}
 
