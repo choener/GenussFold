@@ -1,5 +1,10 @@
 
 {-# Language MagicHash #-}
+{-# Language ForeignFunctionInterface #-}
+{-# Language UnliftedFFITypes #-}
+{-# Language GHCForeignImportPrim #-}
+{-# Language UnboxedTuples #-}
+{-# Language CPP #-}
 
 -- | This module provides a small set of function for extremely fast @max@ and
 -- @min@ operations that are branchless.
@@ -23,32 +28,18 @@ instance FastMinMax Int where
     let I# x = x'
         I# y = y'
         l    = x <# y
-        --res  = I# (  (x *# l) +# (y *# (1# -# l))  )
-        res  = I# ( x +# (x -# y) `andI#` uncheckedIShiftRA# (x -# y) 63# )
+        res  = I# (  (x *# l) +# (y *# (1# -# l))  )
+        --res  = I# ( x +# (x -# y) `andI#` uncheckedIShiftRA# (x -# y) 63# )
     in  res
   {-# Inline fastmin #-}
   fastmax x' y' =
     let I# x = x'
         I# y = y'
         l    = x <# y
-        --res  = I# (  (x *# (1# -# l)) +# (y *# l)  )
-        res  = I# ( x -# (x -# y) `andI#` uncheckedIShiftRA# (x -# y) 63# )
+        res  = I# (  (x *# (1# -# l)) +# (y *# l)  )
+        --res = I# ( case (x>=# y) of { 0# -> y; 1# -> x } )
+        --res  = I# ( x -# (x -# y) `andI#` uncheckedIShiftRA# (x -# y) 63# )
+        --res = I# ( (x >=# y) *# x +# (x <# y) *# y )
     in  res
   {-# Inline fastmax #-}
-
---instance FastMinMax Double where
---  fastmin x' y' =
---    let D# x = x'
---        D# y = y'
---        l    = 1## -- x <## y
---        res  = D# 1# -- (  (x *## l) +## (y *## (1## -## l))  )
---    in  res
---  {-# Inline fastmin #-}
---  fastmax x' y' =
---    let D# x = x'
---        D# y = y'
---        l    = 1## -- x <## y
---        res  = D# 1# -- (  (x *## (1## -## l)) +## (y *## l)  )
---    in  res
---  {-# Inline fastmax #-}
 
