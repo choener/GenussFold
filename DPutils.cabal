@@ -77,6 +77,7 @@ Library
     Data.Attoparsec.ByteString.Streaming
     Data.ByteString.Streaming.Split
     Data.Char.Util
+    Data.Info
     Data.Ord.Fast
     Data.Paired.Common
     Data.Paired.Foldable
