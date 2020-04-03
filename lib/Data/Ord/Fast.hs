@@ -27,17 +27,13 @@ class FastMinMax x where
 
 instance FastMinMax Int where
   fastmin (I# x) (I# y) =
-    let l    = x <# y
-        --res  = I# (  (x *# l) +# (y *# (1# -# l))  )
-        res  = I# ( x +# (x -# y) `andI#` uncheckedIShiftRA# (x -# y) 63# )
+    let !xmy = x -# y
+        res  = I# ( y +# ( xmy `andI#` uncheckedIShiftRA# xmy 63# ) )
     in  res
   {-# Inline fastmin #-}
   fastmax (I# x) (I# y) =
     let !xmy  = x -# y
-        -- res  = I# (  (x *# (1# -# l)) +# (y *# l)  )
-        --res = I# ( case (x>=# y) of { 0# -> y; 1# -> x } )
-        res  = I# ( x -# xmy `andI#` uncheckedIShiftRA# xmy 63# )
-        --res = I# ( (x >=# y) *# x +# (x <# y) *# y )
+        res  = I# ( x -# ( xmy `andI#` uncheckedIShiftRA# xmy 63# ) )
     in  res
   {-# Inline fastmax #-}
   clamp (I# x) = I# (andI# x (notI# (uncheckedIShiftRA# x 63#)))
