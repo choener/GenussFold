@@ -14,7 +14,9 @@ Build-type:     Simple
 tested-with:    GHC == 8.6.5
 Synopsis:       bijections with multiple implementations.
 Description:
-                Bijections between sets of values.
+                Bijections between sets of values. The main use is for internalization, and generic
+                savings on memory. For example, strings of unicode characters that encode for one
+                complex symbol may be represented with just a single (newtype wrapped) Int.
 
 
 
