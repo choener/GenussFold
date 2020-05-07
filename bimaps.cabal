@@ -5,13 +5,13 @@ License:        BSD-3-Clause
 License-file:   LICENSE
 Author:         Christian Hoener zu Siederdissen
 Maintainer:     choener@bioinf.uni-leipzig.de
-Copyright:      Christian Hoener zu Siederdissen, 2014 - 2019
+Copyright:      Christian Hoener zu Siederdissen, 2014 - 2020
 homepage:       https://github.com/choener/bimaps
 bug-reports:    https://github.com/choener/bimaps/issues
 Stability:      Experimental
 Category:       Data
 Build-type:     Simple
-tested-with:    GHC == 8.4.4
+tested-with:    GHC == 8.6.5
 Synopsis:       bijections with multiple implementations.
 Description:
                 Bijections between sets of values.
