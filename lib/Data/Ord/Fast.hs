@@ -35,6 +35,11 @@ instance FastMinMax Int where
     let !xmy  = x -# y
         res  = I# ( x -# ( xmy `andI#` uncheckedIShiftRA# xmy 63# ) )
     in  res
+  -- FROM: https://ghc.gitlab.haskell.org/ghc/doc/libraries/ghc-bignum-1.0/src/GHC-Num-Primitives.html#maxI%23
+  -- NOTE: slightly slower than the above version
+  --fastmax (I# x) (I# y)
+  --  | isTrue# (x >=# y) = I# x
+  --  | True              = I# y
   {-# Inline fastmax #-}
   clamp (I# x) = I# (andI# x (notI# (uncheckedIShiftRA# x 63#)))
   {-# Inline clamp #-}
