@@ -15,6 +15,7 @@ import           Text.Printf
 
 import           ADP.Fusion.Subword
 import           Data.PrimitiveArray as PA hiding (map)
+import           ADPfusion.Core.SynVar.Fill
 
 import           FormalLanguage
 
