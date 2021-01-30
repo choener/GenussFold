@@ -8,25 +8,32 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs";
     flake-utils.url = "github:numtide/flake-utils";
+    ghcicabal = { url = "github:choener/ghcicabal"; inputs.nixpkgs.follows = "nixpkgs"; };
   };
 
-  outputs = { self, nixpkgs, flake-utils }:
-    flake-utils.lib.eachDefaultSystem
-      (system:
-        let pkgs = nixpkgs.legacyPackages.${system}; in
-        {
-          devShell = pkgs.mkShell {
-            "NIX_PATH" = "nixpkgs=${nixpkgs}";
+  outputs = { self, nixpkgs, flake-utils, ghcicabal }: let
+    over = final: prev: {
+      haskellPackages = (prev.haskellPackages.override{ overrides= hself: hsuper: let
+          checked   = a: hself.callHackageDirect a {};
+          unchecked = a: final.haskell.lib.dontCheck (checked a);
+          unb       = a: final.haskell.lib.dontCheck (final.haskell.lib.unmarkBroken a);
+        in {
+          fused-effects = hself.fused-effects_1_1_0_0;
+          lens          = hself.lens_4_19_2;
+        };
+      }).extend ( hself: hsuper: {
+      });
+    };
+  in flake-utils.lib.eachDefaultSystem (system: let
+      pkgs = import nixpkgs { inherit system; overlays = [ ghcicabal.overlay self.overlay ]; };
+      sharedBuildInputs = with pkgs; [  ];
+    in  { devShell = pkgs.mkShell {
+            #"NIX_PATH" = "nixpkgs=${pkgs}";
             shellHook = ''
-              nix-shell --run zsh
+              nix-shell --argstr pkgs=${pkgs} --run zsh
               exit
             '';
-          };
-          # NOTE unfortunately, this requires that all dependencies are known to the flake, which is
-          # not working out for this type of development, since I "share" in-progress repositories
-          # between multiple projects.
-          #devShell = import ./shell.nix { inherit pkgs; };
-        }
-      );
+        };
+       }) // {overlay = over;};
 }
 
