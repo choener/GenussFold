@@ -5,7 +5,7 @@
 --
 -- TODO need Outside code
 
-module ADP.Fusion.Term.Strng.Subword where
+module ADPfusion.Term.Strng.Subword where
 
 import           Data.Proxy
 import           Data.Strict.Tuple
@@ -18,8 +18,8 @@ import qualified Data.Vector.Generic as VG
 
 import           Data.PrimitiveArray
 
-import           ADP.Fusion.Core
-import           ADP.Fusion.Core.Subword
+import           ADPfusion.Core
+import           ADPfusion.Core.Subword
 
 
 

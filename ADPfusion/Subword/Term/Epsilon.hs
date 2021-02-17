@@ -1,5 +1,5 @@
 
-module ADP.Fusion.Subword.Term.Epsilon where
+module ADPfusion.Subword.Term.Epsilon where
 
 import Data.Proxy
 import Data.Strict.Tuple
@@ -10,8 +10,8 @@ import Prelude hiding (map)
 
 import Data.PrimitiveArray hiding (map)
 
-import ADP.Fusion.Core
-import ADP.Fusion.Subword.Core
+import ADPfusion.Core
+import ADPfusion.Subword.Core
 
 
 

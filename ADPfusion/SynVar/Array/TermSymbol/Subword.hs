@@ -5,7 +5,7 @@
 -- required here. Probably not trivial since there are, in principle, @n*m@
 -- instances that we need to handle.
 
-module ADP.Fusion.SynVar.Array.TermSymbol.Subword where
+module ADPfusion.SynVar.Array.TermSymbol.Subword where
 
 import Data.Proxy
 import Data.Strict.Tuple hiding (snd)
@@ -16,8 +16,8 @@ import Prelude hiding (map,mapM)
 
 import Data.PrimitiveArray hiding (map)
 
-import ADP.Fusion.Core
-import ADP.Fusion.Core.Subword
+import ADPfusion.Core
+import ADPfusion.Core.Subword
 
 
 

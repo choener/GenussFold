@@ -6,7 +6,7 @@
 -- TODO Take care of minsize constraints! These are somewhat tricky. We
 -- have one constraint for dimension in the table.
 
-module ADP.Fusion.SynVar.Split.Subword where
+module ADPfusion.SynVar.Split.Subword where
 
 import Data.Proxy
 import Data.Strict.Tuple
@@ -20,8 +20,8 @@ import Prelude hiding (map,mapM)
 
 import Data.PrimitiveArray hiding (map)
 
-import ADP.Fusion.Core
-import ADP.Fusion.Core.Subword
+import ADPfusion.Core
+import ADPfusion.Core.Subword
 
 
 

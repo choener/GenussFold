@@ -64,18 +64,18 @@ library
                , PrimitiveArray     == 0.10.0.*
 
   exposed-modules:
-    ADP.Fusion.Subword
-    ADP.Fusion.Subword.Core
-    ADP.Fusion.Subword.SynVar.Indices
-    ADP.Fusion.Subword.Term.Chr
-    ADP.Fusion.Subword.Term.Deletion
-    ADP.Fusion.Subword.Term.Epsilon
-    ADP.Fusion.Subword.Term.Str
---    ADP.Fusion.SynVar.Array.TermSymbol.Subword
---    ADP.Fusion.SynVar.Recursive.Subword
---    ADP.Fusion.SynVar.Split.Subword
---    ADP.Fusion.Term.PeekIndex.Subword
---    ADP.Fusion.Term.Strng.Subword
+    ADPfusion.Subword
+    ADPfusion.Subword.Core
+    ADPfusion.Subword.SynVar.Indices
+    ADPfusion.Subword.Term.Chr
+    ADPfusion.Subword.Term.Deletion
+    ADPfusion.Subword.Term.Epsilon
+    ADPfusion.Subword.Term.Str
+--    ADPfusion.SynVar.Array.TermSymbol.Subword
+--    ADPfusion.SynVar.Recursive.Subword
+--    ADPfusion.SynVar.Split.Subword
+--    ADPfusion.Term.PeekIndex.Subword
+--    ADPfusion.Term.Strng.Subword
 
   default-extensions: BangPatterns
                     , ConstraintKinds

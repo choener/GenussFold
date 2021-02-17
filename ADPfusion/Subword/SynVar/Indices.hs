@@ -7,7 +7,7 @@
 -- is different; check if @coerce@ yields improved performance or if the
 -- compiler optimizes this out!
 
-module ADP.Fusion.Subword.SynVar.Indices where
+module ADPfusion.Subword.SynVar.Indices where
 
 import Data.Proxy
 import Data.Vector.Fusion.Stream.Monadic (map,Stream,head,mapM,Step(..),filter,flatten)
@@ -17,8 +17,8 @@ import Debug.Trace
 
 import Data.PrimitiveArray hiding (map)
 
-import ADP.Fusion.Core
-import ADP.Fusion.Subword.Core
+import ADPfusion.Core
+import ADPfusion.Subword.Core
 
 
 

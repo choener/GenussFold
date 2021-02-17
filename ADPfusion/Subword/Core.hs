@@ -2,7 +2,7 @@
 -- | Instances to allow 'Subword's to be used as index structures in
 -- @ADPfusion@.
 
-module ADP.Fusion.Subword.Core where
+module ADPfusion.Subword.Core where
 
 import Data.Vector.Fusion.Stream.Monadic (singleton,filter,enumFromStepN,map,unfoldr)
 import Debug.Trace
@@ -11,7 +11,7 @@ import GHC.Exts
 
 import Data.PrimitiveArray hiding (map)
 
-import ADP.Fusion.Core
+import ADPfusion.Core
 
 
 

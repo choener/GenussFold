@@ -1,5 +1,5 @@
 
-module ADP.Fusion.Subword.Term.Str where
+module ADPfusion.Subword.Term.Str where
 
 import           Data.Proxy
 import           Data.Strict.Tuple
@@ -10,9 +10,9 @@ import qualified Data.Vector.Generic as VG
 
 import           Data.PrimitiveArray
 
-import           ADP.Fusion.Core
-import           ADP.Fusion.Core.Term.Str
-import           ADP.Fusion.Subword.Core
+import           ADPfusion.Core
+import           ADPfusion.Core.Term.Str
+import           ADPfusion.Subword.Core
 
 
 

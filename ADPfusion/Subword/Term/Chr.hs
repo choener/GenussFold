@@ -1,5 +1,5 @@
 
-module ADP.Fusion.Subword.Term.Chr where
+module ADPfusion.Subword.Term.Chr where
 
 import           Data.Proxy
 import           Data.Strict.Tuple
@@ -12,8 +12,8 @@ import qualified Data.Vector.Generic as VG
 
 import           Data.PrimitiveArray hiding (map)
 
-import           ADP.Fusion.Core
-import           ADP.Fusion.Subword.Core
+import           ADPfusion.Core
+import           ADPfusion.Subword.Core
 
 
 
