@@ -24,7 +24,7 @@ instance
     , TermStaticVar pos (Epsilon lg) (Subword i)
     , MkStream m posLeft ls (Subword i)
   )
-  ⇒ MkStream m pos (ls :!: (Epsilon lg)) (Subword i) where
+  => MkStream m pos (ls :!: (Epsilon lg)) (Subword i) where
   mkStream Proxy (ls :!: Epsilon) grd us is
     = map (\(ss,ee,ii) -> ElmEpsilon ii ss)
     . addTermStream1 (Proxy ∷ Proxy pos) (Epsilon @lg) us is
@@ -39,7 +39,7 @@ instance
 instance
   ( TermStreamContext m ps ts s x0 i0 is (Subword I)
   )
-  ⇒ TermStream m (ps:.IStatic d) (TermSymbol ts (Epsilon lg)) s (is:.Subword I) where
+  => TermStream m (ps:.IStatic d) (TermSymbol ts (Epsilon lg)) s (is:.Subword I) where
   termStream Proxy (ts:|Epsilon) (us:..u) (is:.Subword (i:.j))
     = map (\(TState s ii ee) ->
               TState s (ii:.:RiSwI j) (ee:.()) )

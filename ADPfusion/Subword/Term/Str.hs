@@ -37,12 +37,12 @@ instance
     , MkStream m posLeft ls (Subword i)
     )
   => MkStream m pos (ls :!: Str linked minSz maxSz v x r) (Subword i) where
-  mkStream pos (ls :!: str@(Str f xs)) grd us is
+  mkStream pos (ls :!: Str f xs) grd us is
     = S.map (\(ss,ee,ii) -> ElmStr ee ii ss)
-    . addTermStream1 pos (Str f xs `asTypeOf` str) us is
+    . addTermStream1 pos (Str @v @x @r @linked @minSz @maxSz f xs) us is
     $ mkStream (Proxy :: Proxy posLeft) ls
-               (termStaticCheck pos (Str f xs `asTypeOf` str) us is grd)
-               us (termStreamIndex pos (Str f xs `asTypeOf` str) is)
+               (termStaticCheck pos (Str  @v @x @r @linked @minSz @maxSz f xs) us is grd)
+               us (termStreamIndex pos (Str  @v @x @r @linked @minSz @maxSz f xs) is)
   {-# Inline mkStream #-}
 
 class MaybeMaxSz (maxSz :: Maybe Nat) where
@@ -77,7 +77,9 @@ instance
   ) => TermStream m (ps:.IStatic d) (TermSymbol ts (Str linked minSz maxSz v x r)) s (is:.Subword I) where
   termStream Proxy (ts:|Str f xs) (us:..LtSubword u) (is:.Subword (i:.j))
     = S.mapMaybe (\(TState s ii ee) -> let RiSwI l = getIndex (getIdx s) (Proxy :: PRI is (Subword I))
-        in maybeMaxSz @maxSz (j-l) $ TState s (ii:.:RiSwI j) (ee:.f l j xs) )
+        in maybeMaxSz @maxSz (j-l) $ TState s (ii:.:RiSwI j) (ee:.f xs l j) )
+--    = S.map (\(TState s ii ee) -> let RiSwI l = getIndex (getIdx s) (Proxy :: PRI is (Subword I))
+--        in TState s (ii:.:RiSwI j) (ee:.f xs l j) )
     . termStream (Proxy ∷ Proxy ps) ts us is
   {-# Inline termStream #-}
 
@@ -100,7 +102,7 @@ instance (eq ~ (p == linked), LinkedSzEq eq p (ls :!: Str linked minSz maxSz v x
   {-# Inline linkedSz #-}
   linkedSz ts = linkedSzEq @eq @p ts
 
-instance LinkedSz eqEmpty linked (Term1 (Elm S (Subword I))) (Z:.Subword I) where
+instance LinkedSz False linked (Term1 (Elm S (Subword I))) (Z:.Subword I) where
   {-# Inline linkedSz #-}
   linkedSz _ = 0
 
@@ -139,12 +141,11 @@ instance
   termStream Proxy (ts:|Str f xs) (us:..LtSubword u) (is:.Subword (i:.j))
     = S.flatten mk step . termStream (Proxy ∷ Proxy ps) ts us is
     where mk (tstate@(TState s ii ee)) =
-            let RiSwI k = getIndex (getIdx s) (Proxy ∷ PRI is (Subword I))
-                msz     = fromIntegral $ natVal (Proxy ∷ Proxy minSz)
+            let !msz = fromIntegral $ natVal (Proxy ∷ Proxy minSz)
             in  return (tstate,msz)
-          step (TState s ii ee, sz)
-            | k+sz > j || gtMaxSz @maxSz (lsz+sz) = return $ S.Done
-            | otherwise = return $ S.Yield (TState s (ii:.:RiSwI ksz) (ee:.f k ksz xs))
+          step (TState s ii ee, !sz)
+            | ksz > j || gtMaxSz @maxSz (lsz+sz) = return $ S.Done
+            | otherwise = return $ S.Yield (TState s (ii:.:RiSwI ksz) (ee:.f xs k ksz))
                                            (TState s ii ee, sz+1)
             where RiSwI k = getIndex (getIdx s) (Proxy ∷ PRI is (Subword I))
                   ksz = k+sz
@@ -154,7 +155,7 @@ instance
   {-# Inline termStream #-}
 
 instance (KnownNat minSz)
-  ⇒ TermStaticVar (IStatic d) (Str linked minSz maxSz v x r) (Subword I) where
+  => TermStaticVar (IStatic d) (Str linked minSz maxSz v x r) (Subword I) where
   termStreamIndex Proxy (Str _ _) (Subword (i:.j)) = subword i $ j - fromIntegral (natVal (Proxy ∷ Proxy minSz))
   termStaticCheck Proxy (Str _ _) _ _ grd = grd
   {-# Inline [0] termStreamIndex #-}
