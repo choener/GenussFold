@@ -3,6 +3,7 @@ module ADPfusion.Subword.Term.Str where
 
 import           Data.Proxy
 import           Data.Strict.Tuple
+import           Data.Type.Equality
 import           Debug.Trace
 import           GHC.Exts
 import qualified Data.Vector.Fusion.Stream.Monadic as S
@@ -36,15 +37,13 @@ instance
     , MkStream m posLeft ls (Subword i)
     )
   => MkStream m pos (ls :!: Str linked minSz maxSz v x r) (Subword i) where
-{-
-  mkStream pos (ls :!: Str xs) grd us is
-    = S.map (\(ss,ee,ii) -> ElmStr ee ii ss) -- recover ElmChr
-    . addTermStream1 pos (Str @v @x @linked @minSz @maxSz xs) us is
-    $ mkStream (Proxy ∷ Proxy posLeft) ls
-               (termStaticCheck pos (Str @v @x @linked @minSz @maxSz xs) us is grd)
-               us (termStreamIndex pos (Str @v @x @linked @minSz @maxSz xs) is)
+  mkStream pos (ls :!: str@(Str f xs)) grd us is
+    = S.map (\(ss,ee,ii) -> ElmStr ee ii ss)
+    . addTermStream1 pos (Str f xs `asTypeOf` str) us is
+    $ mkStream (Proxy :: Proxy posLeft) ls
+               (termStaticCheck pos (Str f xs `asTypeOf` str) us is grd)
+               us (termStreamIndex pos (Str f xs `asTypeOf` str) is)
   {-# Inline mkStream #-}
--}
 
 class MaybeMaxSz (maxSz :: Maybe Nat) where
   maybeMaxSz :: Int -> a -> Maybe a
@@ -82,8 +81,52 @@ instance
     . termStream (Proxy ∷ Proxy ps) ts us is
   {-# Inline termStream #-}
 
-class LinkedSz linked a b where
-  linkedSz :: a -> b -> Int
+
+
+class LinkedSz (eqEmpty::Bool) (p::Symbol) ts i where
+  linkedSz :: Elm ts i -> Int
+
+-- | If the @Str@ we want to calculate for has a symbol @""@ then there is no need to sum up the
+-- linked sizes, since "" declares independence.
+
+instance LinkedSz True p any i where
+  {-# Inline linkedSz #-}
+  linkedSz _ = 0
+
+-- | The linked name is non-empty, hence we now need to sum up linked sizes.
+
+instance (eq ~ (p == linked), LinkedSzEq eq p (ls :!: Str linked minSz maxSz v x r) i )
+  => LinkedSz False p (ls :!: Str linked minSz maxSz v x r) i where
+  {-# Inline linkedSz #-}
+  linkedSz ts = linkedSzEq @eq @p ts
+
+instance LinkedSz eqEmpty linked (Term1 (Elm S (Subword I))) (Z:.Subword I) where
+  {-# Inline linkedSz #-}
+  linkedSz _ = 0
+
+
+
+-- | This class calculates the actual link sizes.
+
+class LinkedSzEq (eq::Bool) (p::Symbol) ts i where
+  linkedSzEq :: Elm ts i -> Int
+
+instance ( LinkedSz False p ls (Subword I), Element ls (Subword I) )
+  => LinkedSzEq 'True p (ls :!: Str linked minSz maxSz v x r) (Subword I) where
+  {-# Inline linkedSzEq #-}
+  -- We have the correct type @Str@ and the same non-empty linked annotation. Extract the previous
+  -- running index, and the current running index. Calculate their size difference, and recursively
+  -- add more linked sizes.
+  linkedSzEq (ElmStr _ (RiSwI j) ls) = let RiSwI i = getIdx ls in (j-i) + linkedSz @False @p ls
+
+-- | This @Str@ does NOT have the same type-level string annotation
+
+instance ( LinkedSz False p ls i )
+  => LinkedSzEq 'False p (ls :!: Str linked minSz maxSz v x r) i where
+  {-# Inline linkedSzEq #-}
+  linkedSzEq (ElmStr _ _ ls) = linkedSz @False @p ls
+
+
 
 -- |
 --
@@ -91,7 +134,7 @@ class LinkedSz linked a b where
 
 instance
   ( TermStreamContext m ps ts s x0 i0 is (Subword I)
-  , KnownNat minSz, MaybeMaxSz maxSz
+  , KnownNat minSz, KnownSymbol linked, MaybeMaxSz maxSz, LinkedSz (linked == "") linked x0 i0
   ) => TermStream m (ps:.IVariable d) (TermSymbol ts (Str linked minSz maxSz v x r)) s (is:.Subword I) where
   termStream Proxy (ts:|Str f xs) (us:..LtSubword u) (is:.Subword (i:.j))
     = S.flatten mk step . termStream (Proxy ∷ Proxy ps) ts us is
@@ -100,13 +143,12 @@ instance
                 msz     = fromIntegral $ natVal (Proxy ∷ Proxy minSz)
             in  return (tstate,msz)
           step (TState s ii ee, sz)
-            | k+sz > j || gtMaxSz @maxSz sz = return $ S.Done
---            | curK + linked size > maxSz = done
+            | k+sz > j || gtMaxSz @maxSz (lsz+sz) = return $ S.Done
             | otherwise = return $ S.Yield (TState s (ii:.:RiSwI ksz) (ee:.f k ksz xs))
                                            (TState s ii ee, sz+1)
             where RiSwI k = getIndex (getIdx s) (Proxy ∷ PRI is (Subword I))
                   ksz = k+sz
-                  lsz = undefined -- linkedSz @linked ts s
+                  lsz = linkedSz @(linked == "") @linked s
           {-# Inline [0] mk   #-}
           {-# Inline [0] step #-}
   {-# Inline termStream #-}
