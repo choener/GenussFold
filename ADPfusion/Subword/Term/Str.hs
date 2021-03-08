@@ -45,25 +45,6 @@ instance
                us (termStreamIndex pos (Str  @v @x @r @linked @minSz @maxSz f xs) is)
   {-# Inline mkStream #-}
 
-class MaybeMaxSz (maxSz :: Maybe Nat) where
-  maybeMaxSz :: Int -> a -> Maybe a
-  gtMaxSz :: Int -> Bool
-
-instance MaybeMaxSz Nothing where
-  {-# Inline maybeMaxSz #-}
-  maybeMaxSz _ = Just
-  {-# Inline gtMaxSz #-}
-  gtMaxSz _ = False
-
-instance (KnownNat maxSz) => MaybeMaxSz (Just maxSz) where
-  {-# Inline maybeMaxSz #-}
-  maybeMaxSz k a
-    | k <= maxSz = Just a
-    | otherwise  = Nothing
-    where maxSz = fromIntegral (natVal (Proxy :: Proxy maxSz))
-  {-# Inline gtMaxSz #-}
-  gtMaxSz k = k > fromIntegral (natVal (Proxy :: Proxy maxSz))
-
 -- | Note that the @minSz@ should automatically work out due to the encoding in
 -- @d@ / @termStaticVar@
 --
@@ -84,9 +65,6 @@ instance
   {-# Inline termStream #-}
 
 
-
-class LinkedSz (eqEmpty::Bool) (p::Symbol) ts i where
-  linkedSz :: Elm ts i -> Int
 
 -- | If the @Str@ we want to calculate for has a symbol @""@ then there is no need to sum up the
 -- linked sizes, since "" declares independence.
