@@ -1,61 +1,41 @@
 
+{-# Options_GHC -Wno-partial-type-signatures  #-}
+{-# Options_GHC -fspec-constr-count=1000      #-}
+{-# Options_GHC -fspec-constr-keen            #-}
+{-# Options_GHC -fspec-constr-recursive=1000  #-}
+{-# Options_GHC -fspec-constr-threshold=1000  #-}
+{-# Options_GHC -fmax-worker-args=1000        #-}
+-- both, full laziness and no liberate case are essential to have things inline nicely!
+{-# Options_GHC -fno-full-laziness            #-}
+{-# Options_GHC -fno-liberate-case            #-}
+
+-- |
+
 module BioInf.GenussFold.PKN where
 
-import           Control.Applicative
-import           Control.Monad
-import           Control.Monad.ST
-import           Data.Char (toUpper,toLower)
-import           Data.List
-import           Data.Vector.Fusion.Util
-import           Language.Haskell.TH
-import           Language.Haskell.TH.Syntax
+import Control.Applicative
+import Control.Monad
+import Control.Monad.ST
+import Data.Char (toUpper,toLower)
+import Data.List
+import Data.Vector.Fusion.Util
+import Language.Haskell.TH
+import Language.Haskell.TH.Syntax
 import qualified Data.Vector.Fusion.Stream.Monadic as SM
 import qualified Data.Vector.Unboxed as VU
-import           Text.Printf
+import Text.Printf
 
-import           ADP.Fusion.Subword
-import           Data.PrimitiveArray as PA hiding (map)
-import           ADPfusion.Core.SynVar.Fill
+import ADPfusion.Core.SynVar.Fill
+import ADPfusion.Subword
+import Data.PrimitiveArray as PA hiding (map)
+import FormalLanguage
 
-import           FormalLanguage
+import BioInf.GenussFold.PKN.Grammar
 
 
-
--- | Define signature and grammar
-
-[formalLanguage|
-Verbose
-
-Grammar: PKN
-N: S
-{-
- - <U,2> is a split non-terminal.
- -
- - We explicitly introduce <U> and <V> as we want to have @pk1@ and @pk2@
- - in place. In principle, we could make use of an intermediate recursive
- - syntactic variable to ease the memory load, but this is simpler.
- -}
-N: <U,2>
-N: <V,2>
-T: c
-S: S
-S -> unp <<< S c
-S -> jux <<< S c S c
-S -> nil <<< e
-S -> pse <<< U V U V
-
-<U,U> -> pk1 <<< [S,-] [c,-] <U,U> [-,S] [-,c]
-<U,U> -> nll <<< [e,e]
-
-<V,V> -> pk2 <<< [S,-] [c,-] <V,V> [-,S] [-,c]
-<V,V> -> nll <<< [e,e]
-//
-Emit: PKN
-|]
-
-makeAlgebraProduct ''SigPKN
 
 bpmax :: Monad m => SigPKN m Int Int Char Char
+{-# Inline bpmax #-}
 bpmax = SigPKN
   { unp = \ x c     -> x
   , jux = \ x c y d -> if c `pairs` d then x + y + 1 else -999999
@@ -66,8 +46,9 @@ bpmax = SigPKN
   , nll = \ (Z:.():.()) -> 0
   , h   = SM.foldl' max (-999999)
   }
-{-# INLINE bpmax #-}
 
+pairs :: Char -> Char -> Bool
+{-# Inline pairs #-}
 pairs !c !d
   =  c=='A' && d=='U'
   || c=='C' && d=='G'
@@ -75,7 +56,6 @@ pairs !c !d
   || c=='G' && d=='U'
   || c=='U' && d=='A'
   || c=='U' && d=='G'
-{-# INLINE pairs #-}
 
 -- |
 --
@@ -85,6 +65,7 @@ pairs !c !d
 -- possibilities here! ([] ist lightweight, on the other hand ...)
 
 pretty :: Monad m => SigPKN m [String] [[String]] Char Char
+{-# Inline pretty #-}
 pretty = SigPKN
   { unp = \ [x] c     -> [x ++ "."]
   , jux = \ [x] c [y] d -> [x ++ "(" ++ y ++ ")"]
@@ -95,7 +76,6 @@ pretty = SigPKN
   , nll = \ (Z:.():.()) -> ["",""]
   , h   = SM.toList
   }
-{-# INLINE pretty #-}
 
 -- |
 --
@@ -108,18 +88,19 @@ pretty = SigPKN
 -- @
 
 pknPairMax :: Int -> String -> (Int,[[String]])
+{-# NoInline pknPairMax #-}
 pknPairMax k inp = (d, take k bs) where
   i = VU.fromList . Prelude.map toUpper $ inp
   n = VU.length i
   !(Z:.t:.u:.v) = runInsideForward i
   d = unId $ axiom t
   bs = runInsideBacktrack i (Z:.t:.u:.v)
-{-# NOINLINE pknPairMax #-}
 
 type X = TwITbl Id Unboxed EmptyOk (Subword I) Int
 type T = TwITbl Id Unboxed (Z:.EmptyOk:.EmptyOk) (Z:.Subword I:.Subword I) Int
 
 runInsideForward :: VU.Vector Char -> Z:.X:.T:.T
+{-# NoInline runInsideForward #-}
 runInsideForward i = mutateTablesWithHints (Proxy :: Proxy MonotoneMCFG)
                    $ gPKN bpmax
                         (ITbl 0 0 EmptyOk (PA.fromAssocs (subword 0 0) (subword 0 n) (-666999) []))
@@ -128,12 +109,12 @@ runInsideForward i = mutateTablesWithHints (Proxy :: Proxy MonotoneMCFG)
                         (chr i)
                         (chr i)
   where n = VU.length i
-{-# NoInline runInsideForward #-}
 
 type X' = TwITblBt Unboxed EmptyOk (Subword I) Int Id Id [String]
 type T' = TwITblBt Unboxed (Z:.EmptyOk:.EmptyOk) (Z:.Subword I:.Subword I) Int Id Id [String]
 
 runInsideBacktrack :: VU.Vector Char -> Z:.X:.T:.T -> [[String]]
+{-# NoInline runInsideBacktrack #-}
 runInsideBacktrack i (Z:.t:.u:.v) = unId $ axiom b
   where !(Z:.b:._:._) = gPKN (bpmax <|| pretty)
                           (toBacktrack t (undefined :: Id a -> Id a))
@@ -142,5 +123,4 @@ runInsideBacktrack i (Z:.t:.u:.v) = unId $ axiom b
                           (chr i)
                           (chr i)
                           :: Z:.X':.T':.T'
-{-# NoInline runInsideBacktrack #-}
 

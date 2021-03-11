@@ -1,5 +1,149 @@
 {
   "nodes": {
+    "ADPfusion-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1615216272,
+        "narHash": "sha256-zLzUXy1WqYuNd4Kr4c0E4zl+XfrDOgJKW13yjhnMS8M=",
+        "owner": "choener",
+        "repo": "ADPfusion",
+        "rev": "9f0044a6167d9f909530fed18c5a6bac9cfe03ad",
+        "type": "github"
+      },
+      "original": {
+        "owner": "choener",
+        "repo": "ADPfusion",
+        "type": "github"
+      }
+    },
+    "ADPfusionSubword-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1615221225,
+        "narHash": "sha256-64GFyWpHTGbLBY9vxZJFYMTefkWG16Tx4rPzD3QPE4M=",
+        "owner": "choener",
+        "repo": "ADPfusionSubword",
+        "rev": "6a3caddb7fca84c7d1a9a2dfa8480c99f3fd6076",
+        "type": "github"
+      },
+      "original": {
+        "owner": "choener",
+        "repo": "ADPfusionSubword",
+        "type": "github"
+      }
+    },
+    "DPutils-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1606226778,
+        "narHash": "sha256-8o44MxzNTIxF+ZGK/Y/ANU9013Csl/nK94CRusu3y3w=",
+        "owner": "choener",
+        "repo": "DPutils",
+        "rev": "23d7628487eb0da2bdd05b400d806b47d9ea6c4e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "choener",
+        "repo": "DPutils",
+        "type": "github"
+      }
+    },
+    "ForestStructures-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1602612645,
+        "narHash": "sha256-m9s8eNg2sYHpapA5uBsrCm7cJRPnsA/rQ0BNNyYZTaI=",
+        "owner": "choener",
+        "repo": "ForestStructures",
+        "rev": "2e5ef5cc6586dfe9269ff422fee2fa32e50b9b99",
+        "type": "github"
+      },
+      "original": {
+        "owner": "choener",
+        "repo": "ForestStructures",
+        "type": "github"
+      }
+    },
+    "FormalGrammars-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1614856946,
+        "narHash": "sha256-wvlG0U/RRxUiKmDOK7QT4Biq0wpupa8Z0/Ebic29Zng=",
+        "owner": "choener",
+        "repo": "FormalGrammars",
+        "rev": "e5cd99fed38fbc9f972ebba98d7c6554dbc0a3c0",
+        "type": "github"
+      },
+      "original": {
+        "owner": "choener",
+        "repo": "FormalGrammars",
+        "type": "github"
+      }
+    },
+    "GrammarProducts-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1614856951,
+        "narHash": "sha256-11iUQg062x3FoWowkkRlEp+AsO1jcM2/3+34BthR+Hs=",
+        "owner": "choener",
+        "repo": "GrammarProducts",
+        "rev": "d377ae110dd7895767fca4dd6a7ed201d499bb6c",
+        "type": "github"
+      },
+      "original": {
+        "owner": "choener",
+        "repo": "GrammarProducts",
+        "type": "github"
+      }
+    },
+    "OrderedBits-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1588855846,
+        "narHash": "sha256-emWr4Ytm/k0vovSGiixe9E4VfjxsjAs587YSPx0qs58=",
+        "owner": "choener",
+        "repo": "OrderedBits",
+        "rev": "f62aa023819adadb89577f7fef8ed706f53d2abc",
+        "type": "github"
+      },
+      "original": {
+        "owner": "choener",
+        "repo": "OrderedBits",
+        "type": "github"
+      }
+    },
+    "PrimitiveArray-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1614856956,
+        "narHash": "sha256-F18hrTdYEJJrWo0bS6Acd4wzb1Y6pgEXWCoFxHqSswA=",
+        "owner": "choener",
+        "repo": "PrimitiveArray",
+        "rev": "3793e179ea87aed0d51d43d5624e66174e06408e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "choener",
+        "repo": "PrimitiveArray",
+        "type": "github"
+      }
+    },
+    "bimaps-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1602612666,
+        "narHash": "sha256-9RgHafPWSCHC+yjF108xitArSOBsW+oF/B3FkeH6nSY=",
+        "owner": "choener",
+        "repo": "bimaps",
+        "rev": "b0f63af1e9afb78a08c733b8f068ceb8c94c7dd4",
+        "type": "github"
+      },
+      "original": {
+        "owner": "choener",
+        "repo": "bimaps",
+        "type": "github"
+      }
+    },
     "flake-utils": {
       "locked": {
         "lastModified": 1610051610,
@@ -53,21 +197,31 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1611935233,
-        "narHash": "sha256-DNKjtkkkMS2nYWE/AkpAXIsIY3p79DC5nkrLdtONdD8=",
+        "lastModified": 1611687636,
+        "narHash": "sha256-LsbgFEBm5IOxWgn2rUuUsTac4QdNrCQhXDnSHK4FUO4=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "90a9b71b73ffdf2b7fc8f9d03e81968cbc1ff344",
+        "rev": "93c2261684ea8c65606d7167b5d52b8da7d7778a",
         "type": "github"
       },
       "original": {
         "owner": "NixOS",
+        "ref": "nixos-20.09",
         "repo": "nixpkgs",
         "type": "github"
       }
     },
     "root": {
       "inputs": {
+        "ADPfusion-src": "ADPfusion-src",
+        "ADPfusionSubword-src": "ADPfusionSubword-src",
+        "DPutils-src": "DPutils-src",
+        "ForestStructures-src": "ForestStructures-src",
+        "FormalGrammars-src": "FormalGrammars-src",
+        "GrammarProducts-src": "GrammarProducts-src",
+        "OrderedBits-src": "OrderedBits-src",
+        "PrimitiveArray-src": "PrimitiveArray-src",
+        "bimaps-src": "bimaps-src",
         "flake-utils": "flake-utils",
         "ghcicabal": "ghcicabal",
         "nixpkgs": "nixpkgs"
