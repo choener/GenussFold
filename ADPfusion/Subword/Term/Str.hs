@@ -58,7 +58,7 @@ instance
   ) => TermStream m (ps:.IStatic d) (TermSymbol ts (Str linked minSz maxSz v x r)) s (is:.Subword I) where
   termStream Proxy (ts:|Str f xs) (us:..LtSubword u) (is:.Subword (i:.j))
     = S.mapMaybe (\(TState s ii ee) -> let RiSwI l = getIndex (getIdx s) (Proxy :: PRI is (Subword I))
-        in maybeMaxSz @maxSz (j-l) $ TState s (ii:.:RiSwI j) (ee:.f xs l j) )
+        in maybeMaxSz (Proxy @maxSz) (j-l) $ TState s (ii:.:RiSwI j) (ee:.f xs l j) )
 --    = S.map (\(TState s ii ee) -> let RiSwI l = getIndex (getIdx s) (Proxy :: PRI is (Subword I))
 --        in TState s (ii:.:RiSwI j) (ee:.f xs l j) )
     . termStream (Proxy ∷ Proxy ps) ts us is
@@ -66,30 +66,11 @@ instance
 
 
 
--- | If the @Str@ we want to calculate for has a symbol @""@ then there is no need to sum up the
--- linked sizes, since "" declares independence.
-
-instance LinkedSz True p any i where
-  {-# Inline linkedSz #-}
-  linkedSz _ = 0
-
 -- | The linked name is non-empty, hence we now need to sum up linked sizes.
 
-instance (eq ~ (p == linked), LinkedSzEq eq p (ls :!: Str linked minSz maxSz v x r) i )
-  => LinkedSz False p (ls :!: Str linked minSz maxSz v x r) i where
-  {-# Inline linkedSz #-}
-  linkedSz ts = linkedSzEq @eq @p ts
-
-instance LinkedSz False linked (Term1 (Elm S (Subword I))) (Z:.Subword I) where
-  {-# Inline linkedSz #-}
-  linkedSz _ = 0
-
-
-
--- | This class calculates the actual link sizes.
-
-class LinkedSzEq (eq::Bool) (p::Symbol) ts i where
-  linkedSzEq :: Elm ts i -> Int
+--instance LinkedSz False linked (Term1 (Elm S (Subword I))) (Z:.Subword I) where
+--  {-# Inline linkedSz #-}
+--  linkedSz _ _ _ = 0
 
 instance ( LinkedSz False p ls (Subword I), Element ls (Subword I) )
   => LinkedSzEq 'True p (ls :!: Str linked minSz maxSz v x r) (Subword I) where
@@ -97,14 +78,14 @@ instance ( LinkedSz False p ls (Subword I), Element ls (Subword I) )
   -- We have the correct type @Str@ and the same non-empty linked annotation. Extract the previous
   -- running index, and the current running index. Calculate their size difference, and recursively
   -- add more linked sizes.
-  linkedSzEq (ElmStr _ (RiSwI j) ls) = let RiSwI i = getIdx ls in (j-i) + linkedSz @False @p ls
+  linkedSzEq _ _ (ElmStr _ (RiSwI j) ls) = let RiSwI i = getIdx ls in (j-i) + linkedSz (Proxy @False) (Proxy @p) ls
 
 -- | This @Str@ does NOT have the same type-level string annotation
 
 instance ( LinkedSz False p ls i )
   => LinkedSzEq 'False p (ls :!: Str linked minSz maxSz v x r) i where
   {-# Inline linkedSzEq #-}
-  linkedSzEq (ElmStr _ _ ls) = linkedSz @False @p ls
+  linkedSzEq _ _ (ElmStr _ _ ls) = linkedSz (Proxy @False) (Proxy @p) ls
 
 
 
@@ -122,12 +103,12 @@ instance
             let !msz = fromIntegral $ natVal (Proxy ∷ Proxy minSz)
             in  return (tstate,msz)
           step (TState s ii ee, !sz)
-            | ksz > j || gtMaxSz @maxSz (lsz+sz) = return $ S.Done
+            | ksz > j || gtMaxSz (Proxy @maxSz) (lsz+sz) = return $ S.Done
             | otherwise = return $ S.Yield (TState s (ii:.:RiSwI ksz) (ee:.f xs k ksz))
                                            (TState s ii ee, sz+1)
             where RiSwI k = getIndex (getIdx s) (Proxy ∷ PRI is (Subword I))
                   ksz = k+sz
-                  lsz = linkedSz @(linked == "") @linked s
+                  lsz = linkedSz (Proxy @(linked == "")) (Proxy @linked) s
           {-# Inline [0] mk   #-}
           {-# Inline [0] step #-}
   {-# Inline termStream #-}
