@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/choener/ADPfusionSubword.svg?branch=master)](https://travis-ci.org/choener/ADPfusionSubword)
+![github action: master](https://github.com/choener/ADPfusionSubword/actions/workflows/action.yml/badge.svg)
 
 # ADPfusionSubword
 
