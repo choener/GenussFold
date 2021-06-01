@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/choener/OrderedBits.svg?branch=master)](https://travis-ci.org/choener/OrderedBits)
+![github action: master](https://github.com/choener/OrderedBits/actions/workflows/action.yml/badge.svg)
 
 # OrderedBits
 
