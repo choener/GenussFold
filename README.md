@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/choener/DPutils.svg?branch=master)](https://travis-ci.org/choener/DPutils)
+![github action: master](https://github.com/choener/DPutils/actions/workflows/action.yml/badge.svg)
 
 # DPutils
 
