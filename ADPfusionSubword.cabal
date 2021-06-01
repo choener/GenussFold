@@ -7,7 +7,7 @@ homepage:       https://github.com/choener/ADPfusionSubword
 bug-reports:    https://github.com/choener/ADPfusionSubword/issues
 maintainer:     choener@bioinf.uni-leipzig.de
 category:       Algorithms, Data Structures, Bioinformatics, Formal Languages
-license:        BSD3
+license:        BSD3-3-Clause
 license-file:   LICENSE
 build-type:     Simple
 stability:      experimental
