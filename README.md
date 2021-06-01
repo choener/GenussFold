@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/choener/ForestStructures.svg?branch=master)](https://travis-ci.org/choener/ForestStructures)
+![github action: master](https://github.com/choener/ForestStructures/actions/workflows/action.yml/badge.svg)
 
 # ForestStructures: Dynamic and static tree and forest structures
 
