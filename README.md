@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/choener/bimaps.svg?branch=master)](https://travis-ci.org/choener/bimaps)
+![github action: master](https://github.com/choener/bimaps/actions/workflows/action.yml/badge.svg)
 
 # bimaps
 
