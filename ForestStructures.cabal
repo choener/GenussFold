@@ -7,7 +7,7 @@ homepage:       https://github.com/choener/ForestStructures
 bug-reports:    https://github.com/choener/ForestStructures/issues
 maintainer:     choener@bioinf.uni-leipzig.de
 category:       Formal Languages, Bioinformatics
-license:        BSD3
+license:        BSD-3-Clause
 license-file:   LICENSE
 build-type:     Simple
 stability:      experimental
