@@ -2,6 +2,8 @@
 -------
 
 - Data.Ord.Fast provides fast versions of min/max (until GHC catches up)
+- Data.Info for "hand-written" Show-like instances to be used in an interactive environment. The
+  info might, for example, return the length, beginning, and end of a string.
 
 0.1.0.0
 -------

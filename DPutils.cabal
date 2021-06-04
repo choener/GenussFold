@@ -1,6 +1,6 @@
 Cabal-version:  2.2
 Name:           DPutils
-Version:        0.1.0.0
+Version:        0.1.1.0
 License:        BSD-3-Clause
 License-file:   LICENSE
 Maintainer:     choener@bioinf.uni-leipzig.de
@@ -11,7 +11,7 @@ bug-reports:    https://github.com/choener/DPutils/issues
 Stability:      Experimental
 Category:       Data
 Build-type:     Simple
-tested-with:    GHC == 8.8
+tested-with:    GHC == 8.8, GHC == 8.10, GHC == 9.0
 Synopsis:       utilities for DP
 Description:
                 Small set of utility functions, as well as the base types for
