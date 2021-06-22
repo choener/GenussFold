@@ -4,7 +4,7 @@
   '';
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-20.09";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-21.05";
     flake-utils.url = "github:numtide/flake-utils";
     ghcicabal = { url = "github:choener/ghcicabal"; inputs.nixpkgs.follows = "nixpkgs"; };
     bimaps-src = {
@@ -54,8 +54,8 @@
           unchecked = a: final.haskell.lib.dontCheck (checked a);
           unb       = a: final.haskell.lib.dontCheck (final.haskell.lib.unmarkBroken a);
         in {
-          fused-effects = hself.fused-effects_1_1_0_0;
-          lens          = hself.lens_4_19_2;
+          #fused-effects = hself.fused-effects_1_1_0_0;
+          #lens          = hself.lens_4_19_2;
         };
       }).extend ( hself: hsuper: {
         GenussFold = hself.callPackage ./. {};
