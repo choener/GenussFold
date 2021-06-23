@@ -1,6 +1,6 @@
 { mkDerivation, ADPfusion, ADPfusionSubword, ansi-wl-pprint, base
 , bytestring, cmdargs, containers, data-default, FormalGrammars
-, lens, mtl, PrimitiveArray, QuickCheck, semigroups, stdenv
+, lens, lib, mtl, PrimitiveArray, QuickCheck, semigroups
 , template-haskell, test-framework, test-framework-quickcheck2
 , test-framework-th, text, transformers, unordered-containers
 , vector
@@ -24,5 +24,5 @@ mkDerivation {
   ];
   homepage = "https://github.com/choener/GenussFold";
   description = "MCFGs for Genus-1 RNA Pseudoknots";
-  license = stdenv.lib.licenses.gpl3;
+  license = lib.licenses.gpl3Only;
 }

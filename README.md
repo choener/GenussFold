@@ -1,4 +1,5 @@
-[![Build Status](https://travis-ci.org/choener/GenussFold.svg?branch=master)](https://travis-ci.org/choener/GenussFold)
+![github action: master](https://github.com/choener/SciBaseTypes/actions/workflows/ci.yml/badge.svg)
+![github action: master](https://github.com/choener/SciBaseTypes/actions/workflows/hackage.yml/badge.svg)
 
 # GenussFold: RNA Pseudoknot Folding
 
