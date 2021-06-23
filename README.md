@@ -1,5 +1,5 @@
-![github action: master](https://github.com/choener/SciBaseTypes/actions/workflows/ci.yml/badge.svg)
-![github action: master](https://github.com/choener/SciBaseTypes/actions/workflows/hackage.yml/badge.svg)
+![github action: master](https://github.com/choener/GenussFold/actions/workflows/ci.yml/badge.svg)
+![github action: master](https://github.com/choener/GenussFold/actions/workflows/hackage.yml/badge.svg)
 
 # GenussFold: RNA Pseudoknot Folding
 
