@@ -1,7 +1,7 @@
 name:           GenussFold
 version:        0.0.0.3
-author:         Christian Hoener zu Siederdissen, 2015-2017
-copyright:      Christian Hoener zu Siederdissen, 2015-2017
+author:         Christian Hoener zu Siederdissen, 2015-2021
+copyright:      Christian Hoener zu Siederdissen, 2015-2021
 homepage:       https://github.com/choener/GenussFold
 bug-reports:    https://github.com/choener/GenussFold/issues
 maintainer:     choener@bioinf.uni-leipzig.de
@@ -11,7 +11,7 @@ license-file:   LICENSE
 build-type:     Simple
 stability:      experimental
 cabal-version:  >= 1.10.0
-tested-with:    GHC == 7.8.4, GHC == 7.10.3, GHC == 8.0.1, GHC == 8.0.2
+tested-with:    GHC == 8.8, GHC == 8.10, GHC == 9.0
 synopsis:       MCFGs for Genus-1 RNA Pseudoknots
 description:
                 <http://www.bioinf.uni-leipzig.de/Software/gADP/ generalized Algebraic Dynamic Programming>
@@ -60,7 +60,7 @@ library
                , ADPfusion              == 0.6.0.*
                , ADPfusionSubword       == 0.0.0.*
                , FormalGrammars         == 0.3.1.*
-               , PrimitiveArray         == 0.9.0.*
+               , PrimitiveArray         == 0.10.1.*
   exposed-modules:
     BioInf.GenussFold
     BioInf.GenussFold.PKN

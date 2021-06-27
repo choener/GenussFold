@@ -89,33 +89,51 @@ pretty = SigPKN
 
 pknPairMax :: Int -> String -> (Int,[[String]])
 {-# NoInline pknPairMax #-}
+pknPairMax = undefined
+{-
 pknPairMax k inp = (d, take k bs) where
   i = VU.fromList . Prelude.map toUpper $ inp
   n = VU.length i
   !(Z:.t:.u:.v) = runInsideForward i
   d = unId $ axiom t
   bs = runInsideBacktrack i (Z:.t:.u:.v)
+-}
 
-type X = TwITbl Id Unboxed EmptyOk (Subword I) Int
-type T = TwITbl Id Unboxed (Z:.EmptyOk:.EmptyOk) (Z:.Subword I:.Subword I) Int
+type X = TwITbl 0 0 Id (Dense VU.Vector) EmptyOk (Subword I) Int
+type T = TwITbl 0 0 Id (Dense VU.Vector) (Z:.EmptyOk:.EmptyOk) (Z:.Subword I:.Subword I) Int
 
-runInsideForward :: VU.Vector Char -> Z:.X:.T:.T
+runInsideForward :: VU.Vector Char -> Mutated (Z:.X:.T:.T)
 {-# NoInline runInsideForward #-}
-runInsideForward i = mutateTablesWithHints (Proxy :: Proxy MonotoneMCFG)
+runInsideForward i = runST $ do
+  let n = VU.length i
+  arrS <- newWithPA (LtSubword n) (-999999)
+  arrUU <- newWithPA (ZZ:..LtSubword n:..LtSubword n) (-999999)
+  arrVV <- newWithPA (ZZ:..LtSubword n:..LtSubword n) (-999999)
+  tbls@(Mutated (Z:.s:.uu:.vv) _ _) <- fillTables
+    $ gPKN bpmax
+        (ITbl @_ @_ @_ @_ @_ @_ EmptyOk arrS)
+        (ITbl @_ @_ @_ @_ @_ @_ (Z:.EmptyOk:.EmptyOk) arrUU)
+        (ITbl @_ @_ @_ @_ @_ @_ (Z:.EmptyOk:.EmptyOk) arrVV)
+        (chr i)
+        (chr i)
+  return tbls
+  {-
+  mutateTablesWithHints (Proxy :: Proxy MonotoneMCFG)
                    $ gPKN bpmax
                         (ITbl 0 0 EmptyOk (PA.fromAssocs (subword 0 0) (subword 0 n) (-666999) []))
                         (ITbl 0 0 (Z:.EmptyOk:.EmptyOk) (PA.fromAssocs (Z:.subword 0 0:.subword 0 0) (Z:.subword 0 n:.subword 0 n) (-777999) []))
                         (ITbl 0 0 (Z:.EmptyOk:.EmptyOk) (PA.fromAssocs (Z:.subword 0 0:.subword 0 0) (Z:.subword 0 n:.subword 0 n) (-888999) []))
                         (chr i)
                         (chr i)
-  where n = VU.length i
+  -}
 
-type X' = TwITblBt Unboxed EmptyOk (Subword I) Int Id Id [String]
-type T' = TwITblBt Unboxed (Z:.EmptyOk:.EmptyOk) (Z:.Subword I:.Subword I) Int Id Id [String]
+type X' = TwITblBt 0 0 (Dense VU.Vector) EmptyOk (Subword I) Int Id Id [String]
+type T' = TwITblBt 0 0 (Dense VU.Vector) (Z:.EmptyOk:.EmptyOk) (Z:.Subword I:.Subword I) Int Id Id [String]
 
 runInsideBacktrack :: VU.Vector Char -> Z:.X:.T:.T -> [[String]]
 {-# NoInline runInsideBacktrack #-}
-runInsideBacktrack i (Z:.t:.u:.v) = unId $ axiom b
+runInsideBacktrack i (Z:.t:.u:.v) = unId $ undefined -- axiom b
+{-
   where !(Z:.b:._:._) = gPKN (bpmax <|| pretty)
                           (toBacktrack t (undefined :: Id a -> Id a))
                           (toBacktrack u (undefined :: Id a -> Id a))
@@ -123,4 +141,4 @@ runInsideBacktrack i (Z:.t:.u:.v) = unId $ axiom b
                           (chr i)
                           (chr i)
                           :: Z:.X':.T':.T'
-
+-}
