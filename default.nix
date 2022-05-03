@@ -1,5 +1,5 @@
 { mkDerivation, aeson, base, bifunctors, containers, criterion
-, deepseq, fgl, lens, QuickCheck, stdenv, tasty, tasty-quickcheck
+, deepseq, fgl, lens, lib, QuickCheck, tasty, tasty-quickcheck
 , tasty-th, unordered-containers, vector, vector-th-unbox
 }:
 mkDerivation {
@@ -16,5 +16,5 @@ mkDerivation {
   benchmarkHaskellDepends = [ base criterion ];
   homepage = "https://github.com/choener/ForestStructures";
   description = "Tree- and forest structures";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }
