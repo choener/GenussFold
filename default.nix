@@ -1,6 +1,6 @@
 { mkDerivation, aeson, base, binary, cereal, cereal-vector
-, containers, criterion, deepseq, hashable, mwc-random, primitive
-, QuickCheck, stdenv, storable-tuple, tasty, tasty-quickcheck
+, containers, criterion, deepseq, hashable, lib, mwc-random
+, primitive, QuickCheck, storable-tuple, tasty, tasty-quickcheck
 , tasty-th, unordered-containers, vector, vector-binary-instances
 , vector-th-unbox
 }:
@@ -14,13 +14,16 @@ mkDerivation {
     vector-binary-instances vector-th-unbox
   ];
   testHaskellDepends = [
-    base QuickCheck tasty tasty-quickcheck tasty-th
+    aeson base binary cereal cereal-vector containers deepseq hashable
+    primitive QuickCheck storable-tuple tasty tasty-quickcheck tasty-th
+    unordered-containers vector vector-binary-instances vector-th-unbox
   ];
   benchmarkHaskellDepends = [
-    base containers criterion deepseq mwc-random unordered-containers
-    vector
+    aeson base binary cereal cereal-vector containers criterion deepseq
+    hashable mwc-random primitive storable-tuple unordered-containers
+    vector vector-binary-instances vector-th-unbox
   ];
   homepage = "https://github.com/choener/bimaps";
   description = "bijections with multiple implementations";
-  license = stdenv.lib.licenses.bsd3;
+  license = lib.licenses.bsd3;
 }
