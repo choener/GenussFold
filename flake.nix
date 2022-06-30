@@ -4,7 +4,7 @@
   '';
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-21.05";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-22.05";
     flake-utils.url = "github:numtide/flake-utils";
     ghcicabal = { url = "github:choener/ghcicabal"; inputs.nixpkgs.follows = "nixpkgs"; };
     bimaps-src = {
@@ -92,6 +92,9 @@
         withHoogle = true;
         buildInputs = with pkgs; [
           cabal-install
+          haskellPackages.haskell-language-server
+          haskellPackages.hls-tactics-plugin
+          nodejs # required for lsp
           pkgs.ghcicabal # be explicit to get the final package
         ] ++ sharedBuildInputs;
       }; # devShell

@@ -24,5 +24,5 @@ mkDerivation {
   ];
   homepage = "https://github.com/choener/GenussFold";
   description = "MCFGs for Genus-1 RNA Pseudoknots";
-  license = lib.licenses.gpl3Only;
+  license = lib.licenses.gpl3Plus;
 }
