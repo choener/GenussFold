@@ -21,12 +21,17 @@ import Prelude hiding (map,mapM)
 import Data.PrimitiveArray hiding (map)
 
 import ADPfusion.Core
-import ADPfusion.Core.Subword
+import ADPfusion.Subword.Core
 
+
+
+instance
+  () => MkStream m (ls :!: Split uId Fragment (TwITbl m arr c j x)) (Z:.Subword I:.Subword I) where
 
 
 -- * 'Fragment' and 'Final' instances for 'Split' / 'ITbl'.
 
+{-
 instance
   ( Monad m
   , Element ls (Subword I)
@@ -47,7 +52,9 @@ instance
           {-# Inline [0] mk   #-}
           {-# Inline [0] step #-}
   {-# Inline mkStream #-}
+-}
 
+{-
 instance
   ( Monad m
   , Element ls (Subword I)
@@ -74,11 +81,12 @@ instance
           {-# Inline [0] mk   #-}
           {-# Inline [0] step #-}
   {-# Inline mkStream #-}
-
+-}
 
 
 -- * 'Fragment' and 'Final' instances for 'Split' / @Backtrack@ 'ITbl'.
 
+{-
 instance
   ( Monad mB
   , Element ls (Subword I)
@@ -99,7 +107,9 @@ instance
           {-# Inline [0] mk   #-}
           {-# Inline [0] step #-}
   {-# Inline mkStream #-}
+-}
 
+{-
 instance
   ( Monad mB
   , Element ls (Subword I)
@@ -129,4 +139,5 @@ instance
           {-# Inline [0] mk   #-}
           {-# Inline [0] step #-}
   {-# Inline mkStream #-}
+-}
 

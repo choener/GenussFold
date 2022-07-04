@@ -20,7 +20,7 @@ import ADPfusion.Subword.Term.Epsilon
 --import ADPfusion.Subword.SynVar.Array.TermSymbol
 import ADPfusion.Subword.SynVar.Indices
 --import ADPfusion.Subword.SynVar.Recursive
---import ADPfusion.Subword.SynVar.Split
+import ADPfusion.Subword.SynVar.Split
 import ADPfusion.Subword.Term.Chr
 import ADPfusion.Subword.Term.Deletion
 --import ADPfusion.Subword.Term.PeekIndex
