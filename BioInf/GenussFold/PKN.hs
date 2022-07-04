@@ -26,6 +26,7 @@ import qualified Data.Vector.Unboxed as VU
 import Text.Printf
 
 import ADPfusion.Core.SynVar.Fill
+import ADPfusion.Core.SynVar.Split
 import ADPfusion.Subword
 import Data.PrimitiveArray as PA hiding (map)
 import FormalLanguage

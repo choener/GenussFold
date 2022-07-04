@@ -59,8 +59,12 @@ library
                --
                , ADPfusion              == 0.6.0.*
                , ADPfusionSubword       == 0.0.0.*
-               , FormalGrammars         == 0.3.1.*
-               , PrimitiveArray         == 0.10.1.*
+               , FormalGrammars         == 0.4.0.*
+               , PrimitiveArray         == 0.10.2.*
+               -- (temporary before I update the deps to github)
+               , fused-effects
+               , parsers
+               , trifecta
   exposed-modules:
     BioInf.GenussFold
     BioInf.GenussFold.PKN
@@ -75,6 +79,7 @@ library
                     , PolyKinds
                     , QuasiQuotes
                     , TemplateHaskell
+                    , TypeApplications
                     , TypeFamilies
                     , TypeOperators
                     , UnicodeSyntax

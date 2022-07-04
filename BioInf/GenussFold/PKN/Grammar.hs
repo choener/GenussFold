@@ -13,6 +13,22 @@ Verbose
 
 Grammar: PKN
 N: S
+N: <U,2>
+T: c
+S: <U,U>
+<U,U> -> pk1 <<< [S,-] [c,-] <U,U> [-,S] [-,c]
+<U,U> -> nll <<< [e,e]
+//
+Emit: PKN
+|]
+
+makeAlgebraProduct ''SigPKN
+
+{-
+Verbose
+
+Grammar: PKN
+N: S
 {-
  - <U,2> is a split non-terminal.
  -
@@ -36,7 +52,4 @@ S -> pse <<< U V U V
 <V,V> -> nll <<< [e,e]
 //
 Emit: PKN
-|]
-
-makeAlgebraProduct ''SigPKN
-
+-}
