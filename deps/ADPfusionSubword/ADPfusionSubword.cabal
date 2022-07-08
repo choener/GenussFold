@@ -66,6 +66,7 @@ library
   exposed-modules:
     ADPfusion.Subword
     ADPfusion.Subword.Core
+    ADPfusion.Subword.SynVar
     ADPfusion.Subword.SynVar.Indices
     ADPfusion.Subword.SynVar.Split
     ADPfusion.Subword.Term.Chr
