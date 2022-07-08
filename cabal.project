@@ -1,4 +1,10 @@
-packages: .
-
-optional-packages: deps/*
-
+packages:
+  .
+  ./deps/ADPfusion
+  ./deps/ADPfusionSubword
+  ./deps/bimaps
+  ./deps/DPutils
+  ./deps/ForestStructures
+  ./deps/FormalGrammars
+  ./deps/OrderedBits
+  ./deps/PrimitiveArray
