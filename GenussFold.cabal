@@ -57,10 +57,10 @@ library
                , unordered-containers   >= 0.2
                , vector                 >= 0.10
                --
-               , ADPfusion              == 0.6.0.*
-               , ADPfusionSubword       == 0.0.0.*
-               , FormalGrammars         == 0.4.0.*
-               , PrimitiveArray         == 0.10.2.*
+               , ADPfusion              >= 0.6.0
+               , ADPfusionSubword       >= 0.0.0
+               , FormalGrammars         >= 0.4.0
+               , PrimitiveArray         >= 0.10.2
                -- (temporary before I update the deps to github)
                , fused-effects
                , parsers

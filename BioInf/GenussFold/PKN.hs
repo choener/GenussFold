@@ -25,8 +25,6 @@ import qualified Data.Vector.Fusion.Stream.Monadic as SM
 import qualified Data.Vector.Unboxed as VU
 import Text.Printf
 
-import ADPfusion.Core.SynVar.Fill
-import ADPfusion.Core.SynVar.Split
 import ADPfusion.Subword
 import Data.PrimitiveArray as PA hiding (map)
 import FormalLanguage
@@ -38,13 +36,13 @@ import BioInf.GenussFold.PKN.Grammar
 bpmax :: Monad m => SigPKN m Int Int Char Char
 {-# Inline bpmax #-}
 bpmax = SigPKN
-  { unp = \ x c     -> x
+  { unp = const
   , jux = \ x c y d -> if c `pairs` d then x + y + 1 else -999999
   , pse = \ () () x y -> x + y
   , nil = \ ()      -> 0
-  , pk1 = \ (Z:.x:.()) (Z:.a:.()) y (Z:.():.z) (Z:.():.b) -> if a `pairs` b then x + y + z + 1 else -888888
-  , pk2 = \ (Z:.x:.()) (Z:.a:.()) y (Z:.():.z) (Z:.():.b) -> if a `pairs` b then x + y + z + 1 else -888888
+  , pkk = \ (Z:.x:.()) (Z:.a:.()) y (Z:.():.z) (Z:.():.b) -> if a `pairs` b then x + y + z + 1 else -888888
   , nll = \ (Z:.():.()) -> 0
+  , idd = id
   , h   = SM.foldl' max (-999999)
   }
 
@@ -72,9 +70,9 @@ pretty = SigPKN
   , jux = \ [x] c [y] d -> [x ++ "(" ++ y ++ ")"]
   , pse = \ () () [x1,x2] [y1,y2] -> [x1 ++ y1 ++ x2 ++ y2]
   , nil = \ ()      -> [""]
-  , pk1 = \ (Z:.[x]:.()) (Z:.a:.()) [y1,y2] (Z:.():.[z]) (Z:.():.b) -> [x ++ "[" ++ y1 , y2 ++ z ++ "]"]
-  , pk2 = \ (Z:.[x]:.()) (Z:.a:.()) [y1,y2] (Z:.():.[z]) (Z:.():.b) -> [x ++ "{" ++ y1 , y2 ++ z ++ "}"]
+  , pkk = \ (Z:.[x]:.()) (Z:.a:.()) [y1,y2] (Z:.():.[z]) (Z:.():.b) -> [x ++ "[" ++ y1 , y2 ++ z ++ "]"]
   , nll = \ (Z:.():.()) -> ["",""]
+  , idd = id
   , h   = SM.toList
   }
 
@@ -110,7 +108,8 @@ runInsideForward i = runST $ do
   arrS <- newWithPA (LtSubword n) (-999999)
   arrUU <- newWithPA (ZZ:..LtSubword n:..LtSubword n) (-999999)
   arrVV <- newWithPA (ZZ:..LtSubword n:..LtSubword n) (-999999)
-  tbls@(Mutated (Z:.s:.uu:.vv) _ _) <- fillTables
+  let guideIndex = Z:.BOI @0 (upperBound arrUU)
+  tbls@(Mutated (Z:.s:.uu:.vv) _ _) <- fillTablesDim guideIndex
     $ gPKN bpmax
         (ITbl @_ @_ @_ @_ @_ @_ EmptyOk arrS)
         (ITbl @_ @_ @_ @_ @_ @_ (Z:.EmptyOk:.EmptyOk) arrUU)
@@ -118,15 +117,6 @@ runInsideForward i = runST $ do
         (chr i)
         (chr i)
   return tbls
-  {-
-  mutateTablesWithHints (Proxy :: Proxy MonotoneMCFG)
-                   $ gPKN bpmax
-                        (ITbl 0 0 EmptyOk (PA.fromAssocs (subword 0 0) (subword 0 n) (-666999) []))
-                        (ITbl 0 0 (Z:.EmptyOk:.EmptyOk) (PA.fromAssocs (Z:.subword 0 0:.subword 0 0) (Z:.subword 0 n:.subword 0 n) (-777999) []))
-                        (ITbl 0 0 (Z:.EmptyOk:.EmptyOk) (PA.fromAssocs (Z:.subword 0 0:.subword 0 0) (Z:.subword 0 n:.subword 0 n) (-888999) []))
-                        (chr i)
-                        (chr i)
-  -}
 
 type X' = TwITblBt 0 0 (Dense VU.Vector) EmptyOk (Subword I) Int Id Id [String]
 type T' = TwITblBt 0 0 (Dense VU.Vector) (Z:.EmptyOk:.EmptyOk) (Z:.Subword I:.Subword I) Int Id Id [String]
