@@ -7,47 +7,9 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-22.05";
     flake-utils.url = "github:numtide/flake-utils";
     ghcicabal = { url = "github:choener/ghcicabal"; inputs.nixpkgs.follows = "nixpkgs"; };
-    bimaps-src = {
-      url = "github:choener/bimaps";
-      flake = false;
-    };
-    ADPfusion-src = {
-      url = "github:choener/ADPfusion";
-      flake = false;
-    };
-    ADPfusionSubword-src = {
-      url = "github:choener/ADPfusionSubword";
-      flake = false;
-    };
-    DPutils-src = {
-      url = "github:choener/DPutils";
-      flake = false;
-    };
-    ForestStructures-src = {
-      url = "github:choener/ForestStructures";
-      flake = false;
-    };
-    FormalGrammars-src = {
-      url = "github:choener/FormalGrammars";
-      flake = false;
-    };
-    GrammarProducts-src = {
-      url = "github:choener/GrammarProducts";
-      flake = false;
-    };
-    OrderedBits-src = {
-      url = "github:choener/OrderedBits";
-      flake = false;
-    };
-    PrimitiveArray-src = {
-      url = "github:choener/PrimitiveArray";
-      flake = false;
-    };
   };
 
-  outputs = { self, nixpkgs, flake-utils, ghcicabal
-            , bimaps-src, ADPfusion-src, ADPfusionSubword-src, DPutils-src, ForestStructures-src
-            , FormalGrammars-src, GrammarProducts-src, OrderedBits-src, PrimitiveArray-src }: let
+  outputs = { self, nixpkgs, flake-utils, ghcicabal }: let
     over = final: prev: {
       haskellPackages = (prev.haskellPackages.override{ overrides= hself: hsuper: let
           checked   = a: hself.callHackageDirect a {};
@@ -60,15 +22,14 @@
       }).extend ( hself: hsuper: {
         GenussFold = hself.callPackage ./. {};
         #
-        bimaps = hself.callPackage bimaps-src {};
-        ADPfusion = hself.callPackage ADPfusion-src {};
-        ADPfusionSubword = hself.callPackage ADPfusionSubword-src {};
-        DPutils = hself.callPackage DPutils-src {};
-        ForestStructures = hself.callPackage ForestStructures-src {};
-        FormalGrammars = hself.callPackage FormalGrammars-src {};
-        GrammarProducts = hself.callPackage GrammarProducts-src {};
-        OrderedBits = hself.callPackage OrderedBits-src {};
-        PrimitiveArray = hself.callPackage PrimitiveArray-src {};
+        bimaps = hself.callPackage ./deps/bimaps {};
+        ADPfusion = hself.callPackage ./deps/ADPfusion {};
+        ADPfusionSubword = hself.callPackage ./deps/ADPfusionSubword {};
+        DPutils = hself.callPackage ./deps/DPutils {};
+        ForestStructures = hself.callPackage ./deps/ForestStructures {};
+        FormalGrammars = hself.callPackage ./deps/FormalGrammars {};
+        OrderedBits = hself.callPackage ./deps/OrderedBits {};
+        PrimitiveArray = hself.callPackage ./deps/PrimitiveArray {};
       });
     };
   in
@@ -84,9 +45,11 @@
           #
           p.ADPfusion
           p.ADPfusionSubword
+          p.bimaps
           p.DPutils
+          p.ForestStructures
           p.FormalGrammars
-          p.GrammarProducts
+          p.OrderedBits
           p.PrimitiveArray
         ];
         withHoogle = true;

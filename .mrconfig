@@ -1,48 +1,20 @@
-
-[deps/ADPfusion]
-checkout = git clone 'git@github.com:choener/ADPfusion.git' 'ADPfusion'
-
-[deps/ADPfusionSubword]
-checkout = git clone 'git@github.com:choener/ADPfusionSubword.git' 'ADPfusionSubword'
-
+#[deps/ADPfusion]
+#checkout = git clone 'git@github.com:choener/ADPfusion.git' 'ADPfusion'
+#
+#[deps/ADPfusionSubword]
+#checkout = git clone 'git@github.com:choener/ADPfusionSubword.git' 'ADPfusionSubword'
+#
 #[deps/bimaps]
 #checkout = git clone 'git@github.com:choener/bimaps.git' 'bimaps'
 #
-#[deps/BiobaseTypes]
-#checkout = git clone 'git@github.com:choener/BiobaseTypes.git' 'BiobaseTypes'
+#[deps/DPutils]
+#checkout = git clone 'git@github.com:choener/DPutils.git' 'DPutils'
 #
-#[deps/BiobaseENA]
-#checkout = git clone 'git@github.com:choener/BiobaseENA.git' 'BiobaseENA'
+#[deps/FormalGrammars]
+#checkout = git clone 'git@github.com:choener/FormalGrammars.git' 'FormalGrammars'
 #
-#[deps/BiobaseTurner]
-#checkout = git clone 'git@github.com:choener/BiobaseTurner.git' 'BiobaseTurner'
+#[deps/OrderedBits]
+#checkout = git clone 'git@github.com:choener/OrderedBits.git' 'OrderedBits'
 #
-#[deps/BiobaseXNA]
-#checkout = git clone 'git@github.com:choener/BiobaseXNA.git' 'BiobaseXNA'
-
-[deps/DPutils]
-checkout = git clone 'git@github.com:choener/DPutils.git' 'DPutils'
-
-#[deps/ForestStructures]
-#checkout = git clone 'git@github.com:choener/ForestStructures.git' 'ForestStructures'
-
-[deps/FormalGrammars]
-checkout = git clone 'git@github.com:choener/FormalGrammars.git' 'FormalGrammars'
-
-#[deps/GrammarProducts]
-#checkout = git clone 'git@github.com:choener/GrammarProducts.git' 'GrammarProducts'
-
-[deps/OrderedBits]
-checkout = git clone 'git@github.com:choener/OrderedBits.git' 'OrderedBits'
-
-[deps/PrimitiveArray]
-checkout = git clone 'git@github.com:choener/PrimitiveArray.git' 'PrimitiveArray'
-
-#[deps/SciBaseTypes]
-#checkout = git clone 'git@github.com:choener/SciBaseTypes.git' 'SciBaseTypes'
-#
-#[otherdeps/ViennaRNA-bindings]
-#checkout = git clone 'git@github.com:choener/ViennaRNA-bindings.git' 'ViennaRNA-bindings'
-#
-#[deps/ViennaRNA-extras]
-#checkout = git clone 'git@github.com:choener/ViennaRNA-extras.git' 'ViennaRNA-extras'
+#[deps/PrimitiveArray]
+#checkout = git clone 'git@github.com:choener/PrimitiveArray.git' 'PrimitiveArray'
