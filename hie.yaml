@@ -1,0 +1,8 @@
+cradle:
+  cabal:
+    - path: "./"
+      component: "lib:GenussFold"
+    - path: "./deps/ADPfusion"
+      component: "lib:ADPfusion"
+    - path: "./deps/ADPfusionSubword"
+      component: "lib:ADPfusionSubword"

@@ -1,7 +1,7 @@
 cabal-version:  2.2
 name:           GenussFold
 version:        0.0.0.3
-author:         Christian Hoener zu Siederdissen, 2015-2022
+author:         Christian Hoener zu Siederdissen, 2015-2022, Dustyn Eggers, 2020-2022
 copyright:      Christian Hoener zu Siederdissen, 2015-2022
 homepage:       https://github.com/choener/GenussFold
 bug-reports:    https://github.com/choener/GenussFold/issues
