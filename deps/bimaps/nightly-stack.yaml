@@ -1,0 +1,12 @@
+resolver: nightly-2016-06-21
+
+packages:
+- .
+
+extra-deps:
+- cereal-vector-0.2.0.1
+- storable-tuple-0.0.3.2
+- storable-record-0.0.3.1
+
+flags: {}
+
