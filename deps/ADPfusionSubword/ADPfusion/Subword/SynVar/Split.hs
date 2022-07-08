@@ -30,17 +30,23 @@ instance
   ( split ~ Split uId Fragment (TwITbl b s m (Dense v) (cs:.c) (us:.u) x)
   , left ~ LeftPosTy (IVariable 0) split (Subword I)
   , Monad m, MkStream m left ls (Subword I), TermStaticVar (IVariable 0) split (Subword I)
+  , Element ls (Subword I)
   ) => MkStream m (IVariable 0) (ls :!: Split uId Fragment (TwITbl b s m (Dense v) (cs:.c) (us:.u) x)) (Subword I) where
-----{{{
-----  {-# Inline mkStream #-}
-----  mkStream proxy (ls :!: split@(Split _)) grd us i
-----    = SP.map (\elm ->
-----        let ri = RiPlI $ fromSubword i
-----        in  ElmSplitITbl (Proxy @uId) () ri elm i)
-----    $ mkStream (Proxy :: Proxy left) ls
-----        (termStaticCheck proxy split us i grd)
-----        us i
-----}}}
+  --{{{
+  {-# Inline mkStream #-}
+  mkStream proxy (ls :!: split@(Split (TW (ITbl _ arr) _))) grd us i@(Subword(_:.j))
+    = seq csize . SP.flatten mk step $ mkStream (Proxy @left) ls (termStaticCheck proxy split us i grd) us i
+    where
+      mk elm = let RiSwI l = getIdx elm
+               in  return (elm:.j-l-csize)
+      step (elm:.zz)
+        | zz >= 0 = do let RiSwI k = getIdx elm; l = j - zz; kl = subword k l
+                       return $ SP.Yield (ElmSplitITbl (Proxy @uId) () (RiSwI l) elm (Subword (k:.l))) (elm:.zz-1)
+        | otherwise = return SP.Done
+      csize = 0 -- TODO
+      {-# Inline [0] mk #-}
+      {-# Inline [0] step #-}
+  --}}}
 
 
 
@@ -51,16 +57,17 @@ instance
   , Monad m, MkStream m left ls (Subword I), TermStaticVar (IStatic 0) split (Subword I)
   , SplitIxCol uId (SameSid uId (Elm ls (Subword I))) (Elm ls (Subword I))
   , PrimArrayOps (Dense v) (us:.Subword I) x
+  , Element ls (Subword I)
   )
   => MkStream m (IStatic 0) (ls :!: Split uId Final (TwITbl b s m (Dense v) (cs:.c) (us:.Subword I) x)) (Subword I) where
 --{{{
   {-# Inline mkStream #-}
-  mkStream proxy (ls :!: split@(Split (TW (ITbl _ arr) _))) grd us i
+  mkStream proxy (ls :!: split@(Split (TW (ITbl _ arr) _))) grd us i@(Subword (_:.j))
     = SP.map (\elm ->
-      let jx = collectIx (Proxy @uId) elm :. (error "calculate correct index")
-          val = arr PA.! jx
-          ri = error "calculate correct running index"
-      in  ElmSplitITbl (Proxy @uId) val ri elm i)
+      let RiSwI l = getIdx elm
+          ix      = collectIx (Proxy @uId) elm :. Subword (l:.j)
+          val     = arr PA.! ix
+      in  ElmSplitITbl (Proxy @uId) val (RiSwI j) elm i)
     $ mkStream (Proxy :: Proxy left) ls
         (termStaticCheck proxy split us i grd)
         us i
@@ -70,33 +77,49 @@ instance
   ( us ~ SplitIxTy uId (SameSid uId (Elm ls (Subword I))) (Elm ls (Subword I))
   , split ~ Split uId Final (TwITbl b s m (Dense v) (cs:.c) (us:.Subword I) x)
   , left ~ LeftPosTy (IStatic 0) split (Subword I)
-  , Monad m, MkStream m left ls (Subword I), TermStaticVar (IStatic 0) split (Subword I)
+  , Monad m, MkStream m left ls (Subword I), TermStaticVar (IVariable 0) split (Subword I)
   , SplitIxCol uId (SameSid uId (Elm ls (Subword I))) (Elm ls (Subword I))
   , PrimArrayOps (Dense v) (us:.Subword I) x
+  , Element ls (Subword I)
   )
   => MkStream m (IVariable 0) (ls :!: Split uId Final (TwITbl b s m (Dense v) (cs:.c) (us:.Subword I) x)) (Subword I) where
-
---instance (Monad m) => MkStream m statVar (ls :!: Split uId fragFin (TwITbl b s m (Dense v) (cs:.c) (us:.Subword I) x)) (Subword I) where
+  --{{{
+  {-# Inline mkStream #-}
+  mkStream proxy (ls :!: split@(Split (TW (ITbl _ arr) _))) grd us i@(Subword(_:.j))
+    = seq csize . SP.flatten mk step $ mkStream (Proxy @left) ls (termStaticCheck proxy split us i grd) us i
+    where
+      mk elm = let RiSwI l = getIdx elm
+               in  return (elm:.j-l-csize)
+      step (elm:.zz)
+        | zz >= 0 = do let RiSwI k = getIdx elm; l = j - zz; kl = subword k l
+                           ix      = collectIx (Proxy @uId) elm :. Subword (k:.l)
+                           val     = arr PA.! ix
+                       return $ SP.Yield (ElmSplitITbl (Proxy @uId) val (RiSwI l) elm (Subword (k:.l))) (elm:.zz-1)
+        | otherwise = return SP.Done
+      csize = 0 -- TODO
+      {-# Inline [0] mk #-}
+      {-# Inline [0] step #-}
+  --}}}
 
 instance TermStaticVar (IStatic d) (Split uId fragTy (TwITbl bo so m arr c i x)) (Subword I) where
-----{{{
---  -- | Calculate how much the index changes.
---  --
---  -- TODO replace '0' by an appropriate (EmptyOk vs not) amount
---  {-# Inline [0] termStreamIndex #-}
---  termStreamIndex Proxy _ (PointL j) = PointL $ j - 0
---  {-# Inline [0] termStaticCheck #-}
---  termStaticCheck Proxy _ _ _ grd = grd
-----}}}
+--{{{
+  -- | Calculate how much the index changes.
+  --
+  -- TODO replace '0' by an appropriate (EmptyOk vs not) amount
+  {-# Inline [0] termStreamIndex #-}
+  termStreamIndex Proxy _ (Subword (i:.j)) = Subword (i:.j)
+  {-# Inline [0] termStaticCheck #-}
+  termStaticCheck Proxy _ _ _ grd = grd
+--}}}
 
 instance TermStaticVar (IVariable d) (Split uId fragTy (TwITbl bo so m arr c i x)) (Subword I) where
-----{{{
---  -- | Calculate how much the index changes.
---  --
---  -- TODO replace '0' by an appropriate (EmptyOk vs not) amount
---  {-# Inline [0] termStreamIndex #-}
---  termStreamIndex Proxy _ (PointL j) = PointL $ j - 0
---  {-# Inline [0] termStaticCheck #-}
---  termStaticCheck Proxy _ _ _ grd = grd
-----}}}
+--{{{
+  -- | Calculate how much the index changes.
+  --
+  -- TODO replace '0' by an appropriate (EmptyOk vs not) amount
+  {-# Inline [0] termStreamIndex #-}
+  termStreamIndex Proxy _ (Subword (i:.j)) = Subword (i:.j)
+  {-# Inline [0] termStaticCheck #-}
+  termStaticCheck Proxy _ _ _ grd = grd
+--}}}
 
