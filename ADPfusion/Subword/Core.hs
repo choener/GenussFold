@@ -183,3 +183,19 @@ instance TableStaticVar (u O) c (Subword C) where
 
 -}
 
+-- * Index Conversion
+
+instance IndexConversion (Z:.Subword I:.Subword I) (Z:.Subword I:.Subword I) where
+--{{{
+  {-# Inline convertIndex #-}
+  convertIndex = Just
+--}}}
+
+instance IndexConversion (Z:.Subword I:.Subword I) (Subword I) where
+--{{{
+  {-# Inline convertIndex #-}
+  convertIndex (Z:.ij:.kl)
+    | ij==kl = Just ij
+    | otherwise = Nothing
+--}}}
+

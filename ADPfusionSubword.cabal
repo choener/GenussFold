@@ -67,15 +67,11 @@ library
     ADPfusion.Subword
     ADPfusion.Subword.Core
     ADPfusion.Subword.SynVar.Indices
+    ADPfusion.Subword.SynVar.Split
     ADPfusion.Subword.Term.Chr
     ADPfusion.Subword.Term.Deletion
     ADPfusion.Subword.Term.Epsilon
     ADPfusion.Subword.Term.Str
---    ADPfusion.SynVar.Array.TermSymbol.Subword
---    ADPfusion.SynVar.Recursive.Subword
---    ADPfusion.SynVar.Split.Subword
---    ADPfusion.Term.PeekIndex.Subword
---    ADPfusion.Term.Strng.Subword
 
   default-extensions: BangPatterns
                     , ConstraintKinds
