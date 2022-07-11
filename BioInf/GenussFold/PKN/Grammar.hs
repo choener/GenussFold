@@ -26,10 +26,8 @@ S -> jux <<< S c S c
 S -> nil <<< e
 S -> pse <<< U V U V
 
-<U,U> -> pkk <<< [S,-] [c,-] <V,V> [-,S] [-,c] -- pkk <<< [S,-] [c,-] <U,U> [-,S] [-,c]
+<U,U> -> pkk <<< [S,-] [c,-] <V,V> [-,S] [-,c]
 <U,U> -> nll <<< [e,e]
--- we just need to be able to correctly split the two synvars in S -> UVUV
--- TODO <V,V> should not be a full table, rather be a direct lookup.
 <V,V> -> idd <<< <U,U>
 //
 Emit: PKN
