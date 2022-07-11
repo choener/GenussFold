@@ -68,6 +68,7 @@ library
   exposed-modules:
     BioInf.GenussFold
     BioInf.GenussFold.PKN
+    BioInf.GenussFold.PKN.Grammar
   default-language:
     Haskell2010
   default-extensions: BangPatterns
