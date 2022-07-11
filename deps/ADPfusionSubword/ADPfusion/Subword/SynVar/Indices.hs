@@ -44,33 +44,35 @@ instance
   ( AddIndexDenseContext ps elm x0 i0 cs c us (Subword I) is (Subword I)
   , MinSize c
   )
-  ⇒ AddIndexDense (ps:.IStatic d) elm (cs:.c) (us:.Subword I) (is:.Subword I) where
+  => AddIndexDense (ps:.IStatic d) elm (cs:.c) (us:.Subword I) (is:.Subword I) where
   addIndexDenseGo Proxy (cs:._) (ubs:.._) (us:..LtSubword u) (is:.Subword (i:.j))
     = map (\(SvS s t y') -> let RiSwI l = getIndex (getIdx s) (Proxy :: PRI is (Subword I))
                                 lj = subword l j
                             in  SvS s (t:.lj) (y' :.: RiSwI j) )
-    . addIndexDenseGo (Proxy ∷ Proxy ps) cs ubs us is
+    . addIndexDenseGo (Proxy :: Proxy ps) cs ubs us is
   {-# Inline addIndexDenseGo #-}
 
 instance
   ( AddIndexDenseContext ps elm x0 i0 cs c us (Subword I) is (Subword I)
   , MinSize c
   )
-  ⇒ AddIndexDense (ps:.IVariable d) elm (cs:.c) (us:.Subword I) (is:.Subword I) where
-  addIndexDenseGo Proxy (cs:.c) (ubs:.._) (us:..LtSubword u) (is:.Subword (i:.j))
-    = seq csize
-    . flatten mk step . addIndexDenseGo (Proxy ∷ Proxy ps) cs ubs us is
-    where mk   svS = let RiSwI l = getIndex (getIdx $ sS svS) (Proxy :: PRI is (Subword I))
-                     in  return $ svS :. (j - l - csize)
-          step (svS@(SvS s t y') :. zz)
-            | zz >= 0 = do let RiSwI k = getIndex (getIdx s) (Proxy :: PRI is (Subword I))
-                               l = j - zz ; kl = subword k l
-                           return $ Yield (SvS s (t:.kl) (y' :.: RiSwI l)) (svS :. zz-1)
-            | otherwise =  return $ Done
-          !csize = minSize c
-          {-# Inline [0] mk   #-}
-          {-# Inline [0] step #-}
+  => AddIndexDense (ps:.IVariable d) elm (cs:.c) (us:.Subword I) (is:.Subword I) where
+--{{{
   {-# Inline addIndexDenseGo #-}
+  addIndexDenseGo Proxy (cs:.c) (ubs:.._) (us:..LtSubword u) (is:.Subword (i:.j))
+    = seq csize . flatten mk step . addIndexDenseGo (Proxy :: Proxy ps) cs ubs us is
+    where
+      {-# Inline [0] mk   #-}
+      mk   svS = let RiSwI l = getIndex (getIdx $ sS svS) (Proxy :: PRI is (Subword I))
+                 in  return $ svS :. (j - l - csize)
+      {-# Inline [0] step #-}
+      step (svS@(SvS s t y') :. zz)
+        | zz >= 0 = do let RiSwI k = getIndex (getIdx s) (Proxy :: PRI is (Subword I))
+                           l = j - zz ; kl = subword k l
+                       return $ Yield (SvS s (t:.kl) (y' :.: RiSwI l)) (svS :. zz-1)
+        | otherwise =  return $ Done
+      !csize = minSize c
+--}}}
 
 {-
 -- |

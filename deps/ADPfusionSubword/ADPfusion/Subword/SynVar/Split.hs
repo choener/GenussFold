@@ -37,15 +37,15 @@ instance
   mkStream proxy (ls :!: split@(Split (TW (ITbl _ arr) _))) grd us i@(Subword(_:.j))
     = seq csize . SP.flatten mk step $ mkStream (Proxy @left) ls (termStaticCheck proxy split us i grd) us i
     where
+      {-# Inline [0] mk #-}
       mk elm = let RiSwI l = getIdx elm
                in  return (elm:.j-l-csize)
+      {-# Inline [0] step #-}
       step (elm:.zz)
         | zz >= 0 = do let RiSwI k = getIdx elm; l = j - zz; kl = subword k l
                        return $ SP.Yield (ElmSplitITbl (Proxy @uId) () (RiSwI l) elm (Subword (k:.l))) (elm:.zz-1)
         | otherwise = return SP.Done
       csize = 0 -- TODO
-      {-# Inline [0] mk #-}
-      {-# Inline [0] step #-}
   --}}}
 
 
@@ -88,8 +88,10 @@ instance
   mkStream proxy (ls :!: split@(Split (TW (ITbl _ arr) _))) grd us i@(Subword(_:.j))
     = seq csize . SP.flatten mk step $ mkStream (Proxy @left) ls (termStaticCheck proxy split us i grd) us i
     where
+      {-# Inline [0] mk #-}
       mk elm = let RiSwI l = getIdx elm
                in  return (elm:.j-l-csize)
+      {-# Inline [0] step #-}
       step (elm:.zz)
         | zz >= 0 = do let RiSwI k = getIdx elm; l = j - zz; kl = subword k l
                            ix      = collectIx (Proxy @uId) elm :. Subword (k:.l)
@@ -97,8 +99,6 @@ instance
                        return $ SP.Yield (ElmSplitITbl (Proxy @uId) val (RiSwI l) elm (Subword (k:.l))) (elm:.zz-1)
         | otherwise = return SP.Done
       csize = 0 -- TODO
-      {-# Inline [0] mk #-}
-      {-# Inline [0] step #-}
   --}}}
 
 instance TermStaticVar (IStatic d) (Split uId fragTy (TwITbl bo so m arr c i x)) (Subword I) where
