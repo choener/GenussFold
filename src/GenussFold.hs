@@ -27,7 +27,7 @@ main = do
     Nussinov{..} -> do
       ls <- lines <$> getContents
       forM_ ls $ \l -> do
-        let (r,bs) = pknPairMax coopts l
-        printf "%s   %d\n" l r
+        let (r,bs,perf) = pknPairMax coopts l
+        printf "%s   %d\n%s\n" l r perf
         forM_ bs $ \[b] -> printf "%s   %d\n" b r
 
