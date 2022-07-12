@@ -1,4 +1,5 @@
 
+--{{{ GHC Options
 {-# Options_GHC -fdicts-cheap                  #-}
 {-# Options_GHC -flate-dmd-anal                #-}
 {-# Options_GHC -fmax-worker-args=1000         #-}
@@ -12,12 +13,13 @@
 {-# Options_GHC -fno-liberate-case             #-}
 
 {-# Language MagicHash #-}
+--}}}
 
 -- | The PKN DP algorithm.
 
 module BioInf.GenussFold.PKN where
 
---{{{
+--{{{ Imports
 import Control.Applicative
 import Control.Monad
 import Control.Monad.ST
@@ -73,30 +75,20 @@ pairs c d = go c d
 
 -- | The pretty algebra is used for backtracing.
 
---pretty :: Monad m => SigPKN m [String] [[String]] Char -- Char
---{-# Inline pretty #-}
---pretty = SigPKN
---  { unp = \ [x] c     -> [x ++ "."]
---  , jux = \ [x] c [y] d -> [x ++ "(" ++ y ++ ")"]
-----  , pse = \ () () [x1,x2] [y1,y2] -> [x1 ++ y1 ++ x2 ++ y2]
---  , nil = \ ()      -> [""]
-----  , pkk = \ (Z:.[x]:.()) (Z:.a:.()) [y1,y2] (Z:.():.[z]) (Z:.():.b) -> [x ++ "[" ++ y1 , y2 ++ z ++ "]"]
-----  , nll = \ (Z:.():.()) -> ["",""]
---  , idd = id
---  , h   = SM.toList
---  }
-
--- | Wrapper function that just calls the forward and backtrack parts of the DP algorithm and does a
--- bit of input / output manipulation.
-
-pknPairMax :: Int -> String -> (Int,[[String]],String)
-{-# NoInline pknPairMax #-}
-pknPairMax k inp = (d, take k bs, showPerfCounter perf) where
-  i = VU.fromList . Prelude.map toUpper $ inp
-  n = VU.length i
-  Mutated (Z:.t:.u:.v) perf eachPerf = runInsideForward i
-  d = unId $ axiom t
-  bs = [] -- runInsideBacktrack i (Z:.t:.u:.v)
+pretty :: Monad m => SigPKN m [String] [[String]] Char Char
+--{{{
+{-# Inline pretty #-}
+pretty = SigPKN
+  { unp = \ [x] c     -> [x ++ "."]
+  , jux = \ [x] c [y] d -> [x ++ "(" ++ y ++ ")"]
+  , pse = \ () () [x1,x2] [y1,y2] -> [x1 ++ y1 ++ x2 ++ y2]
+  , nil = \ ()      -> [""]
+  , pkk = \ (Z:.[x]:.()) (Z:.a:.()) [y1,y2] (Z:.():.[z]) (Z:.():.b) -> [x ++ "[" ++ y1 , y2 ++ z ++ "]"]
+  , nll = \ (Z:.():.()) -> ["",""]
+  , idd = id
+  , h   = SM.toList
+  }
+--}}}
 
 -- | Scalar-style table for the Vienna part of the algorithm.
 
@@ -126,18 +118,35 @@ runInsideForward i = runST $ do
         (chr i)
         (chr i)
 
-type X' = TwITblBt 0 0 (Dense VU.Vector) EmptyOk (Subword I) Int Id Id [String]
-type T' = TwITblBt 0 0 (Dense VU.Vector) (Z:.EmptyOk:.EmptyOk) (Z:.Subword I:.Subword I) Int Id Id [String]
+type X' bo so = TwITblBt bo so (Dense VU.Vector) EmptyOk (Subword I) Int Id Id [String]
+type T' bo so = TwITblBt bo so (Dense VU.Vector) (Z:.EmptyOk:.EmptyOk) (Z:.Subword I:.Subword I) Int Id Id [String]
 
 runInsideBacktrack :: VU.Vector Char -> Z:.X 0 2:.T 0 0:.T 0 1 -> [[String]]
+--{{{
 {-# NoInline runInsideBacktrack #-}
-runInsideBacktrack i (Z:.t:.u:.v) = unId $ undefined -- axiom b
-{-
+runInsideBacktrack i (Z:.t:.u:.v) = unId $ axiom b
   where !(Z:.b:._:._) = gPKN (bpmax <|| pretty)
                           (toBacktrack t (undefined :: Id a -> Id a))
                           (toBacktrack u (undefined :: Id a -> Id a))
                           (toBacktrack v (undefined :: Id a -> Id a))
                           (chr i)
                           (chr i)
-                          :: Z:.X':.T':.T'
--}
+                          :: Z:.X' 0 2:.T' 0 0:.T' 0 1
+--}}}
+
+
+
+-- | Wrapper function that just calls the forward and backtrack parts of the DP algorithm and does a
+-- bit of input / output manipulation.
+
+pknPairMax :: Int -> String -> (Int,[[String]],String)
+--{{{
+{-# NoInline pknPairMax #-}
+pknPairMax k inp = (d, take k bs, showPerfCounter perf) where
+  i = VU.fromList . Prelude.map toUpper $ inp
+  n = VU.length i
+  Mutated (Z:.t:.u:.v) perf eachPerf = runInsideForward i
+  d = unId $ axiom t
+  bs = runInsideBacktrack i (Z:.t:.u:.v)
+--}}}
+
