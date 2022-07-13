@@ -103,6 +103,7 @@ type T bo so = TwITbl bo so Id (Dense VU.Vector) (Z:.EmptyOk:.EmptyOk) (Z:.Subwo
 -- the help of the guide index.
 
 runInsideForward :: VU.Vector Char -> Mutated (Z:.X 0 2:.T 0 0:.T 0 1)
+--{{{
 {-# NoInline runInsideForward #-}
 runInsideForward i = runST $ do
   let n = VU.length i
@@ -117,6 +118,7 @@ runInsideForward i = runST $ do
         (ITbl @_ @_ @_ @_ @_ @_ (Z:.EmptyOk:.EmptyOk) arrVV)
         (chr i)
         (chr i)
+--}}}
 
 type X' bo so = TwITblBt bo so (Dense VU.Vector) EmptyOk (Subword I) Int Id Id [String]
 type T' bo so = TwITblBt bo so (Dense VU.Vector) (Z:.EmptyOk:.EmptyOk) (Z:.Subword I:.Subword I) Int Id Id [String]
