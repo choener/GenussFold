@@ -28,6 +28,7 @@ S -> pse <<< U V U V
 
 <U,U> -> pkk <<< [S,-] [c,-] <U,U> [-,S] [-,c]
 <U,U> -> nll <<< [e,e]
+-- <U,U> -> sng <<< [S,-] [c,-] [-,S] [-,c]
 <V,V> -> idd <<< <U,U>
 //
 Emit: PKN

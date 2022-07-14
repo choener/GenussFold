@@ -20,6 +20,7 @@
 module BioInf.GenussFold.PKN where
 
 --{{{ Imports
+import Data.Ord
 import Control.Applicative
 import Control.Monad
 import Control.Monad.ST
@@ -49,10 +50,11 @@ bpmax :: Monad m => SigPKN m Int Int (Int,Char) (Int,Char)
 {-# Inline bpmax #-}
 bpmax = SigPKN
   { unp = const
-  , jux = \ x c y d -> -77777 -- if snd c `pairs` snd d then x + y + 1 else -777777
+  , jux = \ x c y d -> if snd c `pairs` snd d then x + y + 1 else -777777
   , pse = \ () () x y -> x + y
   , nil = \ () -> 0
   , pkk = \ (Z:.x:.()) (Z:.a:.()) y (Z:.():.z) (Z:.():.b) -> if snd a `pairs` snd b then x + y + z + 1 else -888888
+--  , sng = \ (Z:.x:.()) (Z:.a:.())   (Z:.():.z) (Z:.():.b) -> if snd a `pairs` snd b then x +     z + 1 else -888888
   , nll = \ (Z:.():.()) -> 0
   , idd = id
   , h   = SM.foldl' max (-999999)
@@ -84,6 +86,7 @@ pretty = SigPKN
   , pse = \ () () [x1,x2] [y1,y2] -> [concat $ intersperse " " [x1,y1,x2,y2]]
   , nil = \ ()      -> [""]
   , pkk = \ (Z:.[x]:.()) (Z:.a:.()) [y1,y2] (Z:.():.[z]) (Z:.():.b) -> [x ++ "[" ++ shw a ++ y1 , y2 ++ z ++ "]" ++ shw b]
+--  , sng = \ (Z:.[x]:.()) (Z:.a:.())         (Z:.():.[z]) (Z:.():.b) -> [x ++ "[" ++ shw a       ,       z ++ "]" ++ shw b]
   , nll = \ (Z:.():.()) -> ["",""]
   , idd = id
   , h   = SM.toList
@@ -95,9 +98,48 @@ data BT = Unp BT (Int,Char)
         | PSE BT BT
         | Nil
         | PKK BT (Int,Char) BT BT (Int,Char)
+        | SNG BT (Int,Char)    BT (Int,Char)
         | NLL
         | IDD BT
   deriving (Eq,Ord,Show)
+
+-- | Decompose into PK-free substructures. Might introduce more substructures than necessary.
+
+bt2pk :: BT -> [(Int,Int)] -- [Either (Int,Int) (Int,Int)]
+bt2pk = go
+  where
+    go (Unp bt _) = go bt
+    go (Jux xss (l,_) yss (r,_)) = (l,r) : go xss ++ go yss
+    go (PSE xss yss) = go xss ++ go yss
+    go Nil = []
+    go (PKK xss (l,_) yss zss (r,_)) = (l,r) : go xss ++ go yss ++ go zss
+    go (SNG xss (l,_)     zss (r,_)) = (l,r) : go xss ++ go zss
+    go NLL = []
+    go (IDD xs) = go xs
+
+-- | Costly!
+
+groupify :: [(Int,Int)] -> [[(Int,Int)]]
+groupify [] = []
+groupify (x:xs) = map sort . rec . sortBy (comparing (Down . length)) $ go x xs
+  where
+    rec [] = []
+    rec [r] = [r]
+    rec (r:rs) = r : groupify (concat rs)
+    go (l,r) [] = [[(l,r)]]
+    go (l,r) xs = (if not (null ass) then (l,r) `prependHead` go a as else [[(l,r)]]) ++ (if not (null bss) then go b bs else [])
+      where
+        (ass,bss) = partition (\(x,y) -> y<l || r<x || l<x && y<r || x<l && r<y) xs
+        a:as = ass; b:bs = bss
+        prependHead q (z:zs) = (q:z) : zs
+
+showbt :: Int -> BT -> String
+showbt k = unlines . map (stringify k) . groupify . sort . bt2pk
+
+stringify :: Int -> [(Int,Int)] -> String
+stringify k xs = VU.toList $ go $ VU.replicate k '.'
+  where
+    go v = v VU.// ([ (x,'(') | (x,_) <- xs ] ++ [ (x,')') | (_,x) <- xs ])
 
 bt :: Monad m => SigPKN m BT [BT] (Int,Char) (Int,Char)
 --{{{
@@ -108,6 +150,7 @@ bt = SigPKN
   , pse = \ () () x y -> PSE x y
   , nil = const Nil
   , pkk = \ (Z:.x:.()) (Z:.a:.()) bt (Z:.():.z) (Z:.():.b) -> PKK x a bt z b
+--  , sng = \ (Z:.x:.()) (Z:.a:.())    (Z:.():.z) (Z:.():.b) -> SNG x a    z b
   , nll = const NLL
   , idd = IDD
   , h   = SM.toList
@@ -179,4 +222,11 @@ pknPairMax k inp = (d, take k bs, showPerfCounter perf) where
   bs = runInsideBacktrack i (Z:.t:.u:.v)
 --}}}
 
+testrun :: Int -> String -> IO ()
+testrun k inp = do
+  let (s,bt,_) = pknPairMax k inp
+  forM_ bt $ \b -> do
+    print s
+    print b
+    putStrLn $ showbt (length inp) b
 
