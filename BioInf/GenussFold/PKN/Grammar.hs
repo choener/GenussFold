@@ -26,7 +26,7 @@ S -> jux <<< S c S c
 S -> nil <<< e
 S -> pse <<< U V U V
 
-<U,U> -> pkk <<< [S,-] [c,-] <V,V> [-,S] [-,c]
+<U,U> -> pkk <<< [S,-] [c,-] <U,U> [-,S] [-,c]
 <U,U> -> nll <<< [e,e]
 <V,V> -> idd <<< <U,U>
 //

@@ -29,5 +29,5 @@ main = do
       forM_ ls $ \l -> do
         let (r,bs,perf) = pknPairMax coopts l
         printf "%s   %d\n%s\n" l r perf
-        forM_ bs $ \[b] -> printf "%s   %d\n" b r
+        forM_ bs $ \b -> printf "%s   %d\n" (show b) r
 
